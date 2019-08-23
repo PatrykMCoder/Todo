@@ -111,7 +111,11 @@ public class TodoAdapter{
         Cursor cursorData = database.rawQuery(String.format("SELECT * FROM %s", DB_TABLE_NAME), null);
         cursorData.moveToFirst();
         while(cursorData.moveToNext()){
+            data.add(cursorData.getString(cursorData.getColumnIndex(KEY_TITLE)));
             data.add(cursorData.getString(cursorData.getColumnIndex(KEY_DESCRIPTION)));
+            data.add(cursorData.getString(cursorData.getColumnIndex(KEY_DATE_CREATE)));
+            data.add(cursorData.getString(cursorData.getColumnIndex(KEY_DATE_LIMIT)));
+            data.add(cursorData.getString(cursorData.getColumnIndex(KEY_COMPLETED)));
         }
         return data;
     }

@@ -78,7 +78,7 @@ public class TodoFragment extends Fragment implements View.OnClickListener {
         TodoAdapter todoAdapter = new TodoAdapter(context);
         todoAdapter.openDB();
         for(int i = 0; i < todoAdapter.getAllTodo().size(); i++){
-            todoObject = new TodoObject(todoAdapter.getAllTodo().get(i));
+            todoObject = new TodoObject(todoAdapter.getAllTodo().get(i),todoAdapter.getAllTodo().get(i),todoAdapter.getAllTodo().get(i), todoAdapter.getAllTodo().get(i), 0);
             data.add(todoObject);
         }
         todoAdapter.closeDB();
