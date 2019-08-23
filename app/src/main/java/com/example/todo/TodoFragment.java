@@ -16,6 +16,7 @@ import android.widget.LinearLayout;
 import com.example.todo.database.TodoAdapter;
 import com.example.todo.utils.TodoRecyclerViewAdapter;
 import com.example.todo.utils.objects.TodoObject;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 
@@ -28,6 +29,8 @@ public class TodoFragment extends Fragment implements View.OnClickListener {
     private RecyclerView todoList;
     private RecyclerView.Adapter adapterTodo;
     private RecyclerView.LayoutManager layoutManager;
+
+    private FloatingActionButton addNewTodo;
 
     private ArrayList<TodoObject> data;
     private Context context;
@@ -54,6 +57,8 @@ public class TodoFragment extends Fragment implements View.OnClickListener {
                              Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.fragment_todo, container, false);
         data = new ArrayList<>();
+        addNewTodo = rootView.findViewById(R.id.add_new_todo);
+        addNewTodo.setOnClickListener(this);
         initRecyclerView(rootView);
         getDataToShow();
         return rootView;

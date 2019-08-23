@@ -73,12 +73,12 @@ public class TodoAdapter{
         dbHelper.close();
     }
 
-    public long insertTODODescription(String description, int complete){
+   /* public long insertTODODescription(String description, int complete){
         ContentValues contentValues = new ContentValues();
         contentValues.put(KEY_DESCRIPTION, description);
         contentValues.put(KEY_COMPLETED, complete);
         return  database.insert(DB_TABLE_NAME, null, contentValues);
-    }
+    }*/
 
     public long insertDataTodo(String title, String description, String dateCreate, String dateLimit, int complete){
         ContentValues contentValues = new ContentValues();
@@ -99,11 +99,11 @@ public class TodoAdapter{
         updateValue.put(KEY_COMPLETED, complete);
         return database.update(DB_TABLE_NAME, updateValue, where, null);
     }
-//
-//    public String getAllTodo(){
-//        String[] columns = {KEY_ID, KEY_DESCRIPTION, KEY_COMPLETED};
-//        return  database.query(DB_TABLE_NAME, columns, null, null, null, null, null).toString();
-//    }
+/*
+    public String getAllTodo(){
+        String[] columns = {KEY_ID, KEY_DESCRIPTION, KEY_COMPLETED};
+        return  database.query(DB_TABLE_NAME, columns, null, null, null, null, null).toString();
+    }*/
 
     public ArrayList<String> getAllTodo(){
         String[] columns = {KEY_ID, KEY_DESCRIPTION, KEY_COMPLETED};
@@ -116,10 +116,10 @@ public class TodoAdapter{
         return data;
     }
 
-    public String getInfoAboutTodo(long id){
+   /* public String getInfoAboutTodo(long id){
         return "";
     }
-
+*/
     public boolean removeTodo(long id){
         String where = KEY_ID  + "=" + id;
         return database.delete(DB_TABLE_NAME, where, null ) > 0;

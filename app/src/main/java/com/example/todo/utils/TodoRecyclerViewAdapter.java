@@ -38,6 +38,7 @@ public class TodoRecyclerViewAdapter extends RecyclerView.Adapter<TodoRecyclerVi
             @Override
             public void onClick(View view) {
                 //todo get info about selected todo item: data create, finished, description(need update data base!)
+                // TODO: 23/08/2019 -> on long tap -> remove
             }
         });
     }
@@ -48,6 +49,7 @@ public class TodoRecyclerViewAdapter extends RecyclerView.Adapter<TodoRecyclerVi
     }
 
     public class TodoListViewHolder extends RecyclerView.ViewHolder{
+        public TextView titleTextView;
         public TextView descriptionTextView;
         public LinearLayout layoutItemTodo;
 

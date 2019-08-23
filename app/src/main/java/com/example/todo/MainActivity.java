@@ -17,6 +17,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
 
     private BottomNavigationView bottomNavigationView;
+    private Fragment fragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,13 +43,18 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     }
 
     public void initFragment(Fragment fragment, boolean addToBackStage){
-        Fragment f = fragment;
+        this.fragment = fragment;
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
 
-        fragmentTransaction.replace(R.id.containerFragment, f);
+        fragmentTransaction.replace(R.id.containerFragment, fragment);
         fragmentTransaction.addToBackStack(null);
 
         fragmentTransaction.commit();
+    }
+
+    public void closeFragment(Fragment oldFragment, Fragment newFragment){
+        assert fragment.getFragmentManager() != null;
+        fragment.getFragmentManager().beginTransaction().remove(oldFragment).replace(R.id.containerFragment, newFragment).commit();
     }
 
     @Override
@@ -56,13 +62,13 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         switch (menuItem.getItemId()){
             case R.id.todo_item:
                 initFragment(new TodoFragment(getApplicationContext()), false);
-                break;
+                return true;
             case R.id.note_item:
                 initFragment(new NoteFragment(), false);
-                break;
+                return true;
             case R.id.settings_item:
                 Toast.makeText(this, "Settings", Toast.LENGTH_SHORT).show();
-                break;
+                return true;
                 default: break;
         }
         return false;

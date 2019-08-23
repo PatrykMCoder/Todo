@@ -1,14 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".AddNewTodo">
-
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    tools:context=".AddNewTodo"
+    android:orientation="vertical">
+    
+    <EditText
+        android:id="@+id/new_title_todo"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="50dp"
+        android:hint="Enter title"/>
+    
+    <EditText
+        android:id="@+id/new_description_todo"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:hint="Enter description"/>
+    
+  <!--  <EditText
+        android:id="@+id/new_date_create"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:inputType="date"
+        android:hint="Select date"/>-->
 
-</FrameLayout>
+    <EditText
+        android:id="@+id/new_limit_date"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:inputType="date"
+        android:hint="Select reaming date"/>
+
+    <Button
+        android:id="@+id/submit_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Submit"/>
+</LinearLayout>
