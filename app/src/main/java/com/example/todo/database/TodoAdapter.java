@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 public class TodoAdapter{
     //db config
@@ -28,7 +29,7 @@ public class TodoAdapter{
     public static final String DESCRIPTION_OPTIONS = "TEXT NOT NULL";
     public static final int DESCRIPTION_COLUMN = 2;
 
-    public static final String KEY_DATE_CREATE = "create";
+    public static final String KEY_DATE_CREATE = "ce";
     public static final String DATE_CREATE_OPTIONS = "DATETIME DEFAULT CURRENT_TIMESTAMP";
     public static final int DATE_CREATE_COLUMN = 3;
 
@@ -41,7 +42,13 @@ public class TodoAdapter{
     public static final int COMPLETED_COLUMN = 5;
 
     //query
-    private static final String DB_CREATE_TODO_TABLE = "CREATE TABLE " + DB_TABLE_NAME + "( " + KEY_ID + " " + ID_OPTIONS + ", " + KEY_TITLE + " " + TITLE_OPTIONS + ", " + KEY_DESCRIPTION + " " + DESCRIPTION_OPTIONS + ", " + KEY_DATE_CREATE + " " + DATE_CREATE_OPTIONS + ", " + KEY_DATE_LIMIT + " " + DATE_LIMIT_OPTIONS + ", " + KEY_COMPLETED + " " + COMPLETED_OPTIONS + ");";
+    private static final String DB_CREATE_TODO_TABLE = "CREATE TABLE " + DB_TABLE_NAME + "( " +
+            KEY_ID + " " + ID_OPTIONS + ", " +
+            KEY_TITLE + " " + TITLE_OPTIONS + ", " +
+            KEY_DESCRIPTION + " " + DESCRIPTION_OPTIONS + ", " +
+            KEY_DATE_CREATE + " " + DATE_CREATE_OPTIONS + ", " +
+            KEY_DATE_LIMIT + " " + DATE_LIMIT_OPTIONS + ", " + KEY_COMPLETED + " " + COMPLETED_OPTIONS + ");";
+
     private static final String DROP_TODO_TABLE = "DROP TABLE IF EXISTS " + DB_TABLE_NAME;
 
     private SQLiteDatabase database;
@@ -66,18 +73,25 @@ public class TodoAdapter{
         dbHelper.close();
     }
 
-    public long insertTODODescription(String description, boolean complete){
+    public long insertTODODescription(String description, int complete){
         ContentValues contentValues = new ContentValues();
         contentValues.put(KEY_DESCRIPTION, description);
         contentValues.put(KEY_COMPLETED, complete);
         return  database.insert(DB_TABLE_NAME, null, contentValues);
     }
 
-    public long insertDataTodo(){
+    public long insertDataTodo(String title, String description, String dateCreate, String dateLimit, int complete){
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(KEY_TITLE, title);
+        contentValues.put(KEY_DESCRIPTION, description);
+        contentValues.put(KEY_DATE_CREATE, dateCreate);
+        contentValues.put(KEY_DATE_LIMIT, dateLimit);
+        contentValues.put(KEY_COMPLETED, complete);
 
+        return database.insert(DB_TABLE_NAME, null, contentValues);
     }
 
-    public long updateDataTodo(String description, boolean complete, long id){
+    public long updateDataTodo(String description, int complete, long id){
         //todo update this lol
         String where = KEY_ID + "=" + id;
         ContentValues updateValue = new ContentValues();

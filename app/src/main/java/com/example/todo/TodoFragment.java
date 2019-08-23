@@ -23,7 +23,7 @@ import java.util.ArrayList;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class HomePageFragment extends Fragment {
+public class TodoFragment extends Fragment implements View.OnClickListener {
 
     private RecyclerView todoList;
     private RecyclerView.Adapter adapterTodo;
@@ -35,16 +35,24 @@ public class HomePageFragment extends Fragment {
     private TodoAdapter todoAdapter;
     private TodoObject todoObject;
 
-    public HomePageFragment(Context context) {
+    private MainActivity mainActivity;
+
+    public TodoFragment(Context context) {
         // Required empty public constructor
         this.context = context;
     }
 
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        mainActivity = (MainActivity) context;
+
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        final View rootView = inflater.inflate(R.layout.fragment_home_page, container, false);
+        final View rootView = inflater.inflate(R.layout.fragment_todo, container, false);
         data = new ArrayList<>();
         initRecyclerView(rootView);
         getDataToShow();
@@ -69,5 +77,14 @@ public class HomePageFragment extends Fragment {
             data.add(todoObject);
         }
         todoAdapter.closeDB();
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()){
+            case R.id.add_new_todo:
+                mainActivity.initFragment(new AddNewTodo(), false);
+                break;
+        }
     }
 }
