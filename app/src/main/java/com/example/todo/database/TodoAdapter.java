@@ -6,9 +6,9 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import java.util.ArrayList;
-import java.util.Date;
 
 public class TodoAdapter{
     //db config
@@ -41,6 +41,8 @@ public class TodoAdapter{
     public static final String COMPLETED_OPTIONS = "INTEGER DEFAULT 0";
     public static final int COMPLETED_COLUMN = 5;
 
+
+    private final static String TAG = "TodoAdapter";
     //query
     private static final String DB_CREATE_TODO_TABLE = "CREATE TABLE " + DB_TABLE_NAME + "( " +
             KEY_ID + " " + ID_OPTIONS + ", " +
@@ -113,20 +115,50 @@ public class TodoAdapter{
         while(cursorData.moveToNext()){
             data.add(cursorData.getString(cursorData.getColumnIndex(KEY_TITLE)));
             data.add(cursorData.getString(cursorData.getColumnIndex(KEY_DESCRIPTION)));
-            data.add(cursorData.getString(cursorData.getColumnIndex(KEY_DATE_CREATE)));
-            data.add(cursorData.getString(cursorData.getColumnIndex(KEY_DATE_LIMIT)));
             data.add(cursorData.getString(cursorData.getColumnIndex(KEY_COMPLETED)));
         }
+        cursorData.close();
         return data;
     }
 
-   /* public String getInfoAboutTodo(long id){
-        return "";
+    public ArrayList<String> getTitleTODO(){
+        ArrayList<String> data = new ArrayList<>();
+        String q = "SELECT title from TABLE_TODO_NOTE";
+        Cursor cursor = database.rawQuery(String.format(q), null);
+        cursor.moveToFirst();
+        while (cursor.moveToNext()){
+            data.add(cursor.getString(cursor.getColumnIndex(KEY_TITLE)));
+        }
+        Log.d(TAG, "getTitleTODO: DATA_TITLE: " + data);
+        return data;
     }
-*/
-    public boolean removeTodo(long id){
-        String where = KEY_ID  + "=" + id;
-        return database.delete(DB_TABLE_NAME, where, null ) > 0;
+
+    public ArrayList<String> getDescriptionTODO(){
+        ArrayList<String> data = new ArrayList<>();
+        String q = "SELECT description from TABLE_TODO_NOTE";
+        Cursor cursor = database.rawQuery(String.format(q), null);
+        cursor.moveToFirst();
+        while (cursor.moveToNext()){
+            data.add(cursor.getString(cursor.getColumnIndex(KEY_DESCRIPTION)));
+        }
+        Log.d(TAG, "getDescriptionTODO: DATA_DESCRIPTION: " + data);
+        return data;
+    }
+
+    public ArrayList<Integer> getDoneTODO(){
+        ArrayList<Integer> data = new ArrayList<>();
+        String q = "SELECT completed from TABLE_TODO_NOTE";
+        Cursor cursor = database.rawQuery(String.format(q), null);
+        cursor.moveToFirst();
+        while (cursor.moveToNext()){
+            data.add(cursor.getInt(cursor.getColumnIndex(KEY_COMPLETED)));
+        }
+        Log.d(TAG, "getDescriptionTODO: DATA_DESCRIPTION: " + data);
+        return data;
+    }
+
+    public void deleteTODO(int index){
+
     }
 
     private class DBHelper extends SQLiteOpenHelper {

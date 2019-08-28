@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -14,8 +15,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.todo.R;
 import com.example.todo.database.TodoAdapter;
 import com.example.todo.utils.objects.TodoObject;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 
@@ -37,11 +36,9 @@ public class TodoRecyclerViewAdapter extends RecyclerView.Adapter<TodoRecyclerVi
     }
 
     @Override
-    public void onBindViewHolder(@NonNull TodoListViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final TodoListViewHolder holder, int position) {
         holder.titleTextView.setText(data.get(position).getTitle());
         holder.descriptionTextView.setText(data.get(position).getDescription());
-        holder.dateCreateTextView.setText(data.get(position).getDateCreate());
-        holder.dateReamingTextView.setText(data.get(position).getDateReaming());
 
         if(data.get(position).getDone() == 0){
             holder.doneCheckBox.setChecked(false);
@@ -52,8 +49,18 @@ public class TodoRecyclerViewAdapter extends RecyclerView.Adapter<TodoRecyclerVi
         holder.layoutItemTodo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //todo get info about selected todo item: data create, finished, description(need update data base!)
-                // TODO: 23/08/2019 -> on long tap -> remove
+                // TODO: 29/08/2019 open todo information
+                Toast.makeText(holder.layoutItemTodo.getContext(), "Click", Toast.LENGTH_SHORT).show();
+            }
+        });
+        holder.layoutItemTodo.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                TodoAdapter todoAdapter = new TodoAdapter(view.getContext());
+                todoAdapter.openDB();
+                todoAdapter.deleteTODO(1);
+                todoAdapter.closeDB();
+                return true;
             }
         });
     }
@@ -66,8 +73,6 @@ public class TodoRecyclerViewAdapter extends RecyclerView.Adapter<TodoRecyclerVi
     public class TodoListViewHolder extends RecyclerView.ViewHolder{
         public TextView titleTextView;
         public TextView descriptionTextView;
-        public TextView dateCreateTextView;
-        public TextView dateReamingTextView;
         public CheckBox doneCheckBox;
         public LinearLayout layoutItemTodo;
 
@@ -75,8 +80,6 @@ public class TodoRecyclerViewAdapter extends RecyclerView.Adapter<TodoRecyclerVi
             super(itemView);
             titleTextView = itemView.findViewById(R.id.todoTitle);
             descriptionTextView = itemView.findViewById(R.id.todoDescription);
-            dateCreateTextView = itemView.findViewById(R.id.todoDateCreate);
-            dateReamingTextView = itemView.findViewById(R.id.todoDateReaming);
             doneCheckBox = itemView.findViewById(R.id.todoDone);
             layoutItemTodo = itemView.findViewById(R.id.layoutItemTodo);
         }
