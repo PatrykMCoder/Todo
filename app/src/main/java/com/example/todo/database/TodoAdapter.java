@@ -158,7 +158,6 @@ public class TodoAdapter{
     }
 
     public void deleteTODO(int index){
-
     }
 
     private class DBHelper extends SQLiteOpenHelper {

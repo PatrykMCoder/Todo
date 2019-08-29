@@ -10,6 +10,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.todo.R;
@@ -40,30 +41,12 @@ public class TodoRecyclerViewAdapter extends RecyclerView.Adapter<TodoRecyclerVi
         holder.titleTextView.setText(data.get(position).getTitle());
         holder.descriptionTextView.setText(data.get(position).getDescription());
 
-        if(data.get(position).getDone() == 0){
+     /*   if(data.get(position).getDone() == 0){
             holder.doneCheckBox.setChecked(false);
         }else if(data.get(position).getDone() == 1){
             holder.doneCheckBox.setChecked(true);
         }else Log.d(TAG, "Error with checked");
-
-        holder.layoutItemTodo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // TODO: 29/08/2019 open todo information
-                Toast.makeText(holder.layoutItemTodo.getContext(), "Click", Toast.LENGTH_SHORT).show();
-            }
-        });
-        holder.layoutItemTodo.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                TodoAdapter todoAdapter = new TodoAdapter(view.getContext());
-                todoAdapter.openDB();
-                todoAdapter.deleteTODO(1);
-                todoAdapter.closeDB();
-                return true;
-            }
-        });
-    }
+*/  }
 
     @Override
     public int getItemCount() {
@@ -74,14 +57,16 @@ public class TodoRecyclerViewAdapter extends RecyclerView.Adapter<TodoRecyclerVi
         public TextView titleTextView;
         public TextView descriptionTextView;
         public CheckBox doneCheckBox;
-        public LinearLayout layoutItemTodo;
+       // public LinearLayout layoutItemTodo;
+        public CardView cardView;
 
         public TodoListViewHolder(@NonNull View itemView) {
             super(itemView);
             titleTextView = itemView.findViewById(R.id.todoTitle);
             descriptionTextView = itemView.findViewById(R.id.todoDescription);
-            doneCheckBox = itemView.findViewById(R.id.todoDone);
-            layoutItemTodo = itemView.findViewById(R.id.layoutItemTodo);
+            //doneCheckBox = itemView.findViewById(R.id.todoDone);
+           // layoutItemTodo = itemView.findViewById(R.id.layoutItemTodo);
+            cardView = itemView.findViewById(R.id.cardView);
         }
     }
 
