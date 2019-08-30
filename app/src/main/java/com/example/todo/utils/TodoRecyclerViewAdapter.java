@@ -13,7 +13,9 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.todo.MainActivity;
 import com.example.todo.R;
+import com.example.todo.TodoDetailsFragment;
 import com.example.todo.database.TodoAdapter;
 import com.example.todo.utils.objects.TodoObject;
 
@@ -22,6 +24,7 @@ import java.util.ArrayList;
 public class TodoRecyclerViewAdapter extends RecyclerView.Adapter<TodoRecyclerViewAdapter.TodoListViewHolder> {
     private ArrayList<TodoObject> data;
     private final static String TAG = "TODORECYCLERVIEW";
+    private MainActivity mainActivity;
 
     public TodoRecyclerViewAdapter(ArrayList<TodoObject> data){
         this.data = data;
@@ -38,15 +41,28 @@ public class TodoRecyclerViewAdapter extends RecyclerView.Adapter<TodoRecyclerVi
 
     @Override
     public void onBindViewHolder(@NonNull final TodoListViewHolder holder, int position) {
+        mainActivity = (MainActivity)holder.cardView.getContext();
         holder.titleTextView.setText(data.get(position).getTitle());
         holder.descriptionTextView.setText(data.get(position).getDescription());
 
-     /*   if(data.get(position).getDone() == 0){
-            holder.doneCheckBox.setChecked(false);
-        }else if(data.get(position).getDone() == 1){
-            holder.doneCheckBox.setChecked(true);
-        }else Log.d(TAG, "Error with checked");
-*/  }
+        holder.cardView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                TodoAdapter todoAdapter = new TodoAdapter(view.getContext());
+                todoAdapter.openDB();
+                int id = todoAdapter.getIdColumn(holder.titleTextView.getText().toString(), holder.descriptionTextView.getText().toString());
+                mainActivity.initFragment(new TodoDetailsFragment(id), false)   ;
+                todoAdapter.closeDB();
+            }
+        });
+
+        holder.cardView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                return true;
+            }
+        });
+    }
 
     @Override
     public int getItemCount() {

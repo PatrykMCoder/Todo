@@ -7,10 +7,12 @@ public class TodoObject {
     private String dateReaming;
     private int done;
 
-    public TodoObject(String title, String description, int done) {
+    public TodoObject(String title, String description, int done, String dateCreate, String dateReaming) {
         this.title = title;
         this.description = description;
         this.done = done;
+        this.dateCreate = dateCreate;
+        this.dateReaming = dateReaming;
     }
 
     public String getTitle() {

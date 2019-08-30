@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#F3A782</color>
-    <color name="colorPrimaryDark">#F3A782</color>
-    <color name="colorAccent">#F3A782</color>
+    <color name="colorPrimary">#F88B5A</color>
+    <color name="colorPrimaryDark">#F88B5A</color>
+    <color name="colorAccent">#F88B5A</color>
 
     <color name="colorCard1">#F3A782</color>
+
+    <color name="colorFAB">#F88B5A</color>
 
     <color name="textColorWhite">#ffffff</color>
 </resources>

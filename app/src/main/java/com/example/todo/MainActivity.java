@@ -47,7 +47,9 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
 
         fragmentTransaction.replace(R.id.containerFragment, fragment);
-        fragmentTransaction.addToBackStack(null);
+
+        if(addToBackStage)
+            fragmentTransaction.addToBackStack(null);
 
         fragmentTransaction.commit();
     }
@@ -61,10 +63,10 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
         switch (menuItem.getItemId()){
             case R.id.todo_item:
-                initFragment(new TodoFragment(getApplicationContext()), false);
+                initFragment(new TodoFragment(getApplicationContext()), true);
                 return true;
             case R.id.note_item:
-                initFragment(new NoteFragment(), false);
+                initFragment(new NoteFragment(), true);
                 return true;
             case R.id.settings_item:
                 Toast.makeText(this, "Settings", Toast.LENGTH_SHORT).show();
@@ -72,5 +74,10 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 default: break;
         }
         return false;
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
     }
 }
