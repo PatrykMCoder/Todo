@@ -10,7 +10,10 @@ import android.util.Log;
 
 import com.example.todo.utils.objects.TodoObject;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 public class TodoAdapter{
     //db config
@@ -73,11 +76,6 @@ public class TodoAdapter{
         }
     }
 
-    public String test(){
-        String[] columns = {KEY_ID, KEY_DESCRIPTION, KEY_COMPLETED};
-        return  database.query(DB_TABLE_NAME, columns, null, null, null, null, null).toString();
-    }
-
     public void closeDB(){
         dbHelper.close();
     }
@@ -92,20 +90,6 @@ public class TodoAdapter{
 
         return database.insert(DB_TABLE_NAME, null, contentValues);
     }
-
-    public long updateDataTodo(String description, int complete, long id){
-        //todo update this lol
-        String where = KEY_ID + "=" + id;
-        ContentValues updateValue = new ContentValues();
-        updateValue.put(KEY_DESCRIPTION, description);
-        updateValue.put(KEY_COMPLETED, complete);
-        return database.update(DB_TABLE_NAME, updateValue, where, null);
-    }
-/*
-    public String getAllTodo(){
-        String[] columns = {KEY_ID, KEY_DESCRIPTION, KEY_COMPLETED};
-        return  database.query(DB_TABLE_NAME, columns, null, null, null, null, null).toString();
-    }*/
 
     public ArrayList<String> getAllTodo(){
         String[] columns = {KEY_ID, KEY_DESCRIPTION, KEY_COMPLETED};
@@ -156,30 +140,6 @@ public class TodoAdapter{
         return data;
     }
 
-    public ArrayList<String> getDataCreateTODO(){
-        ArrayList<String> data = new ArrayList<>();
-        String q = String.format("SELECT %s from TABLE_TODO_NOTE", KEY_DATE_CREATE);
-        Cursor cursor = database.rawQuery(q, null);
-        cursor.moveToPosition(0);
-        while (cursor.moveToNext()){
-            data.add(cursor.getString(cursor.getColumnIndexOrThrow(KEY_DATE_CREATE)));
-        }
-        Log.d(TAG, "getDescriptionTODO: DATA_DESCRIPTION: " + data);
-        return data;
-    }
-
-    public ArrayList<String> getTimeReamingTODO(){
-        ArrayList<String> data = new ArrayList<>();
-        String q = String.format("SELECT %s from TABLE_TODO_NOTE", KEY_DATE_LIMIT);
-        Cursor cursor = database.rawQuery(q, null);
-        cursor.moveToPosition(0);
-        while (cursor.moveToNext()){
-            data.add(cursor.getString(cursor.getColumnIndexOrThrow(KEY_DATE_LIMIT)));
-        }
-        Log.d(TAG, "getDescriptionTODO: DATA_DESCRIPTION: " + data);
-        return data;
-    }
-
     public ArrayList<Integer> getDoneTODO(){
         ArrayList<Integer> data = new ArrayList<>();
         String q = String.format("SELECT %s from TABLE_TODO_NOTE", KEY_COMPLETED);
@@ -209,16 +169,24 @@ public class TodoAdapter{
         return data;
     }
 
-    public boolean deleteTODO(int id){
-        return database.delete(DB_TABLE_NAME, KEY_ID + "=" + id, null) > 0;
+    public boolean editTODO(String title, String description, String dataReaming, int id){
+        ContentValues contentValues = new ContentValues();
+
+        contentValues.put(KEY_TITLE, title);
+        contentValues.put(KEY_DESCRIPTION, description);
+        contentValues.put(KEY_DATE_LIMIT, dataReaming);
+
+        return database.update(DB_TABLE_NAME, contentValues, KEY_ID + "=" + id, null) > 0;
     }
 
-    private void updateArrayList(){
-        getTitleTODO();
-        getDescriptionTODO();
-        getDoneTODO();
-        getDataCreateTODO();
-        getTimeReamingTODO();
+    public boolean changeStatusTODO(int done, int id){
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(KEY_COMPLETED, done);
+        return database.update(DB_TABLE_NAME, contentValues, KEY_ID + "=" + id, null) > 0;
+    }
+
+    public boolean deleteTODO(int id){
+        return database.delete(DB_TABLE_NAME, KEY_ID + "=" + id, null) > 0;
     }
 
     private class DBHelper extends SQLiteOpenHelper {
@@ -238,3 +206,29 @@ public class TodoAdapter{
         }
     }
 }
+
+/*
+ public ArrayList<String> getDataCreateTODO(){
+        ArrayList<String> data = new ArrayList<>();
+        String q = String.format("SELECT %s from TABLE_TODO_NOTE", KEY_DATE_CREATE);
+        Cursor cursor = database.rawQuery(q, null);
+        cursor.moveToPosition(0);
+        while (cursor.moveToNext()){
+            data.add(cursor.getString(cursor.getColumnIndexOrThrow(KEY_DATE_CREATE)));
+        }
+        Log.d(TAG, "getDescriptionTODO: DATA_DESCRIPTION: " + data);
+        return data;
+    }
+
+    public ArrayList<String> getTimeReamingTODO(){
+        ArrayList<String> data = new ArrayList<>();
+        String q = String.format("SELECT %s from TABLE_TODO_NOTE", KEY_DATE_LIMIT);
+        Cursor cursor = database.rawQuery(q, null);
+        cursor.moveToPosition(0);
+        while (cursor.moveToNext()){
+            data.add(cursor.getString(cursor.getColumnIndexOrThrow(KEY_DATE_LIMIT)));
+        }
+        Log.d(TAG, "getDescriptionTODO: DATA_DESCRIPTION: " + data);
+        return data;
+    }
+ */

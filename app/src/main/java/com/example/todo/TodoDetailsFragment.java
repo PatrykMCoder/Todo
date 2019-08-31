@@ -11,6 +11,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,7 +22,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 
-public class TodoDetailsFragment extends Fragment implements View.OnClickListener {
+public class TodoDetailsFragment extends Fragment implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
 
     private final static String TAG = "detailsfragment";
 
@@ -80,18 +82,18 @@ public class TodoDetailsFragment extends Fragment implements View.OnClickListene
         editFAB.setOnClickListener(this);
         archiveFAB.setOnClickListener(this);
         deleteFAB.setOnClickListener(this);
+        doneCheckBox.setOnCheckedChangeListener(this);
 
         getDataToShow();
 
         return rootView;
     }
 
-
     @Override
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.editTODO:
-                mainActivity.initFragment(new EditTodoFragment(), false);
+                mainActivity.initFragment(new EditTodoFragment(id), false);
                 break;
             case R.id.archiveTODO:
                 Toast.makeText(context, "Available in future :)", Toast.LENGTH_SHORT).show();
@@ -135,6 +137,29 @@ public class TodoDetailsFragment extends Fragment implements View.OnClickListene
         }else if( doneInt == 1){
             doneCheckBox.setChecked(true);
             doneCheckBox.setText("Done");
+        }
+    }
+
+    @Override
+    public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+        int done;
+        TodoAdapter todoAdapter = new TodoAdapter(context);
+        todoAdapter.openDB();
+        switch (compoundButton.getId()){
+            case R.id.doneDetails:
+                if(b){
+                    done = 1;
+                    todoAdapter.changeStatusTODO(done, id);
+                    todoAdapter.closeDB();
+                    doneCheckBox.setText("Done");
+                }else{
+                    done = 0;
+                    todoAdapter.changeStatusTODO(done, id);
+                    todoAdapter.closeDB();
+                    doneCheckBox.setText("Not done");
+                }
+                break;
+                default: break;
         }
     }
 }

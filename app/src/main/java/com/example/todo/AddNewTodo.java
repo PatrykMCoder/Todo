@@ -6,14 +6,17 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.example.todo.database.TodoAdapter;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -28,7 +31,6 @@ public class AddNewTodo extends Fragment implements View.OnClickListener {
 
     private EditText newTitleEditText;
     private EditText newDescriptionEditText;
-  //  private EditText newDateCreateEditText;
     private EditText newDateLimitEditText;
     private Button newButtonSubmit;
 
@@ -56,7 +58,6 @@ public class AddNewTodo extends Fragment implements View.OnClickListener {
 
         newTitleEditText = rootView.findViewById(R.id.new_title_todo);
         newDescriptionEditText = rootView.findViewById(R.id.new_description_todo);
-        //newDateCreateEditText = rootView.findViewById(R.id.new_date_create);
         newDateLimitEditText = rootView.findViewById(R.id.new_limit_date);
         newButtonSubmit = rootView.findViewById(R.id.submit_button);
 
@@ -74,28 +75,35 @@ public class AddNewTodo extends Fragment implements View.OnClickListener {
         }
     }
 
-    private void saveTodo(){
+    private void saveTodo() {
         String title;
         String description;
         String createDate;
         String reamingDate;
 
-        title  = newTitleEditText.getText().toString();
+        title = newTitleEditText.getText().toString();
         description = newDescriptionEditText.getText().toString();
         createDate = getCurrentDate();
         reamingDate = newDateLimitEditText.getText().toString();
 
+        if (!title.isEmpty() && !description.isEmpty()) {
+            todoAdapter.openDB();
+            todoAdapter.insertDataTodo(title, description, createDate, reamingDate, 0);
+            todoAdapter.closeDB();
 
-        todoAdapter.openDB();
-        todoAdapter.insertDataTodo(title, description, createDate, reamingDate, 0);
-        todoAdapter.closeDB();
-
-        mainActivity.closeFragment(this, new TodoFragment(mainActivity.getApplicationContext()));
+            mainActivity.closeFragment(this, new TodoFragment(mainActivity.getApplicationContext()));
+        }else{
+            Toast.makeText(context, "Title or description can't be empty!", Toast.LENGTH_LONG).show();
+        }
     }
-
     private String getCurrentDate(){
         Date currentDate = Calendar.getInstance().getTime();
-        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+        SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
         return sdf.format(currentDate);
+    }
+
+    private boolean checkDateReaming(String date){
+
+        return true;
     }
 }
