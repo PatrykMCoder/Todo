@@ -162,7 +162,7 @@ public class TodoAdapter{
         Cursor cursor = database.rawQuery(q, null);
         cursor.moveToPosition(0);
         while (cursor.moveToNext()){
-            data.add(cursor.getString(cursor.getColumnIndexOrThrow(KEY_DESCRIPTION)));
+            data.add(cursor.getString(cursor.getColumnIndexOrThrow(KEY_DATE_CREATE)));
         }
         Log.d(TAG, "getDescriptionTODO: DATA_DESCRIPTION: " + data);
         return data;
@@ -174,7 +174,7 @@ public class TodoAdapter{
         Cursor cursor = database.rawQuery(q, null);
         cursor.moveToPosition(0);
         while (cursor.moveToNext()){
-            data.add(cursor.getString(cursor.getColumnIndexOrThrow(KEY_DESCRIPTION)));
+            data.add(cursor.getString(cursor.getColumnIndexOrThrow(KEY_DATE_LIMIT)));
         }
         Log.d(TAG, "getDescriptionTODO: DATA_DESCRIPTION: " + data);
         return data;
@@ -193,11 +193,14 @@ public class TodoAdapter{
     }
 
     public ArrayList<String> getRowTODO(int id){
-        String q = String.format("Select * from %s where %s", DB_TABLE_NAME, id);
+        String q = String.format("Select * from %s where %s = %s", DB_TABLE_NAME, KEY_ID, id);
         Log.d(TAG, "getRowTODO: id: " + id);
+
         ArrayList<String> data = new ArrayList<>();
+
         Cursor cursor = database.rawQuery(q, null);
-        cursor.moveToPosition(id-1);
+        cursor.moveToFirst();
+
         data.add(cursor.getString(cursor.getColumnIndexOrThrow(KEY_TITLE)));
         data.add(cursor.getString(cursor.getColumnIndexOrThrow(KEY_DESCRIPTION)));
         data.add(cursor.getString(cursor.getColumnIndexOrThrow(KEY_COMPLETED)));
@@ -206,8 +209,16 @@ public class TodoAdapter{
         return data;
     }
 
-    public void deleteTODO(int id){
+    public boolean deleteTODO(int id){
+        return database.delete(DB_TABLE_NAME, KEY_ID + "=" + id, null) > 0;
+    }
 
+    private void updateArrayList(){
+        getTitleTODO();
+        getDescriptionTODO();
+        getDoneTODO();
+        getDataCreateTODO();
+        getTimeReamingTODO();
     }
 
     private class DBHelper extends SQLiteOpenHelper {
