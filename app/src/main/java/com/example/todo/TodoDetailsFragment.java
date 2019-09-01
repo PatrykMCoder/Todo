@@ -93,7 +93,7 @@ public class TodoDetailsFragment extends Fragment implements View.OnClickListene
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.editTODO:
-                mainActivity.initFragment(new EditTodoFragment(id), false);
+                mainActivity.initFragment(new EditTodoFragment(id), true);
                 break;
             case R.id.archiveTODO:
                 Toast.makeText(context, "Available in future :)", Toast.LENGTH_SHORT).show();

@@ -51,7 +51,7 @@ public class TodoRecyclerViewAdapter extends RecyclerView.Adapter<TodoRecyclerVi
                 TodoAdapter todoAdapter = new TodoAdapter(view.getContext());
                 todoAdapter.openDB();
                 int id = todoAdapter.getIdColumn(holder.titleTextView.getText().toString(), holder.descriptionTextView.getText().toString());
-                mainActivity.initFragment(new TodoDetailsFragment(id), false)   ;
+                mainActivity.initFragment(new TodoDetailsFragment(id), true);
                 todoAdapter.closeDB();
             }
         });

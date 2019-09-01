@@ -86,12 +86,16 @@ public class TodoFragment extends Fragment implements View.OnClickListener {
     }
 
     @Override
+    public void onDestroy() {
+        super.onDestroy();
+    }
+
+    @Override
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.add_new_todo:
-                mainActivity.initFragment(new AddNewTodo(), false);
+                mainActivity.initFragment(new AddNewTodo(), true);
                 break;
         }
     }
-
 }
