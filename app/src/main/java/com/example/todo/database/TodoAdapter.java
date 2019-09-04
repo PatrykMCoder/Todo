@@ -41,6 +41,10 @@ public class TodoAdapter{
     public static final String COMPLETED_OPTIONS = "INTEGER DEFAULT 0";
     public static final int COMPLETED_COLUMN = 5;
 
+    public static final String KEY_ARCHIVE = "archive";
+    public static final String ARCHIVE_OPTIONS = "INTEGER DEFAULT 0";
+    public static final int ARCHIVE_COLUMN = 5;
+
 
     private final static String TAG = "TodoAdapter";
     //query
@@ -49,7 +53,7 @@ public class TodoAdapter{
             KEY_TITLE + " " + TITLE_OPTIONS + ", " +
             KEY_DESCRIPTION + " " + DESCRIPTION_OPTIONS + ", " +
             KEY_DATE_CREATE + " " + DATE_CREATE_OPTIONS + ", " +
-            KEY_DATE_LIMIT + " " + DATE_LIMIT_OPTIONS + ", " + KEY_COMPLETED + " " + COMPLETED_OPTIONS + ");";
+            KEY_DATE_LIMIT + " " + DATE_LIMIT_OPTIONS + ", " + KEY_COMPLETED + " " + COMPLETED_OPTIONS + ", " + KEY_ARCHIVE + " " + ARCHIVE_OPTIONS + " );";
 
     private static final String DROP_TODO_TABLE = "DROP TABLE IF EXISTS " + DB_TABLE_NAME;
 
@@ -147,6 +151,16 @@ public class TodoAdapter{
         return data;
     }
 
+    public ArrayList<Integer> getArchiveTODO(){
+        ArrayList<Integer> data = new ArrayList<>();
+        String q = String.format(("SELECT %s from %s"), KEY_ARCHIVE, DB_TABLE_NAME);
+        Cursor cursor = database.rawQuery(q, null);
+        cursor.moveToFirst();
+        while (cursor.moveToNext())
+            data.add(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_ARCHIVE)));
+        return data;
+    }
+
     public ArrayList<String> getRowTODO(int id){
         String q = String.format("Select * from %s where %s = %s", DB_TABLE_NAME, KEY_ID, id);
         Log.d(TAG, "getRowTODO: id: " + id);
@@ -177,6 +191,12 @@ public class TodoAdapter{
     public boolean changeStatusTODO(int done, int id){
         ContentValues contentValues = new ContentValues();
         contentValues.put(KEY_COMPLETED, done);
+        return database.update(DB_TABLE_NAME, contentValues, KEY_ID + "=" + id, null) > 0;
+    }
+
+    public boolean archiveTODO(int id, int archive){
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("archive", archive);
         return database.update(DB_TABLE_NAME, contentValues, KEY_ID + "=" + id, null) > 0;
     }
 

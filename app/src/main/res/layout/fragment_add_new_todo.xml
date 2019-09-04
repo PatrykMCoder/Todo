@@ -30,7 +30,7 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:inputType="date"
-        android:hint="Select reaming date"/>
+        android:hint="Select reaming date(dd-MM-yyyy)"/>
 
     <Button
         android:id="@+id/submit_button"

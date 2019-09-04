@@ -91,16 +91,19 @@ public class TodoDetailsFragment extends Fragment implements View.OnClickListene
 
     @Override
     public void onClick(View view) {
+        TodoAdapter todoAdapter = new TodoAdapter(context);
+        todoAdapter.openDB();
         switch (view.getId()){
             case R.id.editTODO:
                 mainActivity.initFragment(new EditTodoFragment(id), true);
                 break;
             case R.id.archiveTODO:
-                Toast.makeText(context, "Available in future :)", Toast.LENGTH_SHORT).show();
+               /* todoAdapter.archiveTODO(id, 1);
+                todoAdapter.closeDB();
+                mainActivity.closeFragment(this, new TodoFragment(context));*/
+               Toast.makeText(context, "In future :) ", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.deleteTODO:
-                TodoAdapter todoAdapter = new TodoAdapter(context);
-                todoAdapter.openDB();
                 todoAdapter.deleteTODO(todoAdapter.getIdColumn(title, description));
                 todoAdapter.closeDB();
                 mainActivity.closeFragment(this, new TodoFragment(context));

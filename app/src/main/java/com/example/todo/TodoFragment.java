@@ -40,6 +40,7 @@ public class TodoFragment extends Fragment implements View.OnClickListener {
     private TodoObject todoObject;
 
     private MainActivity mainActivity;
+    private static final String TAG = "TodoFragment";
 
     public TodoFragment(Context context) {
         // Required empty public constructor
@@ -78,10 +79,11 @@ public class TodoFragment extends Fragment implements View.OnClickListener {
     private void getDataToShow(){
         TodoAdapter todoAdapter = new TodoAdapter(context);
         todoAdapter.openDB();
-        for(int i = 0; i < todoAdapter.getTitleTODO().size(); i++){
-            todoObject = new TodoObject(todoAdapter.getTitleTODO().get(i), todoAdapter.getDescriptionTODO().get(i), todoAdapter.getDoneTODO().get(i), "", ""); // TODO: 29/08/2019 repeat this filed for done
+        for(int i = 0; i < todoAdapter.getTitleTODO().size(); i++) {
+            todoObject = new TodoObject(todoAdapter.getTitleTODO().get(i), todoAdapter.getDescriptionTODO().get(i), todoAdapter.getDoneTODO().get(i), "", "", todoAdapter.getArchiveTODO().get(i)); // TODO: 29/08/2019 repeat this filed for done
             data.add(todoObject);
         }
+
         todoAdapter.closeDB();
     }
 

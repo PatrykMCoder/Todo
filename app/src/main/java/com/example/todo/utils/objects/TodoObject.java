@@ -6,13 +6,15 @@ public class TodoObject {
     private String dateCreate;
     private String dateReaming;
     private int done;
+    private int archive;
 
-    public TodoObject(String title, String description, int done, String dateCreate, String dateReaming) {
+    public TodoObject(String title, String description, int done, String dateCreate, String dateReaming, int archive) {
         this.title = title;
         this.description = description;
         this.done = done;
         this.dateCreate = dateCreate;
         this.dateReaming = dateReaming;
+        this.archive = archive;
     }
 
     public String getTitle() {
@@ -53,5 +55,13 @@ public class TodoObject {
 
     public void setDone(int done) {
         this.done = done;
+    }
+
+    public int getArchive() {
+        return archive;
+    }
+
+    public void setArchive(int archive) {
+        this.archive = archive;
     }
 }
