@@ -3,15 +3,11 @@ package com.example.todo;
 
 import android.app.DatePickerDialog;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.os.Build;
 import android.os.Bundle;
 
-import androidx.annotation.RequiresApi;
+
 import androidx.fragment.app.Fragment;
 
-import android.text.InputType;
-import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,15 +19,11 @@ import android.widget.Toast;
 
 import com.example.todo.database.TodoAdapter;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
-
-/**
- * A simple {@link Fragment} subclass.
- */
 public class AddNewTodo extends Fragment implements View.OnClickListener {
 
     private Context context;
@@ -90,7 +82,7 @@ public class AddNewTodo extends Fragment implements View.OnClickListener {
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.submit_button:
-               saveTodo();
+                saveTodo();
                 break;
         }
     }
@@ -100,13 +92,13 @@ public class AddNewTodo extends Fragment implements View.OnClickListener {
         DatePickerDialog setTime = new DatePickerDialog(context, new DatePickerDialog.OnDateSetListener() {
             public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
                 Calendar calendar = Calendar.getInstance();
-                calendar.set(year, monthOfYear, dayOfMonth);
+                calendar.set(year, monthOfYear-1, dayOfMonth);
                 SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
                 Date d = calendar.getTime();
                 String date = sdf.format(d);
                 newDateLimitEditText.setText(date);
             }
-        }, c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH));
+        }, c.get(Calendar.YEAR), c.get((Calendar.MONTH)), c.get(Calendar.DAY_OF_MONTH));
 
         setTime.create();
         setTime.show();
@@ -143,13 +135,14 @@ public class AddNewTodo extends Fragment implements View.OnClickListener {
     }
     private String getCurrentDateFormat(){
         Date currentDate = Calendar.getInstance().getTime();
-        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM- yyyy");
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
         return sdf.format(currentDate);
     }
 
     private Date getCurrentDate(){
-        Date currentDate = Calendar.getInstance().getTime();
-        return currentDate;
+        Calendar current = Calendar.getInstance();
+        current.setTimeZone(TimeZone.getDefault());
+        return current.getTime();
     }
 
     private boolean checkDateReaming(String date){
@@ -162,6 +155,8 @@ public class AddNewTodo extends Fragment implements View.OnClickListener {
         calendar.set(Calendar.YEAR, Integer.parseInt(check[2]));
 
         Date checkDate = calendar.getTime();
+
+        Log.d(TAG, "checkDateReaming: " + today + "\n" + checkDate);
 
         return (checkDate.after(today) || checkDate.equals(today));
     }
