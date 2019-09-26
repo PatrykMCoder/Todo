@@ -6,7 +6,6 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import android.annotation.SuppressLint;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -16,18 +15,19 @@ import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import static androidx.fragment.app.FragmentManager.POP_BACK_STACK_INCLUSIVE;
-
 public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
 
     private BottomNavigationView bottomNavigationView;
     private Fragment fragment;
-    public static boolean isDetailsOpen;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        if(Build.VERSION.SDK_INT >= 10)
+            getSupportActionBar().hide();
+        else
+            getActionBar().hide();
 
         getAllPermission();
         initView();
@@ -85,16 +85,6 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
     @Override
     public void onBackPressed() {
-        /*FragmentManager fragmentManager = getSupportFragmentManager();
-        if(bottomNavigationView.getSelectedItemId() != R.id.todo_item) {
-            bottomNavigationView.setSelectedItemId(R.id.todo_item);
-        }else{
-            super.onBackPressed();
-        }*/
         super.onBackPressed();
-    }
-
-    private void updateNavigationBar(){
-        bottomNavigationView.setSelectedItemId(bottomNavigationView.getId());
     }
 }

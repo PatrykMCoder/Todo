@@ -8,4 +8,5 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <item name="customButton" type="drawable">@drawable/my_style_button</item>
 </resources>

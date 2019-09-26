@@ -221,29 +221,3 @@ public class TodoAdapter{
         }
     }
 }
-
-/*
- public ArrayList<String> getDataCreateTODO(){
-        ArrayList<String> data = new ArrayList<>();
-        String q = String.format("SELECT %s from TABLE_TODO_NOTE", KEY_DATE_CREATE);
-        Cursor cursor = database.rawQuery(q, null);
-        cursor.moveToPosition(0);
-        while (cursor.moveToNext()){
-            data.add(cursor.getString(cursor.getColumnIndexOrThrow(KEY_DATE_CREATE)));
-        }
-        Log.d(TAG, "getDescriptionTODO: DATA_DESCRIPTION: " + data);
-        return data;
-    }
-
-    public ArrayList<String> getTimeReamingTODO(){
-        ArrayList<String> data = new ArrayList<>();
-        String q = String.format("SELECT %s from TABLE_TODO_NOTE", KEY_DATE_LIMIT);
-        Cursor cursor = database.rawQuery(q, null);
-        cursor.moveToPosition(0);
-        while (cursor.moveToNext()){
-            data.add(cursor.getString(cursor.getColumnIndexOrThrow(KEY_DATE_LIMIT)));
-        }
-        Log.d(TAG, "getDescriptionTODO: DATA_DESCRIPTION: " + data);
-        return data;
-    }
- */

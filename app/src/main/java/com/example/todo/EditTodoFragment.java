@@ -54,7 +54,7 @@ public class EditTodoFragment extends Fragment implements View.OnClickListener {
 
         getData();
 
-        titleEditText = rootView.findViewById(R.id.editTile);
+        titleEditText = rootView.findViewById(R.id.editTitle);
         descriptionEditText = rootView.findViewById(R.id.editDescription);
         dateReamingEditText = rootView.findViewById(R.id.editTimeReaming);
         submitEditButton = rootView.findViewById(R.id.submitEdit);
@@ -123,14 +123,22 @@ public class EditTodoFragment extends Fragment implements View.OnClickListener {
         dateReaming = dateReamingEditText.getText().toString();
 
         if (!title.isEmpty() && !description.isEmpty()) {
-            if (checkDateReaming(dateReaming)) {
+            if (!dateReaming.isEmpty())
+                if (checkDateReaming(dateReaming)) {
+                    TodoAdapter todoAdapter = new TodoAdapter(getContext());
+                    todoAdapter.openDB();
+                    todoAdapter.editTODO(titleEditText.getText().toString(), descriptionEditText.getText().toString(), dateReamingEditText.getText().toString(), id);
+                    todoAdapter.closeDB();
+                    mainActivity.closeFragment(this, new TodoFragment(getContext()));
+                } else {
+                    Toast.makeText(context, "Check your date reaming. It is ok?", Toast.LENGTH_SHORT).show();
+                }
+            else {
                 TodoAdapter todoAdapter = new TodoAdapter(getContext());
                 todoAdapter.openDB();
-                todoAdapter.editTODO(titleEditText.getText().toString(), descriptionEditText.getText().toString(), dateReamingEditText.getText().toString(), id);
+                todoAdapter.editTODO(titleEditText.getText().toString(), descriptionEditText.getText().toString(), null, id);
                 todoAdapter.closeDB();
                 mainActivity.closeFragment(this, new TodoFragment(getContext()));
-            } else {
-                Toast.makeText(context, "Check your date reaming. It is ok?", Toast.LENGTH_SHORT).show();
             }
         } else {
             Toast.makeText(context, "Title or description can't be empty!", Toast.LENGTH_LONG).show();

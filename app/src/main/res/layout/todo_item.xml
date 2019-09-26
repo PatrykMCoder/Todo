@@ -7,41 +7,60 @@
     android:id="@+id/layoutItemTodo">
 
   <androidx.cardview.widget.CardView
-      xmlns:card_view="http://schemas.android.com/apk/res-auto"
       android:id="@+id/cardView"
       android:layout_width="match_parent"
       android:layout_height="100dp"
       android:layout_gravity="center"
       app:cardBackgroundColor="@color/colorCard1"
-      card_view:cardCornerRadius="4dp"
-      card_view:cardUseCompatPadding="true"
+      app:cardCornerRadius="4dp"
+      app:cardUseCompatPadding="true"
       android:clipToPadding="true">
 
-      <LinearLayout
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:orientation="vertical"
-          android:padding="10dp">
+      <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-          <TextView
-              android:id="@+id/todoTitle"
-              android:layout_width="match_parent"
+          <LinearLayout
+              android:layout_width="350dp"
               android:layout_height="match_parent"
-              android:text="Simple title"
-              android:textSize="25dp"
-              android:textAlignment="center"
-              android:textColor="@color/textColorWhite" />
+              android:orientation="vertical"
+              android:padding="10dp">
 
-          <TextView
-              android:id="@+id/todoDescription"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:text="Simple description"
-              android:textAlignment="center"
-              android:textSize="20dp"
-              android:textColor="@color/textColorWhite"/>
+              <TextView
+                  android:id="@+id/todoTitle"
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:text="Simple title"
+                  android:textAlignment="textStart"
+                  android:textColor="@color/textColorWhite"
+                  android:textSize="25dp" />
 
-      </LinearLayout>
+              <TextView
+                  android:id="@+id/todoDescription"
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:layout_below="@+id/todoTitle"
+                  android:text="Simple description"
+                  android:textAlignment="textStart"
+                  android:textColor="@color/textColorWhite"
+                  android:textSize="20dp" />
+
+          </LinearLayout>
+
+          <CheckBox
+              android:id="@+id/todoDoneHomePage"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_alignParentEnd="true"
+              android:layout_alignParentRight="true"
+              android:layout_alignParentBottom="true"
+              android:layout_marginEnd="11dp"
+              android:layout_marginRight="11dp"
+              android:layout_marginBottom="27dp"
+              android:drawableTint="#ffffff"
+              android:textColorLink="#ffffff" />
+      </RelativeLayout>
+
   </androidx.cardview.widget.CardView>
 
 </RelativeLayout>
