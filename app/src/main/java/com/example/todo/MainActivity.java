@@ -6,24 +6,39 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.app.Service;
 import android.os.Build;
 import android.os.Bundle;
 
 import android.Manifest;
+import android.provider.Settings;
+import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.initialization.InitializationStatus;
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+
+import static com.example.todo.BuildConfig.APPLICATION_ID;
 
 public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
 
     private BottomNavigationView bottomNavigationView;
     private Fragment fragment;
+    private AdView adView;
+    private AdRequest request;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         if(Build.VERSION.SDK_INT >= 10)
             getSupportActionBar().hide();
         else
@@ -32,6 +47,17 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         getAllPermission();
         initView();
         initFragment(new TodoFragment(getApplicationContext()), false);
+    }
+
+    private void initAds(){
+        MobileAds.initialize(this, new OnInitializationCompleteListener(){
+
+            @Override
+            public void onInitializationComplete(InitializationStatus initializationStatus) {
+                    request = new AdRequest.Builder()
+                        .build();
+            }
+        });
     }
 
     private void getAllPermission(){
@@ -45,6 +71,19 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     private void initView(){
         bottomNavigationView = findViewById(R.id.nav_bar);
         bottomNavigationView.setOnNavigationItemSelectedListener(this);
+        adView = findViewById(R.id.ad_view);
+        AdRequest adRequest = new AdRequest.Builder().addTestDevice("A03BDA52BCF46627BDA62F08CD24AA2D").build();
+        if(adRequest.isTestDevice(this)){
+            adView.loadAd(adRequest);
+            //test ad
+        }else{
+            //ad
+            initAds();
+            adView.loadAd(request);
+        }
+
+        Log.d("MY_ADDS", "initView: " + adRequest.isTestDevice(getApplicationContext()));
+
     }
 
     public void initFragment(final Fragment fragment, boolean addToBackStage){
