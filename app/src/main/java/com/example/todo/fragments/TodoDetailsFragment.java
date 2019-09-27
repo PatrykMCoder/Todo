@@ -18,6 +18,7 @@ import com.example.todo.MainActivity;
 import com.example.todo.R;
 import com.example.todo.database.TodoAdapter;
 import com.example.todo.utils.objects.TodoObject;
+import com.github.clans.fab.FloatingActionMenu;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
@@ -43,9 +44,10 @@ public class TodoDetailsFragment extends Fragment implements View.OnClickListene
     private TextView dataCreateTextView;
     private TextView dataReamingTextView;
 
-    private FloatingActionButton editFAB;
-    private FloatingActionButton archiveFAB;
-    private FloatingActionButton deleteFAB;
+    private FloatingActionMenu floatingActionMenu;
+    private com.github.clans.fab.FloatingActionButton editFAB;
+    private com.github.clans.fab.FloatingActionButton archiveFAB;
+    private com.github.clans.fab.FloatingActionButton deleteFAB;
 
     private Context context;
     private MainActivity mainActivity;
@@ -75,6 +77,7 @@ public class TodoDetailsFragment extends Fragment implements View.OnClickListene
         dataCreateTextView = rootView.findViewById(R.id.dataCreateDetails);
         dataReamingTextView = rootView.findViewById(R.id.dataReamingDetails);
 
+        floatingActionMenu = rootView.findViewById(R.id.menu);
         editFAB = rootView.findViewById(R.id.editTODO);
         archiveFAB = rootView.findViewById(R.id.archiveTODO);
         deleteFAB = rootView.findViewById(R.id.deleteTODO);
@@ -92,7 +95,7 @@ public class TodoDetailsFragment extends Fragment implements View.OnClickListene
     @Override
     public void onClick(View view) {
         TodoAdapter todoAdapter = new TodoAdapter(context);
-        todoAdapter.openDB();
+         todoAdapter.openDB();
         switch (view.getId()){
             case R.id.editTODO:
                 mainActivity.initFragment(new EditTodoFragment(id), true);
@@ -148,7 +151,7 @@ public class TodoDetailsFragment extends Fragment implements View.OnClickListene
         int done;
         TodoAdapter todoAdapter = new TodoAdapter(context);
         todoAdapter.openDB();
-        switch (compoundButton.getId()){
+        /*   switch (compoundButton.getId()){
             case R.id.doneDetails:
                 if(b){
                     done = 1;
@@ -164,5 +167,5 @@ public class TodoDetailsFragment extends Fragment implements View.OnClickListene
                 break;
                 default: break;
         }
-    }
+    */}
 }

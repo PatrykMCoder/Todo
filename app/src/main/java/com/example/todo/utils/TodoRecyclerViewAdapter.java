@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.todo.MainActivity;
 import com.example.todo.R;
 import com.example.todo.database.TodoAdapter;
+import com.example.todo.fragments.TodoDetailsFragment;
 import com.example.todo.utils.objects.TodoObject;
 
 import java.util.ArrayList;
@@ -60,11 +61,11 @@ public class TodoRecyclerViewAdapter extends RecyclerView.Adapter<TodoRecyclerVi
         holder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-             /*   TodoAdapter todoAdapter = new TodoAdapter(view.getContext());
+                  TodoAdapter todoAdapter = new TodoAdapter(view.getContext());
                 todoAdapter.openDB();
                 id = todoAdapter.getIdColumn(holder.titleTextView.getText().toString(), holder.descriptionTextView.getText().toString());
                 mainActivity.initFragment(new TodoDetailsFragment(id), true);
-                todoAdapter.closeDB();*/
+                todoAdapter.closeDB();
             }
         });
 
