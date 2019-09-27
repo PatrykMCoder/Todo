@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".SplashScreenActivity">
+
+    <TextView
+        android:id="@+id/titleSplash"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TODO NOTE"
+        android:textSize="50dp"
+        android:layout_centerHorizontal="true"/>
+
+    <ImageView
+        android:id="@+id/iconSplash"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_launcher_background"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/titleSplash"
+        android:padding="50dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Plan and write!"
+        android:textSize="50dp"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/iconSplash"/>
+</RelativeLayout>

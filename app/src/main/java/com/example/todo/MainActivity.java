@@ -41,7 +41,6 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         else
             getActionBar().hide();
 
-        getAllPermission();
         initView();
         initFragment(new TodoFragment(getApplicationContext()), false);
     }
@@ -57,19 +56,11 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         });
     }
 
-    private void getAllPermission(){
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, 1000);
-            }
-        }
-    }
-
     private void initView(){
         bottomNavigationView = findViewById(R.id.nav_bar);
         bottomNavigationView.setOnNavigationItemSelectedListener(this);
         adView = findViewById(R.id.ad_view);
-        AdRequest adRequest = new AdRequest.Builder().addTestDevice("A03BDA52BCF46627BDA62F08CD24AA2D").build();
+        AdRequest adRequest = new AdRequest.Builder().addTestDevice("A03BDA52BCF46627BDA62F08CD24AA2D").addTestDevice("6A59F7B812C24D21F3C41428379D5749").build();
         if(adRequest.isTestDevice(this)){
             adView.loadAd(adRequest);
             //test ad
