@@ -1,4 +1,4 @@
-package com.example.todo;
+package com.example.todo.fragments;
 
 
 import android.content.Context;
@@ -8,14 +8,13 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 
+import com.example.todo.MainActivity;
+import com.example.todo.R;
 import com.example.todo.database.TodoAdapter;
 import com.example.todo.utils.TodoRecyclerViewAdapter;
 import com.example.todo.utils.objects.TodoObject;
@@ -94,7 +93,7 @@ public class TodoFragment extends Fragment implements View.OnClickListener {
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.add_new_todo:
-                mainActivity.initFragment(new AddNewTodo(), true);
+                mainActivity.initFragment(new AddNewTodoFragment(), true);
                 break;
         }
     }

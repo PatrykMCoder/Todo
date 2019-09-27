@@ -1,4 +1,4 @@
-package com.example.todo;
+package com.example.todo.fragments;
 
 
 import android.content.Context;
@@ -6,16 +6,16 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.todo.MainActivity;
+import com.example.todo.R;
 import com.example.todo.database.TodoAdapter;
 import com.example.todo.utils.objects.TodoObject;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;

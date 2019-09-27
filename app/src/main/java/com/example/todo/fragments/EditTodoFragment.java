@@ -1,4 +1,4 @@
-package com.example.todo;
+package com.example.todo.fragments;
 
 import android.app.DatePickerDialog;
 import android.content.Context;
@@ -14,6 +14,8 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.todo.MainActivity;
+import com.example.todo.R;
 import com.example.todo.database.TodoAdapter;
 
 import java.text.SimpleDateFormat;

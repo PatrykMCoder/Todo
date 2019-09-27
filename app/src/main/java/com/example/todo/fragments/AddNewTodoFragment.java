@@ -1,4 +1,4 @@
-package com.example.todo;
+package com.example.todo.fragments;
 
 
 import android.app.DatePickerDialog;
@@ -17,6 +17,8 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.todo.MainActivity;
+import com.example.todo.R;
 import com.example.todo.database.TodoAdapter;
 
 import java.text.SimpleDateFormat;
@@ -24,7 +26,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
-public class AddNewTodo extends Fragment implements View.OnClickListener {
+public class AddNewTodoFragment extends Fragment implements View.OnClickListener {
 
     private Context context;
 
@@ -41,9 +43,9 @@ public class AddNewTodo extends Fragment implements View.OnClickListener {
     private String createDate;
     private String reamingDate;
 
-    private final static String TAG = "AddNewTodo";
+    private final static String TAG = "AddNewTodoFragment";
 
-    public AddNewTodo() {
+    public AddNewTodoFragment() {
         // Required empty public constructor
     }
 
