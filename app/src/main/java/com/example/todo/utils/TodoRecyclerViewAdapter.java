@@ -27,7 +27,7 @@ public class TodoRecyclerViewAdapter extends RecyclerView.Adapter<TodoRecyclerVi
     private String title, description;
     private int done, id;
 
-    public TodoRecyclerViewAdapter(ArrayList<TodoObject> data){
+    public TodoRecyclerViewAdapter(ArrayList<TodoObject> data) {
         this.data = data;
     }
 
@@ -42,60 +42,61 @@ public class TodoRecyclerViewAdapter extends RecyclerView.Adapter<TodoRecyclerVi
 
     @Override
     public void onBindViewHolder(@NonNull final TodoListViewHolder holder, final int position) {
-        mainActivity = (MainActivity)holder.cardView.getContext();
-        holder.titleTextView.setText(data.get(position).getTitle());
-        holder.descriptionTextView.setText(data.get(position).getDescription());
+        mainActivity = (MainActivity) holder.cardView.getContext();
 
         title = data.get(position).getTitle();
         description = data.get(position).getDescription();
         done = data.get(position).getDone();
 
-        if(done == 1){
+        holder.titleTextView.setText(title);
+        holder.descriptionTextView.setText(description);
+
+//        int lengthDescription = description.length();
+//        StringBuilder formatDescription = new StringBuilder();
+//        if(lengthDescription > 40){
+//            for (char d: description.toCharArray()) {
+//                formatDescription.append(d);
+//            }
+//            formatDescription.append(formatDescription.append("..."));
+//            holder.descriptionTextView.setText(formatDescription.toString());
+//        }else{
+//        }
+
+        if (done == 1) {
             holder.doneCheckBox.setChecked(true);
-        }else  if(done == 0){
+        } else if (done == 0) {
             holder.doneCheckBox.setChecked(false);
-        }else {
+        } else {
             return;
         }
 
-        holder.cardView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                  TodoAdapter todoAdapter = new TodoAdapter(view.getContext());
-                todoAdapter.openDB();
-                id = todoAdapter.getIdColumn(holder.titleTextView.getText().toString(), holder.descriptionTextView.getText().toString());
-                mainActivity.initFragment(new TodoDetailsFragment(id), true);
-                todoAdapter.closeDB();
-            }
+        holder.cardView.setOnClickListener(view -> {
+            TodoAdapter todoAdapter = new TodoAdapter(view.getContext());
+            todoAdapter.openDB();
+            id = todoAdapter.getIdColumn(holder.titleTextView.getText().toString(), holder.descriptionTextView.getText().toString());
+            mainActivity.initFragment(new TodoDetailsFragment(id), true);
+            todoAdapter.closeDB();
         });
 
-        holder.cardView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                return true;
-            }
-        });
-        holder.doneCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                TodoAdapter todoAdapter = new TodoAdapter(compoundButton.getContext());
-                todoAdapter.openDB();
-                id = todoAdapter.getIdColumn(holder.titleTextView.getText().toString(), holder.descriptionTextView.getText().toString());
-                Log.d(TAG, "onCheckedChanged: " + compoundButton.getId());
-                switch (compoundButton.getId()) {
-                    case R.id.todoDoneHomePage:
-                        if (b) {
-                            todoAdapter.changeStatusTODO(1, id);
-                        } else {
-                            todoAdapter.changeStatusTODO(0, id);
-                        }
-                        todoAdapter.closeDB();
-                        Log.d(TAG, "onCheckedChanged: " + b);
-                        break;
-                    default:
-                        todoAdapter.closeDB();
-                        break;
-                }
+        holder.cardView.setOnLongClickListener(view -> true);
+        holder.doneCheckBox.setOnCheckedChangeListener((compoundButton, b) -> {
+            TodoAdapter todoAdapter = new TodoAdapter(compoundButton.getContext());
+            todoAdapter.openDB();
+            id = todoAdapter.getIdColumn(holder.titleTextView.getText().toString(), holder.descriptionTextView.getText().toString());
+            Log.d(TAG, "onCheckedChanged: " + compoundButton.getId());
+            switch (compoundButton.getId()) {
+                case R.id.todoDoneHomePage:
+                    if (b) {
+                        todoAdapter.changeStatusTODO(1, id);
+                    } else {
+                        todoAdapter.changeStatusTODO(0, id);
+                    }
+                    todoAdapter.closeDB();
+                    Log.d(TAG, "onCheckedChanged: " + b);
+                    break;
+                default:
+                    todoAdapter.closeDB();
+                    break;
             }
         });
     }
@@ -105,11 +106,11 @@ public class TodoRecyclerViewAdapter extends RecyclerView.Adapter<TodoRecyclerVi
         return data.size();
     }
 
-    public class TodoListViewHolder extends RecyclerView.ViewHolder{
+    public class TodoListViewHolder extends RecyclerView.ViewHolder {
         public TextView titleTextView;
         public TextView descriptionTextView;
         public CheckBox doneCheckBox;
-       // public LinearLayout layoutItemTodo;
+        // public LinearLayout layoutItemTodo;
         public CardView cardView;
 
         public TodoListViewHolder(@NonNull View itemView) {
@@ -117,9 +118,8 @@ public class TodoRecyclerViewAdapter extends RecyclerView.Adapter<TodoRecyclerVi
             titleTextView = itemView.findViewById(R.id.todoTitle);
             descriptionTextView = itemView.findViewById(R.id.todoDescription);
             doneCheckBox = itemView.findViewById(R.id.todoDoneHomePage);
-           // layoutItemTodo = itemView.findViewById(R.id.layoutItemTodo);
+            // layoutItemTodo = itemView.findViewById(R.id.layoutItemTodo);
             cardView = itemView.findViewById(R.id.cardView);
         }
     }
-
 }

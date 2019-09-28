@@ -57,7 +57,7 @@
               android:layout_marginEnd="11dp"
               android:layout_marginRight="11dp"
               android:layout_marginBottom="27dp"
-              android:drawableTint="#ffffff"
+              android:buttonTint="#ffffff"
               android:textColorLink="#ffffff" />
       </RelativeLayout>
 

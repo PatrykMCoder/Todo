@@ -56,7 +56,7 @@ public class TodoDetailsFragment extends Fragment implements View.OnClickListene
     public void onAttach(Context context) {
         super.onAttach(context);
         this.context = context;
-        mainActivity = (MainActivity)context;
+        mainActivity = (MainActivity) context;
     }
 
     public TodoDetailsFragment(int id) {
@@ -69,7 +69,7 @@ public class TodoDetailsFragment extends Fragment implements View.OnClickListene
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        final View rootView =  inflater.inflate(R.layout.fragment_todo_details, container, false);
+        final View rootView = inflater.inflate(R.layout.fragment_todo_details, container, false);
 
         titleTextView = rootView.findViewById(R.id.titleDetails);
         descriptionTextView = rootView.findViewById(R.id.descriptionDetails);
@@ -95,8 +95,8 @@ public class TodoDetailsFragment extends Fragment implements View.OnClickListene
     @Override
     public void onClick(View view) {
         TodoAdapter todoAdapter = new TodoAdapter(context);
-         todoAdapter.openDB();
-        switch (view.getId()){
+        todoAdapter.openDB();
+        switch (view.getId()) {
             case R.id.editTODO:
                 mainActivity.initFragment(new EditTodoFragment(id), true);
                 break;
@@ -104,18 +104,19 @@ public class TodoDetailsFragment extends Fragment implements View.OnClickListene
                /* todoAdapter.archiveTODO(id, 1);
                 todoAdapter.closeDB();
                 mainActivity.closeFragment(this, new TodoFragment(context));*/
-               Toast.makeText(context, "In future :) ", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "In future :) ", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.deleteTODO:
                 todoAdapter.deleteTODO(todoAdapter.getIdColumn(title, description));
                 todoAdapter.closeDB();
                 mainActivity.closeFragment(this, new TodoFragment(context));
                 break;
-            default: break;
+            default:
+                break;
         }
     }
 
-    private void getDataToShow(){
+    private void getDataToShow() {
         todoAdapter = new TodoAdapter(context);
         todoAdapter.openDB();
         ArrayList<String> d = todoAdapter.getRowTODO(id);
@@ -123,13 +124,13 @@ public class TodoDetailsFragment extends Fragment implements View.OnClickListene
         description = d.get(1);
         done = d.get(2);
         dataCreate = d.get(3);
-        dataReaming= d.get(4);
+        dataReaming = d.get(4);
         todoAdapter.closeDB();
 
         updateUI();
     }
 
-    private void updateUI(){
+    private void updateUI() {
         titleTextView.setText(title);
         descriptionTextView.setText(description);
         dataCreateTextView.setText("Create at: \n" + dataCreate);
@@ -137,10 +138,10 @@ public class TodoDetailsFragment extends Fragment implements View.OnClickListene
 
         int doneInt = Integer.parseInt(done);
 
-        if(doneInt == 0){
+        if (doneInt == 0) {
             doneCheckBox.setChecked(false);
             doneCheckBox.setText("Not done");
-        }else if( doneInt == 1){
+        } else if (doneInt == 1) {
             doneCheckBox.setChecked(true);
             doneCheckBox.setText("Done");
         }
@@ -151,21 +152,22 @@ public class TodoDetailsFragment extends Fragment implements View.OnClickListene
         int done;
         TodoAdapter todoAdapter = new TodoAdapter(context);
         todoAdapter.openDB();
-        /*   switch (compoundButton.getId()){
+        switch (compoundButton.getId()) {
             case R.id.doneDetails:
-                if(b){
+                if (b) {
                     done = 1;
                     todoAdapter.changeStatusTODO(done, id);
                     todoAdapter.closeDB();
                     doneCheckBox.setText("Done");
-                }else{
+                } else {
                     done = 0;
                     todoAdapter.changeStatusTODO(done, id);
                     todoAdapter.closeDB();
                     doneCheckBox.setText("Not done");
                 }
                 break;
-                default: break;
+            default:
+                break;
         }
-    */}
+    }
 }

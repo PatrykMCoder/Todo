@@ -86,6 +86,7 @@
             android:layout_height="50dp"
             android:layout_below="@+id/descriptionDetails"
             android:text="DONE"
+            android:buttonTint="#ffffff"
             android:textColor="@color/textColorWhite" />
 
         <TextView
