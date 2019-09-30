@@ -59,8 +59,11 @@ public class TodoDetailsFragment extends Fragment implements View.OnClickListene
         mainActivity = (MainActivity) context;
     }
 
+    public TodoDetailsFragment(){
+
+    }
+
     public TodoDetailsFragment(int id) {
-        // Required empty public constructor
         this.id = id;
 
     }

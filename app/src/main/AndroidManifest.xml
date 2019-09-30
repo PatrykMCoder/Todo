@@ -27,6 +27,9 @@
             android:name=".MainActivity"
             android:screenOrientation="portrait">
         </activity>
+        <activity android:name=".fragments.SettingsFragment"
+            android:background="?android:windowBackground"
+            android:clickable = "true"/>
 
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"

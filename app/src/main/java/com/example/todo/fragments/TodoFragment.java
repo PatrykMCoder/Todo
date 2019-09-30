@@ -39,8 +39,11 @@ public class TodoFragment extends Fragment implements View.OnClickListener {
     private MainActivity mainActivity;
     private static final String TAG = "TodoFragment";
 
-    public TodoFragment(Context context) {
+    public TodoFragment(){
         // Required empty public constructor
+    }
+
+    public TodoFragment(Context context) {
         this.context = context;
     }
 

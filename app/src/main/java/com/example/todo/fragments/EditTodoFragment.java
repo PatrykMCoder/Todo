@@ -38,6 +38,10 @@ public class EditTodoFragment extends Fragment implements View.OnClickListener {
 
     private String title, description, dateReaming;
 
+    public EditTodoFragment(){
+
+    }
+
     public EditTodoFragment(int id){
         this.id = id;
     }

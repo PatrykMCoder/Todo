@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+   <!-- <PreferenceCategory android:summary="Display"
+        android:title="Display"/>
+
+        <com.github.danielnilsson9.colorpickerview.preference.ColorPreference
+            android:key="@string/key_background_color"
+            android:defaultValue="#F3A782"
+            android:title="Select your favorite color for display" />-->
+
+    <PreferenceCategory
+        android:title="Display"/>
+
+    <Preference
+        android:key="@string/key_background_color"
+        android:defaultValue="null"
+        android:summary="Select your favorite color! :D"
+        android:title="Select color"/>
+
+</PreferenceScreen>

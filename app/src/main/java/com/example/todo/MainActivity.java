@@ -6,15 +6,19 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 
 import android.Manifest;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.example.todo.fragments.NoteFragment;
+import com.example.todo.fragments.SettingsFragment;
 import com.example.todo.fragments.TodoFragment;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
@@ -40,7 +44,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
             getSupportActionBar().hide();
         else
             getActionBar().hide();
-
+        loadSettings();
         initView();
         initFragment(new TodoFragment(getApplicationContext()), false);
     }
@@ -54,6 +58,10 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                         .build();
             }
         });
+    }
+
+    private void loadSettings(){
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
     }
 
     private void initView(){
@@ -99,11 +107,11 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 initFragment(new TodoFragment(getApplicationContext()), true);
                 return true;
             case R.id.note_item:
-                initFragment(new NoteFragment(), true);
-                return true;
+//                initFragment(new NoteFragment(), true);
+                Toast.makeText(getApplicationContext(), "Available in future :)", Toast.LENGTH_LONG).show();
+                return false;
             case R.id.settings_item:
-                Toast.makeText(this, "Settings", Toast.LENGTH_SHORT).show();
-                initFragment(new TodoFragment(getApplicationContext()), true);
+                initFragment(new SettingsFragment(), true);
                 return true;
                 default: break;
         }
