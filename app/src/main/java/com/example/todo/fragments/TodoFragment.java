@@ -2,8 +2,11 @@ package com.example.todo.fragments;
 
 
 import android.content.Context;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.os.Bundle;
 
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -18,6 +21,7 @@ import com.example.todo.R;
 import com.example.todo.database.TodoAdapter;
 import com.example.todo.utils.TodoRecyclerViewAdapter;
 import com.example.todo.utils.objects.TodoObject;
+import com.example.todo.utils.setteings.Settings;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
@@ -39,6 +43,8 @@ public class TodoFragment extends Fragment implements View.OnClickListener {
     private MainActivity mainActivity;
     private static final String TAG = "TodoFragment";
 
+    private ArrayList<Integer> colors = new ArrayList<>();
+
     public TodoFragment(){
         // Required empty public constructor
     }
@@ -57,13 +63,20 @@ public class TodoFragment extends Fragment implements View.OnClickListener {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        loadSettings();
         final View rootView = inflater.inflate(R.layout.fragment_todo, container, false);
         data = new ArrayList<>();
         addNewTodo = rootView.findViewById(R.id.add_new_todo);
+        addNewTodo.setBackgroundColor(Color.argb(colors.get(0), colors.get(1), colors.get(2), colors.get(3)));
         addNewTodo.setOnClickListener(this);
         initRecyclerView(rootView);
         getDataToShow();
         return rootView;
+    }
+
+    private void loadSettings(){
+        Settings settings = new Settings(context);
+        colors = settings.loadBackgroundColor();
     }
 
     private void initRecyclerView(View v){

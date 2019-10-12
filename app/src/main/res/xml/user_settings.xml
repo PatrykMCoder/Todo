@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:key="user_settings_key">
    <!-- <PreferenceCategory android:summary="Display"
         android:title="Display"/>
 
@@ -14,7 +15,7 @@
     <Preference
         android:key="@string/key_background_color"
         android:defaultValue="null"
-        android:summary="Select your favorite color! :D"
+        android:summary="Select your favorite color! :D Recommend alpha: 255"
         android:title="Select color"/>
 
 </PreferenceScreen>

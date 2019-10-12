@@ -1,5 +1,6 @@
 package com.example.todo.utils;
 
+import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +18,7 @@ import com.example.todo.R;
 import com.example.todo.database.TodoAdapter;
 import com.example.todo.fragments.TodoDetailsFragment;
 import com.example.todo.utils.objects.TodoObject;
+import com.example.todo.utils.setteings.Settings;
 
 import java.util.ArrayList;
 
@@ -115,11 +117,15 @@ public class TodoRecyclerViewAdapter extends RecyclerView.Adapter<TodoRecyclerVi
 
         public TodoListViewHolder(@NonNull View itemView) {
             super(itemView);
+
+            Settings settings = new Settings(itemView.getContext());
+            ArrayList<Integer> colors = settings.loadBackgroundColor();
             titleTextView = itemView.findViewById(R.id.todoTitle);
             descriptionTextView = itemView.findViewById(R.id.todoDescription);
             doneCheckBox = itemView.findViewById(R.id.todoDoneHomePage);
             // layoutItemTodo = itemView.findViewById(R.id.layoutItemTodo);
             cardView = itemView.findViewById(R.id.cardView);
+            cardView.setCardBackgroundColor(Color.argb(colors.get(0), colors.get(1), colors.get(2), colors.get(3)));
         }
     }
 }

@@ -2,6 +2,7 @@ package com.example.todo.fragments;
 
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -11,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,6 +20,7 @@ import com.example.todo.MainActivity;
 import com.example.todo.R;
 import com.example.todo.database.TodoAdapter;
 import com.example.todo.utils.objects.TodoObject;
+import com.example.todo.utils.setteings.Settings;
 import com.github.clans.fab.FloatingActionMenu;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -43,6 +46,7 @@ public class TodoDetailsFragment extends Fragment implements View.OnClickListene
     private CheckBox doneCheckBox;
     private TextView dataCreateTextView;
     private TextView dataReamingTextView;
+    private ImageView backgroundColorView;
 
     private FloatingActionMenu floatingActionMenu;
     private com.github.clans.fab.FloatingActionButton editFAB;
@@ -79,6 +83,7 @@ public class TodoDetailsFragment extends Fragment implements View.OnClickListene
         doneCheckBox = rootView.findViewById(R.id.doneDetails);
         dataCreateTextView = rootView.findViewById(R.id.dataCreateDetails);
         dataReamingTextView = rootView.findViewById(R.id.dataReamingDetails);
+        backgroundColorView = rootView.findViewById(R.id.background);
 
         floatingActionMenu = rootView.findViewById(R.id.menu);
         editFAB = rootView.findViewById(R.id.editTODO);
@@ -134,6 +139,12 @@ public class TodoDetailsFragment extends Fragment implements View.OnClickListene
     }
 
     private void updateUI() {
+        Settings settings = new Settings(context);
+
+        ArrayList<Integer> colors = settings.loadBackgroundColor();
+
+        backgroundColorView.setColorFilter(Color.argb(colors.get(0), colors.get(1), colors.get(2), colors.get(3)));
+       
         titleTextView.setText(title);
         descriptionTextView.setText(description);
         dataCreateTextView.setText("Create at: \n" + dataCreate);

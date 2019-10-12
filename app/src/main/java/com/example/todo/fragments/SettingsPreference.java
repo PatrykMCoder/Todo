@@ -6,17 +6,23 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
-import android.preference.PreferenceManager;
+import android.preference.PreferenceScreen;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
 import com.example.todo.R;
+import com.example.todo.utils.setteings.Settings;
 import com.pes.androidmaterialcolorpickerdialog.ColorPicker;
-import com.pes.androidmaterialcolorpickerdialog.ColorPickerCallback;
+
+import java.util.ArrayList;
+import java.util.prefs.Preferences;
 
 public class SettingsPreference extends PreferenceFragment {
     private Preference colorPickerPreference;
+
+    private Settings settings;
 
     private final static String TAG = "SettingsPreference";
 
@@ -31,6 +37,7 @@ public class SettingsPreference extends PreferenceFragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         this.context = context;
+        settings = new Settings(context);
     }
 
     @Override
@@ -38,41 +45,32 @@ public class SettingsPreference extends PreferenceFragment {
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.user_settings);
 
+        ArrayList<Integer> colors = settings.loadBackgroundColor();
+
         colorPickerPreference = findPreference("color_picker_key");
+
         final ColorPicker colorPicker = new ColorPicker(getActivity(), 0, 0, 0, 0);
-        sharedPreferences = context.getSharedPreferences("UserSettings_colorPicker", 0);
-        colorPicker.setAlpha(sharedPreferences.getInt("color_a", 0));
-        colorPicker.setRed(sharedPreferences.getInt("color_r", 0));
-        colorPicker.setGreen(sharedPreferences.getInt("color_g", 0));
-        colorPicker.setBlue(sharedPreferences.getInt("color_b", 0));
+
+        colorPicker.setAlpha(colors.get(0));
+        colorPicker.setRed(colors.get(1));
+        colorPicker.setGreen(colors.get(2));
+        colorPicker.setBlue(colors.get(3));
+
         colorPickerPreference.setOnPreferenceClickListener(preference -> {
-            colorPicker.setTitle("Select color");
             colorPicker.show();
 
             colorPicker.setCallback(color -> {
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-
                 int colorA = Color.alpha(color);
                 int colorR = Color.red(color);
                 int colorG = Color.green(color);
                 int colorB = Color.blue(color);
 
-                editor.putInt("color_a", colorA);
-                editor.putInt("color_r", colorR);
-                editor.putInt("color_g", colorG);
-                editor.putInt("color_b", colorB);
-                editor.apply();
-
+                settings.saveBackgroundColor(colorA, colorR, colorG, colorB);
+                Toast.makeText(context, settings.message(), Toast.LENGTH_SHORT).show();
                 colorPicker.cancel();
             });
 
             return true;
         });
-
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
     }
 }

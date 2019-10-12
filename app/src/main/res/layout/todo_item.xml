@@ -12,7 +12,7 @@
       android:layout_height="100dp"
       android:layout_gravity="center"
       app:cardBackgroundColor="@color/colorCard1"
-      app:cardCornerRadius="4dp"
+      app:cardCornerRadius="5dp"
       app:cardUseCompatPadding="true"
       android:clipToPadding="true">
 
