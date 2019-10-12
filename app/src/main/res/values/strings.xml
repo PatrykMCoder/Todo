@@ -5,6 +5,12 @@
 
     <!-- Key for preferences -->
     <string name="key_background_color">color_picker_key</string>
+    <string name="key_sort_todo">sort_todo_key</string>
 
+    <string-array name="sort_by">
+        <item>Data Created</item>
+        <item>Alphabetically</item>
+        <item>Data reaming</item>
+    </string-array>
 
 </resources>

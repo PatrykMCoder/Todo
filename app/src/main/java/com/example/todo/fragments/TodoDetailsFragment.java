@@ -144,7 +144,7 @@ public class TodoDetailsFragment extends Fragment implements View.OnClickListene
         ArrayList<Integer> colors = settings.loadBackgroundColor();
 
         backgroundColorView.setColorFilter(Color.argb(colors.get(0), colors.get(1), colors.get(2), colors.get(3)));
-       
+
         titleTextView.setText(title);
         descriptionTextView.setText(description);
         dataCreateTextView.setText("Create at: \n" + dataCreate);

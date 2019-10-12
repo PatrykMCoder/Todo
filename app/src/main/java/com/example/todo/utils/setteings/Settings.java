@@ -51,6 +51,18 @@ public class Settings {
         }
     }
 
+    public void saveSortTodo(String selectedSort){
+        SharedPreferences sharedPreferences = context.getSharedPreferences("UserSettings_sortTodo", 0);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("sort_todo", selectedSort);
+        editor.apply();
+    }
+
+    public String loadSortTodo(){
+        SharedPreferences sharedPreferences = context.getSharedPreferences("UserSettings_sortTodo", 0);
+        return sharedPreferences.getString("sort_todo", "Data Created");
+    }
+
     public String message(){
         return msg;
     }

@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -77,6 +78,8 @@ public class TodoFragment extends Fragment implements View.OnClickListener {
     private void loadSettings(){
         Settings settings = new Settings(context);
         colors = settings.loadBackgroundColor();
+
+        Log.d(TAG, "loadSettings: " + settings.loadSortTodo());
     }
 
     private void initRecyclerView(View v){

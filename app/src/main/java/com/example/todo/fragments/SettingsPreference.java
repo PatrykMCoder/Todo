@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
@@ -21,6 +22,7 @@ import java.util.prefs.Preferences;
 
 public class SettingsPreference extends PreferenceFragment {
     private Preference colorPickerPreference;
+    private ListPreference sortTodoPreference;
 
     private Settings settings;
 
@@ -48,6 +50,7 @@ public class SettingsPreference extends PreferenceFragment {
         ArrayList<Integer> colors = settings.loadBackgroundColor();
 
         colorPickerPreference = findPreference("color_picker_key");
+        sortTodoPreference = (ListPreference) getPreferenceManager().findPreference("sort_todo_key");
 
         final ColorPicker colorPicker = new ColorPicker(getActivity(), 0, 0, 0, 0);
 
@@ -71,6 +74,16 @@ public class SettingsPreference extends PreferenceFragment {
             });
 
             return true;
+        });
+
+        sortTodoPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                Log.d(TAG, "onPreferenceChange: " + sortTodoPreference.getValue());
+                String tmp = sortTodoPreference.getValue();
+                settings.saveSortTodo(tmp);
+                return true;
+            }
         });
     }
 }

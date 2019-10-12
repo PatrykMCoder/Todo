@@ -1,13 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     android:key="user_settings_key">
-   <!-- <PreferenceCategory android:summary="Display"
-        android:title="Display"/>
-
-        <com.github.danielnilsson9.colorpickerview.preference.ColorPreference
-            android:key="@string/key_background_color"
-            android:defaultValue="#F3A782"
-            android:title="Select your favorite color for display" />-->
 
     <PreferenceCategory
         android:title="Display"/>
@@ -17,5 +10,14 @@
         android:defaultValue="null"
         android:summary="Select your favorite color! :D Recommend alpha: 255"
         android:title="Select color"/>
+
+    <ListPreference
+        android:key="@string/key_sort_todo"
+        android:title="Select sort"
+        android:summary="Select sort"
+        android:entries="@array/sort_by"
+        android:entryValues="@array/sort_by"
+        android:defaultValue="null"/>
+
 
 </PreferenceScreen>
