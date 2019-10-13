@@ -8,9 +8,9 @@
     <string name="key_sort_todo">sort_todo_key</string>
 
     <string-array name="sort_by">
-        <item>Data Created</item>
+        <item>Date created</item>
         <item>Alphabetically</item>
-        <item>Data reaming</item>
+        <item>Date reaming</item>
     </string-array>
 
 </resources>

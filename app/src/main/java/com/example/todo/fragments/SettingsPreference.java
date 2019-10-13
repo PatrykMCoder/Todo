@@ -76,14 +76,16 @@ public class SettingsPreference extends PreferenceFragment {
             return true;
         });
 
-        sortTodoPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-            @Override
-            public boolean onPreferenceChange(Preference preference, Object newValue) {
-                Log.d(TAG, "onPreferenceChange: " + sortTodoPreference.getValue());
-                String tmp = sortTodoPreference.getValue();
-                settings.saveSortTodo(tmp);
-                return true;
+        sortTodoPreference.setOnPreferenceChangeListener((preference, newValue) -> {
+            Log.d(TAG, "onPreferenceChange: sortTodoPreference: " + sortTodoPreference.getValue());
+            Log.d(TAG, "onPreferenceChange: new value: " + newValue);
+            settings.saveSortTodo(newValue.toString());
+
+            if(newValue.equals("Date reaming")){
+                Toast.makeText(context, "This can bug :C I'm still working about this :)", Toast.LENGTH_SHORT).show();
             }
+
+            return true;
         });
     }
 }

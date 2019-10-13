@@ -45,6 +45,11 @@ public class TodoAdapter{
     public static final String ARCHIVE_OPTIONS = "INTEGER DEFAULT 0";
     public static final int ARCHIVE_COLUMN = 5;
 
+    private String sort = "";
+
+    private final String SORT_BY_DATE_CREATED = "Date created";
+    private final String SORT_BY_ALPHABETICALLY = "Alphabetically";
+    private final String SORT_BY_DATE_REAMING = "Date reaming";
 
     private final static String TAG = "TodoAdapter";
     //query
@@ -73,6 +78,8 @@ public class TodoAdapter{
             database = dbHelper.getReadableDatabase();
             e.printStackTrace();
         }
+
+        formatStingSort();
     }
 
     public void closeDB(){
@@ -117,7 +124,8 @@ public class TodoAdapter{
 
     public ArrayList<String> getTitleTODO(){
         ArrayList<String> data = new ArrayList<>();
-        String q = String.format("SELECT %s from TABLE_TODO_NOTE", KEY_TITLE);
+        String q = String.format("SELECT %s from TABLE_TODO_NOTE ORDER BY %s", KEY_TITLE, sort);
+        Log.d(TAG, "getTitleTODO: Query SQL: " + q);
         Cursor cursor = database.rawQuery(q, null);
         cursor.moveToPosition(0);
         while (cursor.moveToNext()){
@@ -129,7 +137,7 @@ public class TodoAdapter{
 
     public ArrayList<String> getDescriptionTODO(){
         ArrayList<String> data = new ArrayList<>();
-        String q = String.format("SELECT %s from TABLE_TODO_NOTE", KEY_DESCRIPTION);
+        String q = String.format("SELECT %s from TABLE_TODO_NOTE ORDER BY %s", KEY_DESCRIPTION, sort);
         Cursor cursor = database.rawQuery(q, null);
         cursor.moveToPosition(0);
         while (cursor.moveToNext()){
@@ -141,7 +149,7 @@ public class TodoAdapter{
 
     public ArrayList<Integer> getDoneTODO(){
         ArrayList<Integer> data = new ArrayList<>();
-        String q = String.format("SELECT %s from TABLE_TODO_NOTE", KEY_COMPLETED);
+        String q = String.format("SELECT %s from TABLE_TODO_NOTE ORDER BY %s", KEY_COMPLETED, sort);
         Cursor cursor = database.rawQuery(q, null);
         cursor.moveToFirst();
         while (cursor.moveToNext()){
@@ -202,6 +210,32 @@ public class TodoAdapter{
 
     public boolean deleteTODO(int id){
         return database.delete(DB_TABLE_NAME, KEY_ID + "=" + id, null) > 0;
+    }
+
+    private String getSort(){
+        return sort;
+    }
+
+    public void setSort(String sort){
+        this.sort = sort;
+    }
+
+    private void formatStingSort(){
+        String sort = getSort();
+        switch (sort) {
+            case SORT_BY_DATE_CREATED:
+                this.sort = KEY_DATE_CREATE + " ASC";
+                break;
+            case SORT_BY_DATE_REAMING:
+                this.sort = KEY_DATE_LIMIT + " ASC";
+                break;
+            case SORT_BY_ALPHABETICALLY:
+                this.sort = KEY_TITLE + " ASC";
+                break;
+            default:
+                this.sort = null;
+                break;
+        }
     }
 
     private class DBHelper extends SQLiteOpenHelper {
