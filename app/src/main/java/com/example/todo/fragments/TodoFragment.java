@@ -106,7 +106,7 @@ public class TodoFragment extends Fragment implements View.OnClickListener {
         todoAdapter.setSort(sortData);
         todoAdapter.openDB();
         for(int i = 0; i < todoAdapter.getTitleTODO().size(); i++) {
-            todoObject = new TodoObject(todoAdapter.getTitleTODO().get(i), todoAdapter.getDescriptionTODO().get(i), todoAdapter.getDoneTODO().get(i), "", "", todoAdapter.getArchiveTODO().get(i)); // TODO: 29/08/2019 repeat this filed for done
+            todoObject = new TodoObject(todoAdapter.getTitleTODO().get(i), todoAdapter.getDescriptionTODO().get(i), todoAdapter.getDoneTODO().get(i), "", ""); // TODO: 29/08/2019 repeat this filed for done
             data.add(todoObject);
         }
 

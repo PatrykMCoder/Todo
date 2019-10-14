@@ -8,13 +8,12 @@ public class TodoObject {
     private int done;
     private int archive;
 
-    public TodoObject(String title, String description, int done, String dateCreate, String dateReaming, int archive) {
+    public TodoObject(String title, String description, int done, String dateCreate, String dateReaming) {
         this.title = title;
         this.description = description;
         this.done = done;
         this.dateCreate = dateCreate;
         this.dateReaming = dateReaming;
-        this.archive = archive;
     }
 
     public String getTitle() {

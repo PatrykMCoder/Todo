@@ -1,7 +1,9 @@
 package com.example.todo.fragments;
 
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
 
@@ -115,9 +117,17 @@ public class TodoDetailsFragment extends Fragment implements View.OnClickListene
                 Toast.makeText(context, "In future :) ", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.deleteTODO:
-                todoAdapter.deleteTODO(todoAdapter.getIdColumn(title, description));
-                todoAdapter.closeDB();
-                mainActivity.closeFragment(this, new TodoFragment(context));
+                AlertDialog alertDialog = new AlertDialog.Builder(getContext())
+                        .setTitle("Are you sure?")
+                        .setMessage("Do you want delete this TODO? You won't recover this!")
+                        .setPositiveButton("Yes", (dialogInterface, i) -> {
+                            todoAdapter.deleteTODO(todoAdapter.getIdColumn(title, description));
+                            todoAdapter.closeDB();
+                            mainActivity.closeFragment(this, new TodoFragment(context));
+                        })
+                        .setNegativeButton("No", ((dialogInterface, i) -> dialogInterface.cancel()))
+                        .create();
+                alertDialog.show();
                 break;
             default:
                 break;
