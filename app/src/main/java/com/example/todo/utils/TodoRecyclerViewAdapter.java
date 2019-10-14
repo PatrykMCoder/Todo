@@ -105,6 +105,7 @@ public class TodoRecyclerViewAdapter extends RecyclerView.Adapter<TodoRecyclerVi
 
     @Override
     public int getItemCount() {
+        Log.d(TAG, "getItemCount: count: " + data.size());
         return data.size();
     }
 

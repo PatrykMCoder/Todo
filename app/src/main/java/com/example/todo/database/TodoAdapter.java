@@ -101,7 +101,7 @@ public class TodoAdapter{
         String[] columns = {KEY_ID, KEY_DESCRIPTION, KEY_COMPLETED};
         ArrayList<String> data = new ArrayList<>();
         Cursor cursorData = database.rawQuery(String.format("SELECT * FROM %s", DB_TABLE_NAME), null);
-        cursorData.moveToPosition(0);
+        cursorData.moveToPosition(-1);
         while(cursorData.moveToNext()){
             data.add(cursorData.getString(cursorData.getColumnIndex(KEY_TITLE)));
             data.add(cursorData.getString(cursorData.getColumnIndex(KEY_DESCRIPTION)));
@@ -127,7 +127,7 @@ public class TodoAdapter{
         String q = String.format("SELECT %s from TABLE_TODO_NOTE ORDER BY %s", KEY_TITLE, sort);
         Log.d(TAG, "getTitleTODO: Query SQL: " + q);
         Cursor cursor = database.rawQuery(q, null);
-        cursor.moveToPosition(0);
+        cursor.moveToPosition(-1);
         while (cursor.moveToNext()){
             data.add(cursor.getString(cursor.getColumnIndexOrThrow(KEY_TITLE)));
         }
@@ -139,7 +139,7 @@ public class TodoAdapter{
         ArrayList<String> data = new ArrayList<>();
         String q = String.format("SELECT %s from TABLE_TODO_NOTE ORDER BY %s", KEY_DESCRIPTION, sort);
         Cursor cursor = database.rawQuery(q, null);
-        cursor.moveToPosition(0);
+        cursor.moveToPosition(-1);
         while (cursor.moveToNext()){
             data.add(cursor.getString(cursor.getColumnIndexOrThrow(KEY_DESCRIPTION)));
         }
@@ -151,7 +151,7 @@ public class TodoAdapter{
         ArrayList<Integer> data = new ArrayList<>();
         String q = String.format("SELECT %s from TABLE_TODO_NOTE ORDER BY %s", KEY_COMPLETED, sort);
         Cursor cursor = database.rawQuery(q, null);
-        cursor.moveToFirst();
+        cursor.moveToPosition(-1);
         while (cursor.moveToNext()){
             data.add(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_COMPLETED)));
         }
@@ -163,7 +163,7 @@ public class TodoAdapter{
         ArrayList<Integer> data = new ArrayList<>();
         String q = String.format(("SELECT %s from %s"), KEY_ARCHIVE, DB_TABLE_NAME);
         Cursor cursor = database.rawQuery(q, null);
-        cursor.moveToFirst();
+        cursor.moveToPosition(-1);
         while (cursor.moveToNext())
             data.add(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_ARCHIVE)));
         return data;
@@ -176,7 +176,7 @@ public class TodoAdapter{
         ArrayList<String> data = new ArrayList<>();
 
         Cursor cursor = database.rawQuery(q, null);
-        cursor.moveToFirst();
+        cursor.moveToPosition(0);
 
         data.add(cursor.getString(cursor.getColumnIndexOrThrow(KEY_TITLE)));
         data.add(cursor.getString(cursor.getColumnIndexOrThrow(KEY_DESCRIPTION)));

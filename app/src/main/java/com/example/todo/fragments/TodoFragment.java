@@ -110,6 +110,8 @@ public class TodoFragment extends Fragment implements View.OnClickListener {
             data.add(todoObject);
         }
 
+        Log.d(TAG, "getDataToShow: " + todoAdapter.getAllTodo());
+
         todoAdapter.closeDB();
     }
 
