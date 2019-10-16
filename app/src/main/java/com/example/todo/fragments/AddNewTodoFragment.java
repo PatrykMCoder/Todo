@@ -112,28 +112,30 @@ public class AddNewTodoFragment extends Fragment implements View.OnClickListener
         createDate = getCurrentDateFormat();
         reamingDate = newDateLimitEditText.getText().toString();
 
-        if (!title.isEmpty() && !description.isEmpty()) {
+        todoAdapter.openDB();
 
-            if(!reamingDate.isEmpty()) {
-                if (checkDateReaming(reamingDate)) {
-                    todoAdapter.openDB();
+        if (!title.isEmpty() && !description.isEmpty()) {
+            if(!todoAdapter.checkerExistTodo(title, description)) {
+                if (!reamingDate.isEmpty()) {
+                    if (checkDateReaming(reamingDate)) {
+                        todoAdapter.insertDataTodo(title, description, createDate, reamingDate, 0);
+                        mainActivity.closeFragment(this, new TodoFragment(mainActivity.getApplicationContext()));
+                    } else {
+                        Toast.makeText(context, "Check your date reaming. It is ok?", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
                     todoAdapter.insertDataTodo(title, description, createDate, reamingDate, 0);
-                    todoAdapter.closeDB();
 
                     mainActivity.closeFragment(this, new TodoFragment(mainActivity.getApplicationContext()));
-                } else {
-                    Toast.makeText(context, "Check your date reaming. It is ok?", Toast.LENGTH_SHORT).show();
                 }
             }else{
-                todoAdapter.openDB();
-                todoAdapter.insertDataTodo(title, description, createDate, reamingDate, 0);
-                todoAdapter.closeDB();
-
-                mainActivity.closeFragment(this, new TodoFragment(mainActivity.getApplicationContext()));
+                Toast.makeText(context, "Todo exist!", Toast.LENGTH_SHORT).show();
             }
         }else{
             Toast.makeText(context, "Title or description can't be empty!", Toast.LENGTH_LONG).show();
         }
+
+        todoAdapter.closeDB();
     }
     private String getCurrentDateFormat(){
         Date currentDate = Calendar.getInstance().getTime();

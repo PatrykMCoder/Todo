@@ -6,6 +6,7 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,6 +38,7 @@ public class EditTodoFragment extends Fragment implements View.OnClickListener {
     private Context context;
 
     private String title, description, dateReaming;
+    private static final String TAG = "EditTODO";
 
     public EditTodoFragment(){
 
@@ -92,6 +94,7 @@ public class EditTodoFragment extends Fragment implements View.OnClickListener {
         title = data.get(0);
         description = data.get(1);
         dateReaming = data.get(4);
+
     }
 
 
@@ -127,28 +130,33 @@ public class EditTodoFragment extends Fragment implements View.OnClickListener {
         title = titleEditText.getText().toString();
         description = descriptionEditText.getText().toString();
         dateReaming = dateReamingEditText.getText().toString();
+        TodoAdapter todoAdapter = new TodoAdapter(getContext());
+        todoAdapter.openDB();
 
         if (!title.isEmpty() && !description.isEmpty()) {
-            if (!dateReaming.isEmpty())
-                if (checkDateReaming(dateReaming)) {
-                    TodoAdapter todoAdapter = new TodoAdapter(getContext());
-                    todoAdapter.openDB();
-                    todoAdapter.editTODO(titleEditText.getText().toString(), descriptionEditText.getText().toString(), dateReamingEditText.getText().toString(), id);
-                    todoAdapter.closeDB();
-                    mainActivity.closeFragment(this, new TodoFragment(getContext()));
-                } else {
-                    Toast.makeText(context, "Check your date reaming. It is ok?", Toast.LENGTH_SHORT).show();
+                Log.d(TAG, "updateTODO: data is not this same");
+                if (!todoAdapter.checkerExistTodo(title, description)) {
+                    if (!dateReaming.isEmpty()) {
+                        if (checkDateReaming(dateReaming)) {
+                            Log.d(TAG, "updateTODO: data reaming is not null/empty");
+                            todoAdapter.editTODO(titleEditText.getText().toString(), descriptionEditText.getText().toString(), dateReamingEditText.getText().toString(), id);
+                            mainActivity.closeFragment(this, new TodoFragment(getContext()));
+                        } else {
+                            Toast.makeText(context, "Check your date reaming. It is ok?", Toast.LENGTH_SHORT).show();
+                        }
+                    } else {
+                        Log.d(TAG, "updateTODO: data reaming is null/empty");
+                        todoAdapter.editTODO(titleEditText.getText().toString(), descriptionEditText.getText().toString(), null, id);
+                        mainActivity.closeFragment(this, new TodoFragment(getContext()));
+                    }
+                }else{
+                    Toast.makeText(context, "Todo exist!", Toast.LENGTH_SHORT).show();
                 }
-            else {
-                TodoAdapter todoAdapter = new TodoAdapter(getContext());
-                todoAdapter.openDB();
-                todoAdapter.editTODO(titleEditText.getText().toString(), descriptionEditText.getText().toString(), null, id);
-                todoAdapter.closeDB();
-                mainActivity.closeFragment(this, new TodoFragment(getContext()));
-            }
-        } else {
+        }else {
+            Log.d(TAG, "updateTODO: empty data");
             Toast.makeText(context, "Title or description can't be empty!", Toast.LENGTH_LONG).show();
         }
+        todoAdapter.closeDB();
     }
 
     private Date getCurrentDate(){
