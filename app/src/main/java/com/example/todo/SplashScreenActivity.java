@@ -2,7 +2,6 @@ package com.example.todo;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.biometric.BiometricPrompt;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
@@ -14,13 +13,7 @@ import android.widget.Toast;
 
 import com.example.todo.utils.setteings.Settings;
 
-import java.util.concurrent.Executor;
-
 public class SplashScreenActivity extends AppCompatActivity {
-
-    private Executor executor;
-    private BiometricPrompt biometricPrompt;
-    private BiometricPrompt.PromptInfo promptInfo;
     private Settings settings;
 
     @Override
@@ -30,47 +23,8 @@ public class SplashScreenActivity extends AppCompatActivity {
 
         settings = new Settings(getApplicationContext());
 
-        executor = ContextCompat.getMainExecutor(this);
-
-        biometricPrompt = new BiometricPrompt(this, executor, new BiometricPrompt.AuthenticationCallback() {
-            @Override
-            public void onAuthenticationError(int errorCode, @NonNull CharSequence errString) {
-                super.onAuthenticationError(errorCode, errString);
-                Toast.makeText(getApplicationContext(), "Error: " + errString + " error code: " + errorCode, Toast.LENGTH_LONG).show();
-                Toast.makeText(getApplicationContext(), "Debug this error :C", Toast.LENGTH_SHORT);
-                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                getApplicationContext().startActivity(intent);
-            }
-
-            @Override
-            public void onAuthenticationSucceeded(@NonNull BiometricPrompt.AuthenticationResult result) {
-                super.onAuthenticationSucceeded(result);
-                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                getApplicationContext().startActivity(intent);
-            }
-
-            @Override
-            public void onAuthenticationFailed() {
-                super.onAuthenticationFailed();
-            }
-        });
-
         removeBar();
         getAllPermission();
-
-        promptInfo = new BiometricPrompt.PromptInfo.Builder()
-                .setTitle("Login to app")
-                .setSubtitle(":)")
-                .setNegativeButtonText("Close")
-                .build();
-
-        if (settings.getSecurityFingerprint()) {
-            biometricPrompt.authenticate(promptInfo);
-        } else {
-            new Handler().postDelayed(this::lunchMainActivity, 5000);
-        }
     }
 
     private void removeBar(){
