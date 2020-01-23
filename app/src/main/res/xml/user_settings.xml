@@ -19,5 +19,14 @@
         android:entryValues="@array/sort_by"
         android:defaultValue="null"/>
 
+    <PreferenceCategory
+        android:name="Security"/>
+
+    <CheckBoxPreference
+        android:key="fingerprint_security_app"
+        android:defaultValue="false"
+        android:summary="Not security with fingerprint"
+        android:title="Set fingerprint security"/>
+
 
 </PreferenceScreen>

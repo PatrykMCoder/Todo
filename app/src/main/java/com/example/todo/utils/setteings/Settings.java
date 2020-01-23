@@ -63,6 +63,18 @@ public class Settings {
         return sharedPreferences.getString("sort_todo", "Data Created");
     }
 
+    public void setSecurityFingerprint(Object state){
+        SharedPreferences sharedPreferences = context.getSharedPreferences("UserSettings_security", 0);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean("secure_fingerprint", (Boolean) state);
+        editor.apply();
+    }
+
+    public boolean getSecurityFingerprint(){
+        SharedPreferences sharedPreferences = context.getSharedPreferences("UserSettings_security", 0);
+        return sharedPreferences.getBoolean("secure_fingerprint", false);
+    }
+
     public String message(){
         return msg;
     }

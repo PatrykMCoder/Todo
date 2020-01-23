@@ -7,23 +7,14 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.annotation.SuppressLint;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 
-import android.Manifest;
-import android.preference.PreferenceManager;
-import android.preference.PreferenceScreen;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.example.todo.fragments.NoteFragment;
 import com.example.todo.fragments.SettingsFragment;
-import com.example.todo.fragments.SettingsPreference;
 import com.example.todo.fragments.TodoFragment;
 import com.example.todo.utils.setteings.Settings;
 import com.google.android.gms.ads.AdRequest;
@@ -82,14 +73,14 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
         adView = findViewById(R.id.ad_view);
         AdRequest adRequest = new AdRequest.Builder().addTestDevice("A03BDA52BCF46627BDA62F08CD24AA2D").addTestDevice("6A59F7B812C24D21F3C41428379D5749").build();
-        if(adRequest.isTestDevice(this)){
-            adView.loadAd(adRequest);
-            //test ad
-        }else{
-            //ad
-            initAds();
-            adView.loadAd(request);
-        }
+//        if(adRequest.isTestDevice(this)){
+//            adView.loadAd(adRequest);
+//            //test ad
+//        }else{
+//            //ad
+//            initAds();
+//            adView.loadAd(request);
+//        }
 
         Log.d("MY_ADDS", "initView: " + adRequest.isTestDevice(getApplicationContext()));
 
@@ -127,6 +118,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 initFragment(new SettingsFragment(), true);
                 return true;
                 default: break;
+
         }
         return false;
     }

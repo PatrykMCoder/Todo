@@ -18,9 +18,6 @@ import com.example.todo.MainActivity;
 import com.example.todo.R;
 import com.example.todo.utils.setteings.Settings;
 
-/**
- * A simple {@link Fragment} subclass.
- */
 public class SettingsFragment extends Fragment {
     private Context context;
     private MainActivity mainActivity;

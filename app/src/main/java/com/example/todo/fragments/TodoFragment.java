@@ -2,11 +2,10 @@ package com.example.todo.fragments;
 
 
 import android.content.Context;
-import android.content.res.ColorStateList;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -16,7 +15,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import com.example.todo.MainActivity;
 import com.example.todo.R;
@@ -31,7 +29,7 @@ import java.util.ArrayList;
 public class TodoFragment extends Fragment implements View.OnClickListener {
 
     private RecyclerView todoList;
-    private RecyclerView.Adapter adapterTodo;
+    private RecyclerView.Adapter adapterTodoRecyclerView;
     private RecyclerView.LayoutManager layoutManager;
 
     private FloatingActionButton addNewTodo;
@@ -75,6 +73,7 @@ public class TodoFragment extends Fragment implements View.OnClickListener {
         initRecyclerView(rootView);
         loadSettings();
         getDataToShow();
+        loadToPreferencesCountTodo();
         return rootView;
     }
 
@@ -97,8 +96,8 @@ public class TodoFragment extends Fragment implements View.OnClickListener {
         todoList.setHasFixedSize(false);
         layoutManager = new LinearLayoutManager(context, LinearLayout.VERTICAL, false);
         todoList.setLayoutManager(layoutManager);
-        adapterTodo = new TodoRecyclerViewAdapter(data);
-        todoList.setAdapter(adapterTodo);
+        adapterTodoRecyclerView = new TodoRecyclerViewAdapter(data);
+        todoList.setAdapter(adapterTodoRecyclerView);
     }
 
     private void getDataToShow(){
@@ -115,6 +114,25 @@ public class TodoFragment extends Fragment implements View.OnClickListener {
         todoAdapter.closeDB();
     }
 
+    private void loadToPreferencesCountTodo(){
+        SharedPreferences preferences = context.getSharedPreferences("count_todo_info", 0);
+        TodoAdapter todoAdapter = new TodoAdapter(context);
+        todoAdapter.openDB();
+        ArrayList<Integer> countDoneRow = todoAdapter.getDoneTODO();
+        int countDone = 0;
+        todoAdapter.closeDB();
+        for (int i = 0; i < countDoneRow.size(); i++){
+            if(countDoneRow.get(i).equals(1)){
+                countDone++;
+            }
+        }
+
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putInt("count_todo", adapterTodoRecyclerView.getItemCount());
+        editor.putInt("count_done", countDone);
+        editor.apply();
+    }
+
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -124,7 +142,6 @@ public class TodoFragment extends Fragment implements View.OnClickListener {
     public void onClick(View view) {
         if (view.getId() == R.id.add_new_todo) {
             mainActivity.initFragment(new AddNewTodoFragment(), true);
-
         }
     }
 }

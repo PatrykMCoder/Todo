@@ -4,11 +4,13 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.preference.CheckBoxPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
 import android.util.Log;
+import android.widget.CheckBox;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -21,8 +23,10 @@ import java.util.ArrayList;
 import java.util.prefs.Preferences;
 
 public class SettingsPreference extends PreferenceFragment {
+
     private Preference colorPickerPreference;
     private ListPreference sortTodoPreference;
+    private CheckBoxPreference securityFingerprintPreference;
 
     private Settings settings;
 
@@ -51,6 +55,16 @@ public class SettingsPreference extends PreferenceFragment {
 
         colorPickerPreference = findPreference("color_picker_key");
         sortTodoPreference = (ListPreference) getPreferenceManager().findPreference("sort_todo_key");
+        securityFingerprintPreference = (CheckBoxPreference)  getPreferenceManager().findPreference("fingerprint_security_app");
+
+        securityFingerprintPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object o) {
+                Log.d(TAG, "onPreferenceChange: object: " + o);
+                settings.setSecurityFingerprint(o);
+                return true;
+            }
+        });
 
         final ColorPicker colorPicker = new ColorPicker(getActivity(), 0, 0, 0, 0);
 
@@ -87,5 +101,6 @@ public class SettingsPreference extends PreferenceFragment {
 
             return true;
         });
+
     }
 }
