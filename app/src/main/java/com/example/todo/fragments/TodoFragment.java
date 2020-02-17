@@ -19,6 +19,7 @@ import android.widget.LinearLayout;
 import com.example.todo.MainActivity;
 import com.example.todo.R;
 import com.example.todo.database.TodoAdapter;
+import com.example.todo.database.TodoAdapterV2;
 import com.example.todo.utils.TodoRecyclerViewAdapter;
 import com.example.todo.utils.objects.TodoObject;
 import com.example.todo.utils.setteings.Settings;
@@ -52,12 +53,12 @@ public class TodoFragment extends Fragment implements View.OnClickListener {
     }
 
     public TodoFragment(Context context) {
-        this.context = context;
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        this.context = context;
         mainActivity = (MainActivity) context;
         loadSettings();
     }

@@ -3,25 +3,32 @@ package com.example.todo.fragments;
 
 import android.app.DatePickerDialog;
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 
 
 import androidx.fragment.app.Fragment;
 
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.example.todo.MainActivity;
 import com.example.todo.R;
 import com.example.todo.database.TodoAdapter;
+import com.example.todo.database.TodoAdapterV2;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
@@ -31,19 +38,20 @@ public class AddNewTodoFragment extends Fragment implements View.OnClickListener
     private Context context;
 
     private EditText newTitleEditText;
-    private EditText newDescriptionEditText;
-    private EditText newDateLimitEditText;
-    private Button newButtonSubmit;
+    private LinearLayout box;
+    private CheckBox checkBox;
+    private EditText newTaskEditText;
+    private FloatingActionButton saveTodoButton;
 
-    private TodoAdapter todoAdapter;
+    ArrayList<String> data;
+
+    private TodoAdapterV2 todoAdapter;
     private MainActivity mainActivity;
 
     private String title;
     private String description;
-    private String createDate;
-    private String reamingDate;
-
     private final static String TAG = "AddNewTodoFragment";
+    private int createdElement = 1;
 
     public AddNewTodoFragment() {
         // Required empty public constructor
@@ -53,115 +61,89 @@ public class AddNewTodoFragment extends Fragment implements View.OnClickListener
     public void onAttach(Context context) {
         super.onAttach(context);
         this.context = context;
-        mainActivity = (MainActivity)context;
-        todoAdapter = new TodoAdapter(context);
+
+        mainActivity = (MainActivity) context;
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        final View rootView =  inflater.inflate(R.layout.fragment_add_new_todo, container, false);
+        final View rootView = inflater.inflate(R.layout.fragment_add_new_todo, container, false);
 
         newTitleEditText = rootView.findViewById(R.id.new_title_todo);
-        newDescriptionEditText = rootView.findViewById(R.id.new_description_todo);
-        newDateLimitEditText = rootView.findViewById(R.id.new_limit_date);
-        newButtonSubmit = rootView.findViewById(R.id.submit_button);
+        saveTodoButton = rootView.findViewById(R.id.save_todo);
+        box = rootView.findViewById(R.id.box);
 
-        newDateLimitEditText.setFocusable(false);
-        newDateLimitEditText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                setDateFromPicker(context);
-            }
-        });
-        newButtonSubmit.setOnClickListener(this);
+        data = new ArrayList<>();
 
+        saveTodoButton.setOnClickListener(this);
+
+        createElements();
         return rootView;
     }
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()){
-            case R.id.submit_button:
-                saveTodo();
-                break;
+        if(view.getId() == R.id.save_todo){
+            saveTodo();
         }
     }
 
-    private void setDateFromPicker(Context context){
-        Calendar c = Calendar.getInstance();
-        DatePickerDialog setTime = new DatePickerDialog(context, new DatePickerDialog.OnDateSetListener() {
-            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                Calendar calendar = Calendar.getInstance();
-                calendar.set(year, monthOfYear-1, dayOfMonth);
-                SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
-                Date d = calendar.getTime();
-                String date = sdf.format(d);
-                newDateLimitEditText.setText(date);
-            }
-        }, c.get(Calendar.YEAR), c.get((Calendar.MONTH)), c.get(Calendar.DAY_OF_MONTH));
+    private void createElements() {
+        LinearLayout linearLayout = new LinearLayout(context);
+        linearLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        linearLayout.setOrientation(LinearLayout.HORIZONTAL);
 
-        setTime.create();
-        setTime.show();
+        checkBox = new CheckBox(context);
+        newTaskEditText = new EditText(context);
+        newTaskEditText.setId(createdElement);
+        newTaskEditText.setHint("Enter task");
+        newTaskEditText.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        newTaskEditText.setBackgroundColor(Color.WHITE);
+
+        newTaskEditText.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                    if (keyCode == KeyEvent.KEYCODE_ENTER) {
+                        data.add(newTaskEditText.getText().toString());
+                        createElements();
+                        return true;
+                    }
+                }
+                return false;
+            }
+        });
+        newTaskEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                
+            }
+        });
+        linearLayout.addView(checkBox);
+        linearLayout.addView(newTaskEditText);
+
+        box.addView(linearLayout);
+        createdElement++;
     }
 
-    private void saveTodo() {
+    private void saveTodo(){
         title = newTitleEditText.getText().toString();
-        description = newDescriptionEditText.getText().toString();
-        createDate = getCurrentDateFormat();
-        reamingDate = newDateLimitEditText.getText().toString();
-
+        todoAdapter = new TodoAdapterV2(context, title, data);
         todoAdapter.openDB();
 
-        if (!title.isEmpty() && !description.isEmpty()) {
-            if(!todoAdapter.checkerExistTodo(title, description)) {
-                if (!reamingDate.isEmpty()) {
-                    if (checkDateReaming(reamingDate)) {
-                        todoAdapter.insertDataTodo(title, description, createDate, reamingDate, 0);
-                        mainActivity.closeFragment(this, new TodoFragment(mainActivity.getApplicationContext()));
-                    } else {
-                        Toast.makeText(context, "Check your date reaming. It is ok?", Toast.LENGTH_SHORT).show();
-                    }
-                } else {
-                    todoAdapter.insertDataTodo(title, description, createDate, reamingDate, 0);
-
-                    mainActivity.closeFragment(this, new TodoFragment(mainActivity.getApplicationContext()));
-                }
-            }else{
-                Toast.makeText(context, "Todo exist!", Toast.LENGTH_SHORT).show();
+        if(!title.isEmpty()){
+            if(data != null && data.size() > 0) {
+                todoAdapter.saveToDB();
             }
-        }else{
-            Toast.makeText(context, "Title or description can't be empty!", Toast.LENGTH_LONG).show();
+            else
+                Toast.makeText(context, "You can't save empty TODO 😞", Toast.LENGTH_SHORT).show();
+        }else {
+            // TODO: 05/02/2020 show dialog with information about set title for todo
         }
 
         todoAdapter.closeDB();
-    }
-    private String getCurrentDateFormat(){
-        Date currentDate = Calendar.getInstance().getTime();
-        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
-        return sdf.format(currentDate);
-    }
-
-    private Date getCurrentDate(){
-        Calendar current = Calendar.getInstance();
-        current.setTimeZone(TimeZone.getDefault());
-        return current.getTime();
-    }
-
-    private boolean checkDateReaming(String date){
-        String[] check = date.split("-");
-        Calendar calendar = Calendar.getInstance();
-        Date today = getCurrentDate();
-
-        calendar.set(Calendar.DAY_OF_MONTH, Integer.parseInt(check[0]));
-        calendar.set(Calendar.MONTH, Integer.parseInt(check[1]));
-        calendar.set(Calendar.YEAR, Integer.parseInt(check[2]));
-
-        Date checkDate = calendar.getTime();
-
-        Log.d(TAG, "checkDateReaming: " + today + "\n" + checkDate);
-
-        return (checkDate.after(today) || checkDate.equals(today));
+        mainActivity.closeFragment(this, new TodoFragment());
     }
 }

@@ -25,6 +25,8 @@ public class SplashScreenActivity extends AppCompatActivity {
 
         removeBar();
         getAllPermission();
+
+        lunchMainActivity();
     }
 
     private void removeBar(){

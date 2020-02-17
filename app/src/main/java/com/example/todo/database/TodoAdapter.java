@@ -7,7 +7,9 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
+import android.widget.ArrayAdapter;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class TodoAdapter {
@@ -44,6 +46,9 @@ public class TodoAdapter {
     public static final String KEY_ARCHIVE = "archive";
     public static final String ARCHIVE_OPTIONS = "INTEGER DEFAULT 0";
     public static final int ARCHIVE_COLUMN = 5;
+
+    private  ArrayList<String> data;
+    private String title = "";
 
     private String sort = "";
 
@@ -257,6 +262,21 @@ public class TodoAdapter {
                     break;
             }
         }
+    }
+
+
+    public TodoAdapter(Context c, String title, ArrayList<String> data){
+        this.context = c;
+        this.title = title;
+        this.data = data;
+    }
+
+    public ArrayList<String> getData(){
+        return data;
+    }
+
+    public void setData(ArrayList<String> data){
+        this.data = data;
     }
 
     private class DBHelper extends SQLiteOpenHelper {
