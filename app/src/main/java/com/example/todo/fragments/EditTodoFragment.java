@@ -62,10 +62,7 @@ public class EditTodoFragment extends Fragment implements View.OnClickListener {
 
         getData();
 
-        titleEditText = rootView.findViewById(R.id.editTitle);
-        descriptionEditText = rootView.findViewById(R.id.editDescription);
-        dateReamingEditText = rootView.findViewById(R.id.editTimeReaming);
-        submitEditButton = rootView.findViewById(R.id.submitEdit);
+        titleEditText = rootView.findViewById(R.id.title_edit);
 
         titleEditText.setText(title);
         descriptionEditText.setText(description);
@@ -119,9 +116,6 @@ public class EditTodoFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onClick(View view) {
         switch (view.getId()){
-            case R.id.submitEdit:
-                updateTODO();
-                break;
             default:break;
         }
     }

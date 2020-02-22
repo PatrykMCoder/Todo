@@ -9,6 +9,8 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -98,7 +100,7 @@ public class AddNewTodoFragment extends Fragment implements View.OnClickListener
         checkBox = new CheckBox(context);
         newTaskEditText = new EditText(context);
         newTaskEditText.setId(createdElement);
-        newTaskEditText.setHint("Enter task");
+        newTaskEditText.setHint("Enter task(press enter to submit end create other edit text)");
         newTaskEditText.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         newTaskEditText.setBackgroundColor(Color.WHITE);
 
@@ -115,12 +117,26 @@ public class AddNewTodoFragment extends Fragment implements View.OnClickListener
                 return false;
             }
         });
-        newTaskEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+
+        newTaskEditText.addTextChangedListener(new TextWatcher() {
             @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+//                if(s.length() < 1){
+//                    createElements();
+//                }
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
             }
         });
+
         linearLayout.addView(checkBox);
         linearLayout.addView(newTaskEditText);
 
@@ -130,6 +146,7 @@ public class AddNewTodoFragment extends Fragment implements View.OnClickListener
 
     private void saveTodo(){
         title = newTitleEditText.getText().toString();
+        data.add(newTaskEditText.getText().toString());
         todoAdapter = new TodoAdapterV2(context, title, data);
         todoAdapter.openDB();
 
