@@ -126,6 +126,11 @@ public class TodoAdapterV2 {
         return data;
     }
 
+    public void deleteTodo(String title){
+        String q = String.format("DROP TABLE %s", title.replace(" ", "_"));
+        database.delete(title, null, null);
+    }
+
     private class DBHelper extends SQLiteOpenHelper {
 
         DBHelper(@Nullable Context context, @Nullable String name, @Nullable SQLiteDatabase.CursorFactory factory, int version) {
