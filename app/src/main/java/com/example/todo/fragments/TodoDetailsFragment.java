@@ -1,30 +1,29 @@
 package com.example.todo.fragments;
 
 
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import androidx.fragment.app.Fragment;
 
 import com.example.todo.MainActivity;
 import com.example.todo.R;
 import com.example.todo.database.TodoAdapter;
+import com.example.todo.database.TodoAdapterV2;
+import com.example.todo.helpers.GetDataHelper;
 import com.example.todo.utils.objects.TodoObject;
-import com.example.todo.utils.setteings.Settings;
 import com.github.clans.fab.FloatingActionMenu;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 
@@ -34,7 +33,7 @@ public class TodoDetailsFragment extends Fragment implements View.OnClickListene
 
     private int id = 0;
 
-    private TodoAdapter todoAdapter;
+    private TodoAdapterV2 todoAdapter;
     private TodoObject todoObject;
 
     private String title;
@@ -43,8 +42,10 @@ public class TodoDetailsFragment extends Fragment implements View.OnClickListene
     private String dataCreate;
     private String dataReaming;
 
+
+    private LinearLayout box;
     private TextView titleTextView;
-    private TextView descriptionTextView;
+    private TextView taskTextView;
     private CheckBox doneCheckBox;
     private TextView dataCreateTextView;
     private TextView dataReamingTextView;
@@ -58,20 +59,22 @@ public class TodoDetailsFragment extends Fragment implements View.OnClickListene
     private Context context;
     private MainActivity mainActivity;
 
+    private ArrayList<GetDataHelper> data;
+
+    public TodoDetailsFragment() {
+
+    }
+
+    public TodoDetailsFragment(String title) {
+        this.title = title;
+
+    }
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         this.context = context;
         mainActivity = (MainActivity) context;
-    }
-
-    public TodoDetailsFragment(){
-
-    }
-
-    public TodoDetailsFragment(int id) {
-        this.id = id;
-
     }
 
     @Override
@@ -80,13 +83,9 @@ public class TodoDetailsFragment extends Fragment implements View.OnClickListene
         // Inflate the layout for this fragment
         final View rootView = inflater.inflate(R.layout.fragment_todo_details, container, false);
 
-        titleTextView = rootView.findViewById(R.id.titleDetails);
-        descriptionTextView = rootView.findViewById(R.id.descriptionDetails);
-        doneCheckBox = rootView.findViewById(R.id.doneDetails);
-        dataCreateTextView = rootView.findViewById(R.id.dataCreateDetails);
-        dataReamingTextView = rootView.findViewById(R.id.dataReamingDetails);
-        backgroundColorView = rootView.findViewById(R.id.background);
+        titleTextView = rootView.findViewById(R.id.title_preview);
 
+        box = rootView.findViewById(R.id.box);
         floatingActionMenu = rootView.findViewById(R.id.menu);
         editFAB = rootView.findViewById(R.id.editTODO);
         archiveFAB = rootView.findViewById(R.id.archiveTODO);
@@ -95,7 +94,6 @@ public class TodoDetailsFragment extends Fragment implements View.OnClickListene
         editFAB.setOnClickListener(this);
         archiveFAB.setOnClickListener(this);
         deleteFAB.setOnClickListener(this);
-        doneCheckBox.setOnCheckedChangeListener(this);
 
         getDataToShow();
 
@@ -107,91 +105,111 @@ public class TodoDetailsFragment extends Fragment implements View.OnClickListene
         TodoAdapter todoAdapter = new TodoAdapter(context);
         todoAdapter.openDB();
         switch (view.getId()) {
-            case R.id.editTODO:
-                mainActivity.initFragment(new EditTodoFragment(id), true);
-                break;
-            case R.id.archiveTODO:
-               /* todoAdapter.archiveTODO(id, 1);
-                todoAdapter.closeDB();
-                mainActivity.closeFragment(this, new TodoFragment(context));*/
-                Toast.makeText(context, "In future :) ", Toast.LENGTH_SHORT).show();
-                break;
-            case R.id.deleteTODO:
-                AlertDialog alertDialog = new AlertDialog.Builder(getContext())
-                        .setTitle("Are you sure?")
-                        .setMessage("Do you want delete this TODO? You won't recover this!")
-                        .setPositiveButton("Yes", (dialogInterface, i) -> {
-                            todoAdapter.deleteTODO(todoAdapter.getIdColumn(title, description));
-                            todoAdapter.closeDB();
-                            mainActivity.closeFragment(this, new TodoFragment(context));
-                        })
-                        .setNegativeButton("No", ((dialogInterface, i) -> dialogInterface.cancel()))
-                        .create();
-                alertDialog.show();
-                break;
+//            case R.id.editTODO:
+//                mainActivity.initFragment(new EditTodoFragment(id), true);
+//                break;
+//            case R.id.archiveTODO:
+//               /* todoAdapter.archiveTODO(id, 1);
+//                todoAdapter.closeDB();
+//                mainActivity.closeFragment(this, new TodoFragment(context));*/
+//                Toast.makeText(context, "In future :) ", Toast.LENGTH_SHORT).show();
+//                break;
+//            case R.id.deleteTODO:
+//                AlertDialog alertDialog = new AlertDialog.Builder(getContext())
+//                        .setTitle("Are you sure?")
+//                        .setMessage("Do you want delete this TODO? You won't recover this!")
+//                        .setPositiveButton("Yes", (dialogInterface, i) -> {
+//                            todoAdapter.deleteTODO(todoAdapter.getIdColumn(title, description));
+//                            todoAdapter.closeDB();
+//                            mainActivity.closeFragment(this, new TodoFragment(context));
+//                        })
+//                        .setNegativeButton("No", ((dialogInterface, i) -> dialogInterface.cancel()))
+//                        .create();
+//                alertDialog.show();
+//                break;
             default:
                 break;
         }
     }
 
     private void getDataToShow() {
-        todoAdapter = new TodoAdapter(context);
+        todoAdapter = new TodoAdapterV2(context, title);
         todoAdapter.openDB();
-        ArrayList<String> d = todoAdapter.getRowTODO(id);
-        title = d.get(0);
-        description = d.get(1);
-        done = d.get(2);
-        dataCreate = d.get(3);
-        dataReaming = d.get(4);
+        data = todoAdapter.loadAllData(title);
+        Log.d(TAG, "getDataToShow: " + data.size());
         todoAdapter.closeDB();
+        title = title.replace("_", " ");
+        titleTextView.setText(title);
 
-        updateUI();
+        for(int i = 0; i < data.size(); i++){
+            createElements(i);
+        }
+    }
+
+    private void createElements(int position) {
+        LinearLayout linearLayout = new LinearLayout(context);
+        linearLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        linearLayout.setOrientation(LinearLayout.HORIZONTAL);
+        doneCheckBox = new CheckBox(context);
+        taskTextView = new EditText(context);
+        taskTextView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        taskTextView.setBackgroundColor(Color.WHITE);
+        taskTextView.setTextSize(20);
+
+        taskTextView.setText(data.get(position).getTask().replace("'", ""));
+        doneCheckBox.setChecked(data.get(position).getDone() == 1);
+
+        linearLayout.addView(doneCheckBox);
+        linearLayout.addView(taskTextView);
+
+        box.addView(linearLayout);
     }
 
     private void updateUI() {
-        Settings settings = new Settings(context);
-
-        ArrayList<Integer> colors = settings.loadBackgroundColor();
-
-        backgroundColorView.setColorFilter(Color.argb(colors.get(0), colors.get(1), colors.get(2), colors.get(3)));
-
-        titleTextView.setText(title);
-        descriptionTextView.setText(description);
-        dataCreateTextView.setText("Create at: \n" + dataCreate);
-        dataReamingTextView.setText("Reaming at: \n" + dataReaming);
-
-        int doneInt = Integer.parseInt(done);
-
-        if (doneInt == 0) {
-            doneCheckBox.setChecked(false);
-            doneCheckBox.setText("Not done");
-        } else if (doneInt == 1) {
-            doneCheckBox.setChecked(true);
-            doneCheckBox.setText("Done");
-        }
+//        Settings settings = new Settings(context);
+//
+//        ArrayList<Integer> colors = settings.loadBackgroundColor();
+//
+//        backgroundColorView.setColorFilter(Color.argb(colors.get(0), colors.get(1), colors.get(2), colors.get(3)));
+//
+//        titleTextView.setText(title);
+//        descriptionTextView.setText(description);
+//        dataCreateTextView.setText("Create at: \n" + dataCreate);
+//        dataReamingTextView.setText("Reaming at: \n" + dataReaming);
+//
+//        int doneInt = Integer.parseInt(done);
+//
+//        if (doneInt == 0) {
+//            doneCheckBox.setChecked(false);
+//            doneCheckBox.setText("Not done");
+//        } else if (doneInt == 1) {
+//            doneCheckBox.setChecked(true);
+//            doneCheckBox.setText("Done");
+//        }
     }
 
     @Override
     public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-        int done;
-        TodoAdapter todoAdapter = new TodoAdapter(context);
-        todoAdapter.openDB();
-        switch (compoundButton.getId()) {
-            case R.id.doneDetails:
-                if (b) {
-                    done = 1;
-                    todoAdapter.changeStatusTODO(done, id);
-                    todoAdapter.closeDB();
-                    doneCheckBox.setText("Done");
-                } else {
-                    done = 0;
-                    todoAdapter.changeStatusTODO(done, id);
-                    todoAdapter.closeDB();
-                    doneCheckBox.setText("Not done");
-                }
-                break;
-            default:
-                break;
-        }
+//        int done;
+//        TodoAdapter todoAdapter = new TodoAdapter(context);
+//        todoAdapter.openDB();
+//        switch (compoundButton.getId()) {
+//            case R.id.doneDetails:
+//                if (b) {
+//                    done = 1;
+//                    todoAdapter.changeStatusTODO(done, id);
+//                    todoAdapter.closeDB();
+//                    doneCheckBox.setText("Done");
+//                } else {
+//                    done = 0;
+//                    todoAdapter.changeStatusTODO(done, id);
+//                    todoAdapter.closeDB();
+//                    doneCheckBox.setText("Not done");
+//                }
+//                break;
+//            default:
+//                break;
+//        }
+//    }
     }
 }

@@ -36,8 +36,7 @@
                   android:layout_height="wrap_content"
                   android:layout_below="@+id/todoTitle"
                   android:text="Read..."
-                  android:textColor="@color/textColorWhite"
-                  android:textSize="20dp" />
+                  android:textColor="#ffff"/>
 
           </LinearLayout>
 
