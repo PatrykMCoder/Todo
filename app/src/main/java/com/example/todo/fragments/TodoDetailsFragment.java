@@ -1,6 +1,7 @@
 package com.example.todo.fragments;
 
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -25,9 +26,10 @@ import com.example.todo.helpers.GetDataHelper;
 import com.example.todo.utils.objects.TodoObject;
 import com.github.clans.fab.FloatingActionMenu;
 
+import java.io.File;
 import java.util.ArrayList;
 
-public class TodoDetailsFragment extends Fragment implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
+public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCheckedChangeListener {
 
     private final static String TAG = "detailsfragment";
 
@@ -91,45 +93,29 @@ public class TodoDetailsFragment extends Fragment implements View.OnClickListene
         archiveFAB = rootView.findViewById(R.id.archiveTODO);
         deleteFAB = rootView.findViewById(R.id.deleteTODO);
 
-        editFAB.setOnClickListener(this);
-        archiveFAB.setOnClickListener(this);
-        deleteFAB.setOnClickListener(this);
-
         getDataToShow();
 
-        return rootView;
-    }
+        deleteFAB.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                todoAdapter.openDB();
+                todoAdapter.deleteTodo(title.replace(" ", "_"));
+                todoAdapter.closeDB();
+                //delete file from device
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+                    File file = new File(context.getDataDir() + "/databases/" + title + ".db");
+                    if(file.exists()){
+                        file.delete();
+                    }
+                }else{
+                    //todo > this same from recycler
+                }
 
-    @Override
-    public void onClick(View view) {
-        TodoAdapter todoAdapter = new TodoAdapter(context);
-        todoAdapter.openDB();
-        switch (view.getId()) {
-//            case R.id.editTODO:
-//                mainActivity.initFragment(new EditTodoFragment(id), true);
-//                break;
-//            case R.id.archiveTODO:
-//               /* todoAdapter.archiveTODO(id, 1);
-//                todoAdapter.closeDB();
-//                mainActivity.closeFragment(this, new TodoFragment(context));*/
-//                Toast.makeText(context, "In future :) ", Toast.LENGTH_SHORT).show();
-//                break;
-//            case R.id.deleteTODO:
-//                AlertDialog alertDialog = new AlertDialog.Builder(getContext())
-//                        .setTitle("Are you sure?")
-//                        .setMessage("Do you want delete this TODO? You won't recover this!")
-//                        .setPositiveButton("Yes", (dialogInterface, i) -> {
-//                            todoAdapter.deleteTODO(todoAdapter.getIdColumn(title, description));
-//                            todoAdapter.closeDB();
-//                            mainActivity.closeFragment(this, new TodoFragment(context));
-//                        })
-//                        .setNegativeButton("No", ((dialogInterface, i) -> dialogInterface.cancel()))
-//                        .create();
-//                alertDialog.show();
-//                break;
-            default:
-                break;
-        }
+                mainActivity.closeFragment(TodoDetailsFragment.this, new TodoFragment(getContext()));
+            }
+        });
+
+        return rootView;
     }
 
     private void getDataToShow() {
