@@ -1,174 +1,142 @@
 package com.example.todo.fragments;
 
-import android.app.DatePickerDialog;
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.DatePicker;
+import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.Toast;
+import android.widget.LinearLayout;
+
+import androidx.fragment.app.Fragment;
 
 import com.example.todo.MainActivity;
 import com.example.todo.R;
-import com.example.todo.database.TodoAdapter;
+import com.example.todo.database.TodoAdapterV2;
+import com.example.todo.helpers.EditTodoHelper;
+import com.example.todo.helpers.GetDataHelper;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 
 
 public class EditTodoFragment extends Fragment implements View.OnClickListener {
 
+    private static final String TAG = "EditTODO";
     private int id;
-
     private EditText titleEditText;
-    private EditText descriptionEditText;
-    private EditText dateReamingEditText;
-    private Button submitEditButton;
-
+    private EditText taskEditText;
+    private CheckBox doneCheckBox;
+    private LinearLayout box;
     private MainActivity mainActivity;
     private Context context;
+    private String title, task;
+    private ArrayList<GetDataHelper> dataHelper;
+    private FloatingActionButton saveTodoButton;
 
-    private String title, description, dateReaming;
-    private static final String TAG = "EditTODO";
+    private View rootView;
 
-    public EditTodoFragment(){
+    public EditTodoFragment() {
 
     }
 
-    public EditTodoFragment(int id){
-        this.id = id;
+    public EditTodoFragment(String title) {
+        this.title = title;
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         this.context = context;
-        mainActivity = (MainActivity)context;
+        mainActivity = (MainActivity) context;
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView =  inflater.inflate(R.layout.fragment_edit_todo, container, false);
-
-        getData();
-
+        rootView = inflater.inflate(R.layout.fragment_edit_todo, container, false);
+        box = rootView.findViewById(R.id.box);
         titleEditText = rootView.findViewById(R.id.title_edit);
+        saveTodoButton = rootView.findViewById(R.id.save_todo);
+        saveTodoButton.setOnClickListener(this );
+        titleEditText.setText(title.replace("_", " "));
 
-        titleEditText.setText(title);
-        descriptionEditText.setText(description);
 
-        dateReamingEditText.setFocusable(false);
-        dateReamingEditText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                setDateFromPicker(context);
-            }
-        });
 
-        dateReamingEditText.setText(dateReaming);
+        loadData();
 
-        submitEditButton.setOnClickListener(this);
 
         return rootView;
     }
 
-    private void getData(){
-        TodoAdapter todoAdapter = new TodoAdapter(getContext());
-        todoAdapter.openDB();
-        ArrayList<String> data = todoAdapter.getRowTODO(id);
-        todoAdapter.closeDB();
-
-        title = data.get(0);
-        description = data.get(1);
-        dateReaming = data.get(4);
-
-    }
-
-
-    private void setDateFromPicker(Context context){
-        Calendar c = Calendar.getInstance();
-        DatePickerDialog setTime = new DatePickerDialog(context, new DatePickerDialog.OnDateSetListener() {
-            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                Calendar calendar = Calendar.getInstance();
-                calendar.set(year, monthOfYear, dayOfMonth);
-                SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
-                Date d = calendar.getTime();
-                String date = sdf.format(d);
-                dateReamingEditText.setText(date);
-                dateReaming = dateReamingEditText.getText().toString();
-            }
-        }, c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH));
-
-        setTime.create();
-        setTime.show();
-    }
-
     @Override
     public void onClick(View view) {
-        switch (view.getId()){
-            default:break;
+        switch (view.getId()) {
+            case R.id.save_todo:
+                updateTodo();
+            default:
+                break;
         }
     }
 
-    private void updateTODO() {
-        title = titleEditText.getText().toString();
-        description = descriptionEditText.getText().toString();
-        dateReaming = dateReamingEditText.getText().toString();
-        TodoAdapter todoAdapter = new TodoAdapter(getContext());
-        todoAdapter.openDB();
+    private void loadData() {
+        TodoAdapterV2 todoAdapterV2 = new TodoAdapterV2(getContext());
+        todoAdapterV2.openDB();
+        dataHelper = todoAdapterV2.loadAllData(title);
+        todoAdapterV2.closeDB();
 
-        if (!title.isEmpty() && !description.isEmpty()) {
-                Log.d(TAG, "updateTODO: data is not this same");
-                if (!todoAdapter.checkerExistTodo(title, description)) {
-                    if (!dateReaming.isEmpty()) {
-                        if (checkDateReaming(dateReaming)) {
-                            Log.d(TAG, "updateTODO: data reaming is not null/empty");
-                            todoAdapter.editTODO(titleEditText.getText().toString(), descriptionEditText.getText().toString(), dateReamingEditText.getText().toString(), id);
-                            mainActivity.closeFragment(this, new TodoFragment(getContext()));
-                        } else {
-                            Toast.makeText(context, "Check your date reaming. It is ok?", Toast.LENGTH_SHORT).show();
-                        }
-                    } else {
-                        Log.d(TAG, "updateTODO: data reaming is null/empty");
-                        todoAdapter.editTODO(titleEditText.getText().toString(), descriptionEditText.getText().toString(), null, id);
-                        mainActivity.closeFragment(this, new TodoFragment(getContext()));
-                    }
-                }else{
-                    Toast.makeText(context, "Todo exist!", Toast.LENGTH_SHORT).show();
-                }
-        }else {
-            Log.d(TAG, "updateTODO: empty data");
-            Toast.makeText(context, "Title or description can't be empty!", Toast.LENGTH_LONG).show();
+        for (int i = 0; i < dataHelper.size(); i++)
+            createElements(i);
+    }
+
+    private void createElements(int position) {
+        LinearLayout linearLayout = new LinearLayout(context);
+        linearLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        linearLayout.setOrientation(LinearLayout.HORIZONTAL);
+        doneCheckBox = new CheckBox(context);
+        taskEditText = new EditText(context);
+        taskEditText.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        taskEditText.setBackgroundColor(Color.WHITE);
+        taskEditText.setTextSize(20);
+        taskEditText.setTag("t_" + position);
+        doneCheckBox.setTag("d_" + position);
+        taskEditText.setText(dataHelper.get(position).getTask().replace("'", ""));
+        doneCheckBox.setChecked(dataHelper.get(position).getDone() == 1);
+
+        linearLayout.addView(doneCheckBox);
+        linearLayout.addView(taskEditText);
+
+        Log.d(TAG, "createElements: " + taskEditText.getTag());
+
+        box.addView(linearLayout);
+    }
+
+    private void updateTodo() {
+        ArrayList<EditTodoHelper> helper = new ArrayList<>();
+        EditTodoHelper editTodoHelper;
+        EditText editText;
+        CheckBox checkBox;
+        String title = titleEditText.getText().toString().replace(" ", "_");
+        for (int i = 0; i < dataHelper.size(); i++) {
+            editText = rootView.findViewWithTag("t_" + i);
+            checkBox =rootView.findViewWithTag("d_" + i);
+            Log.d(TAG, "updateTodo: " + editText.getTag());
+            String task = editText.getText().toString();
+            int done = (checkBox.isChecked() ? 1 : 0);
+
+            editTodoHelper = new EditTodoHelper(task, done, "");
+            helper.add(editTodoHelper);
         }
-        todoAdapter.closeDB();
-    }
 
-    private Date getCurrentDate(){
-        Date currentDate = Calendar.getInstance().getTime();
-        return currentDate;
-    }
+        TodoAdapterV2 todoAdapterV2 = new TodoAdapterV2(getContext());
+        todoAdapterV2.openDB();
+        todoAdapterV2.editTodo(title, helper);
+        todoAdapterV2.closeDB();
 
-    private boolean checkDateReaming(String date){
-        String[] check = date.split("-");
-        Calendar calendar = Calendar.getInstance();
-        Date today = getCurrentDate();
-
-        calendar.set(Calendar.DAY_OF_MONTH, Integer.parseInt(check[0]));
-        calendar.set(Calendar.MONTH, Integer.parseInt(check[1]));
-        calendar.set(Calendar.YEAR, Integer.parseInt(check[2]));
-
-        Date checkDate = calendar.getTime();
-
-        return (checkDate.after(today) || checkDate.equals(today));
+        mainActivity.closeFragment(this, new TodoFragment());
     }
 }

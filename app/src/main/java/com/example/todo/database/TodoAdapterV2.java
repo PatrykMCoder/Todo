@@ -10,8 +10,10 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 
+import com.example.todo.helpers.EditTodoHelper;
 import com.example.todo.helpers.GetDataHelper;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class TodoAdapterV2 {
@@ -90,23 +92,6 @@ public class TodoAdapterV2 {
         }
     }
 
-
-    public ArrayList<String> testLoadData(String title) {
-        ArrayList<String> data = new ArrayList<>();
-        title = title.replace(" ", "_");
-        String q = String.format("SELECT * from %s;", title);
-        Cursor cursor = database.rawQuery(q, null);
-        cursor.moveToPosition(-1);
-        while (cursor.moveToNext()) {
-            data.add(cursor.getString(cursor.getColumnIndex("task")));
-        }
-
-        cursor.close();
-        Log.d(TAG, "testLoadData: " + data);
-
-        return data;
-    }
-
     public ArrayList<GetDataHelper> loadAllData(String title) {
         ArrayList<GetDataHelper> data = new ArrayList<>();
 
@@ -129,6 +114,22 @@ public class TodoAdapterV2 {
     public void deleteTodo(String title){
         String q = String.format("DROP TABLE %s", title.replace(" ", "_"));
         database.delete(title, null, null);
+    }
+
+    public void editTodo(String title, ArrayList<EditTodoHelper> dataToEdit){
+        ContentValues contentValues = new ContentValues();
+
+        for(int i = 0; i < dataToEdit.size(); i++){
+            String task = dataToEdit.get(i).getTask();
+            int done = dataToEdit.get(i).getDone();
+            String tag = dataToEdit.get(i).getTag();
+
+            contentValues.put("task", task);
+            contentValues.put("done", done);
+            contentValues.put("tag", tag);
+
+            database.update(title, contentValues, "id = " + (i + 1), null);
+        }
     }
 
     private class DBHelper extends SQLiteOpenHelper {
