@@ -29,7 +29,7 @@ import com.github.clans.fab.FloatingActionMenu;
 import java.io.File;
 import java.util.ArrayList;
 
-public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCheckedChangeListener {
+public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCheckedChangeListener, View.OnClickListener {
 
     private final static String TAG = "detailsfragment";
 
@@ -93,6 +93,8 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
         archiveFAB = rootView.findViewById(R.id.archiveTODO);
         deleteFAB = rootView.findViewById(R.id.deleteTODO);
 
+        editFAB.setOnClickListener(this);
+
         getDataToShow();
 
         deleteFAB.setOnClickListener(new View.OnClickListener() {
@@ -137,7 +139,7 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
         linearLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         linearLayout.setOrientation(LinearLayout.HORIZONTAL);
         doneCheckBox = new CheckBox(context);
-        taskTextView = new EditText(context);
+        taskTextView = new TextView(context);
         taskTextView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         taskTextView.setBackgroundColor(Color.WHITE);
         taskTextView.setTextSize(20);
@@ -197,5 +199,15 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
 //                break;
 //        }
 //    }
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.editTODO:
+                title = title.replace(" ", "_");
+                mainActivity.initFragment(new EditTodoFragment(title), true);
+                break;
+        }
     }
 }
