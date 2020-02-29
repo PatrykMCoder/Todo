@@ -1,7 +1,6 @@
 package com.example.todo.fragments;
 
 
-import android.app.DatePickerDialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -11,14 +10,11 @@ import androidx.fragment.app.Fragment;
 
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -26,14 +22,9 @@ import android.widget.Toast;
 import com.example.todo.MainActivity;
 import com.example.todo.R;
 import com.example.todo.database.TodoAdapter;
-import com.example.todo.database.TodoAdapterV2;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.TimeZone;
 
 public class AddNewTodoFragment extends Fragment implements View.OnClickListener {
 
@@ -47,7 +38,7 @@ public class AddNewTodoFragment extends Fragment implements View.OnClickListener
 
     ArrayList<String> data;
 
-    private TodoAdapterV2 todoAdapter;
+    private TodoAdapter todoAdapter;
     private MainActivity mainActivity;
 
     private String title;
@@ -147,7 +138,7 @@ public class AddNewTodoFragment extends Fragment implements View.OnClickListener
     private void saveTodo(){
         title = newTitleEditText.getText().toString();
         data.add(newTaskEditText.getText().toString());
-        todoAdapter = new TodoAdapterV2(context, title, data);
+        todoAdapter = new TodoAdapter(context, title, data);
         todoAdapter.openDB();
 
         if(!title.isEmpty()){

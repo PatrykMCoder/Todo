@@ -18,7 +18,7 @@ import androidx.fragment.app.Fragment;
 
 import com.example.todo.MainActivity;
 import com.example.todo.R;
-import com.example.todo.database.TodoAdapterV2;
+import com.example.todo.database.TodoAdapter;
 import com.example.todo.helpers.GetDataHelper;
 import com.example.todo.utils.objects.TodoObject;
 import com.github.clans.fab.FloatingActionMenu;
@@ -32,7 +32,7 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
 
     private int id = 0;
 
-    private TodoAdapterV2 todoAdapter;
+    private TodoAdapter todoAdapter;
     private TodoObject todoObject;
 
     private String title;
@@ -107,9 +107,10 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
                     File file = new File(context.getDataDir() + "/databases/" + title + ".db");
                     if (file.exists()) {
                         file.delete();
+                        Log.d(TAG, "onClick: delete");
                     }
                 } else {
-                    //todo > this same from recycler
+                    //todo > this same for recycler
                 }
 
                 mainActivity.closeFragment(TodoDetailsFragment.this, new TodoFragment(getContext()));
@@ -120,7 +121,7 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
     }
 
     private void getDataToShow() {
-        todoAdapter = new TodoAdapterV2(context, title);
+        todoAdapter = new TodoAdapter(context, title);
         todoAdapter.openDB();
         data = todoAdapter.loadAllData(title);
         Log.d(TAG, "getDataToShow: " + data.size());
@@ -163,10 +164,10 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
     public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
         for (int i = 0; i < helperForCheckBox.size(); i++) {
             if (compoundButton.getTag().equals(String.format("d_%s", i))) {
-                TodoAdapterV2 todoAdapterV2 = new TodoAdapterV2(context);
-                todoAdapterV2.openDB();
-                todoAdapterV2.changeStatusTask(title, data.get(i).getTask(), b ? 1 : 0);
-                todoAdapterV2.closeDB();
+                TodoAdapter todoAdapter = new TodoAdapter(context);
+                todoAdapter.openDB();
+                todoAdapter.changeStatusTask(title, data.get(i).getTask(), b ? 1 : 0);
+                todoAdapter.closeDB();
                 break;
             }
         }
