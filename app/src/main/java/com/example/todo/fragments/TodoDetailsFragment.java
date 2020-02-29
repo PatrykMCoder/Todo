@@ -1,7 +1,6 @@
 package com.example.todo.fragments;
 
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -11,7 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -20,7 +18,6 @@ import androidx.fragment.app.Fragment;
 
 import com.example.todo.MainActivity;
 import com.example.todo.R;
-import com.example.todo.database.TodoAdapter;
 import com.example.todo.database.TodoAdapterV2;
 import com.example.todo.helpers.GetDataHelper;
 import com.example.todo.utils.objects.TodoObject;
@@ -62,6 +59,7 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
     private MainActivity mainActivity;
 
     private ArrayList<GetDataHelper> data;
+    private ArrayList<String> helperForCheckBox;
 
     public TodoDetailsFragment() {
 
@@ -82,8 +80,9 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         final View rootView = inflater.inflate(R.layout.fragment_todo_details, container, false);
+
+        helperForCheckBox = new ArrayList<>();
 
         titleTextView = rootView.findViewById(R.id.title_preview);
 
@@ -106,10 +105,10 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
                 //delete file from device
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
                     File file = new File(context.getDataDir() + "/databases/" + title + ".db");
-                    if(file.exists()){
+                    if (file.exists()) {
                         file.delete();
                     }
-                }else{
+                } else {
                     //todo > this same from recycler
                 }
 
@@ -129,7 +128,7 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
         title = title.replace("_", " ");
         titleTextView.setText(title);
 
-        for(int i = 0; i < data.size(); i++){
+        for (int i = 0; i < data.size(); i++) {
             createElements(i);
         }
     }
@@ -145,6 +144,10 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
         taskTextView.setTextSize(20);
 
         taskTextView.setText(data.get(position).getTask().replace("'", ""));
+        doneCheckBox.setTag("d_" + position);
+        doneCheckBox.setOnCheckedChangeListener(this);
+
+        helperForCheckBox.add(doneCheckBox.getTag().toString());
         doneCheckBox.setChecked(data.get(position).getDone() == 1);
 
         linearLayout.addView(doneCheckBox);
@@ -154,60 +157,23 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
     }
 
     private void updateUI() {
-//        Settings settings = new Settings(context);
-//
-//        ArrayList<Integer> colors = settings.loadBackgroundColor();
-//
-//        backgroundColorView.setColorFilter(Color.argb(colors.get(0), colors.get(1), colors.get(2), colors.get(3)));
-//
-//        titleTextView.setText(title);
-//        descriptionTextView.setText(description);
-//        dataCreateTextView.setText("Create at: \n" + dataCreate);
-//        dataReamingTextView.setText("Reaming at: \n" + dataReaming);
-//
-//        int doneInt = Integer.parseInt(done);
-//
-//        if (doneInt == 0) {
-//            doneCheckBox.setChecked(false);
-//            doneCheckBox.setText("Not done");
-//        } else if (doneInt == 1) {
-//            doneCheckBox.setChecked(true);
-//            doneCheckBox.setText("Done");
-//        }
     }
 
     @Override
     public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-//        int done;
-//        TodoAdapter todoAdapter = new TodoAdapter(context);
-//        todoAdapter.openDB();
-//        switch (compoundButton.getId()) {
-//            case R.id.doneDetails:
-//                if (b) {
-//                    done = 1;
-//                    todoAdapter.changeStatusTODO(done, id);
-//                    todoAdapter.closeDB();
-//                    doneCheckBox.setText("Done");
-//                } else {
-//                    done = 0;
-//                    todoAdapter.changeStatusTODO(done, id);
-//                    todoAdapter.closeDB();
-//                    doneCheckBox.setText("Not done");
-//                }
-//                break;
-//            default:
-//                break;
-//        }
-//    }
+        for (int i = 0; i < helperForCheckBox.size(); i++) {
+            if (compoundButton.getTag().equals(String.format("d_%s", i))) {
+                TodoAdapterV2 todoAdapterV2 = new TodoAdapterV2(context);
+                todoAdapterV2.openDB();
+                todoAdapterV2.changeStatusTask(title, data.get(i).getTask(), b ? 1 : 0);
+                todoAdapterV2.closeDB();
+                break;
+            }
+        }
     }
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
-            case R.id.editTODO:
-                title = title.replace(" ", "_");
-                mainActivity.initFragment(new EditTodoFragment(title), true);
-                break;
-        }
+
     }
 }
