@@ -10,10 +10,12 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 
+import com.example.todo.helpers.CreateTodoHelper;
 import com.example.todo.helpers.EditTodoHelper;
 import com.example.todo.helpers.GetDataHelper;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class TodoAdapter {
     private final static String TAG = "TodoAdapterV2";
@@ -22,7 +24,10 @@ public class TodoAdapter {
     private Context context;
     private DBHelper dbHelper;
     private String title;
+
     private ArrayList<String> dataTask;
+    private List<CreateTodoHelper> helper;
+
     private String q_createTable;
     private String q_dropTable;
     private SQLiteDatabase database;
@@ -49,14 +54,23 @@ public class TodoAdapter {
         createQueryDropTable();
     }
 
+    public TodoAdapter(Context context, String title, List<CreateTodoHelper> helper) {
+        this.context = context;
+        this.title = title;
+        this.helper = helper;
+
+        createQueryNewTable();
+        createQueryDropTable();
+    }
+
     private void createQueryNewTable() {
-        if (dataTask != null) {
+        if (helper != null || title != null) {
             nameForDB = (title.replace(" ", "_")) + ".db";
             title = title.replace(" ", "_");
             q_createTable = String.format("CREATE TABLE %s (id INTEGER PRIMARY KEY AUTOINCREMENT, task TEXT NOT NULL, tag INTEGER, done INTEGER);", title);
 
         } else
-            q_createTable = "CREATE TABLE " + title;
+            q_createTable = "CREATE TABLE " + title.replace(" ", "_");
     }
 
     private void createQueryDropTable() {
@@ -79,13 +93,12 @@ public class TodoAdapter {
     }
 
     public void saveToDB() {
-        int len = dataTask.size() - 1;
         title = title.replace(" ", "_");
         ContentValues contentValues = new ContentValues();
-        for (int i = 0; i <= len; i++) {
-            contentValues.put("task", String.format("%s", dataTask.get(i)));
-            contentValues.put("tag", "");
-            contentValues.put("done", 0);
+        for (int i = 0; i <=  helper.size() - 1; i++) {
+            contentValues.put("task", String.format("%s", helper.get(i).getTask()));
+            contentValues.put("tag", String.format("%s", helper.get(i).getTag()));
+            contentValues.put("done", String.format("%s", helper.get(i).getDone()));
 
             database.insert(title, null, contentValues);
         }
