@@ -7,7 +7,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -16,7 +15,7 @@ import androidx.fragment.app.Fragment;
 
 import com.example.todo.MainActivity;
 import com.example.todo.R;
-import com.example.todo.database.TodoAdapterV2;
+import com.example.todo.database.TodoAdapter;
 import com.example.todo.helpers.EditTodoHelper;
 import com.example.todo.helpers.GetDataHelper;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -84,10 +83,10 @@ public class EditTodoFragment extends Fragment implements View.OnClickListener {
     }
 
     private void loadData() {
-        TodoAdapterV2 todoAdapterV2 = new TodoAdapterV2(getContext());
-        todoAdapterV2.openDB();
-        dataHelper = todoAdapterV2.loadAllData(title);
-        todoAdapterV2.closeDB();
+        TodoAdapter todoAdapter = new TodoAdapter(getContext());
+        todoAdapter.openDB();
+        dataHelper = todoAdapter.loadAllData(title);
+        todoAdapter.closeDB();
 
         for (int i = 0; i < dataHelper.size(); i++)
             createElements(i);
@@ -132,10 +131,10 @@ public class EditTodoFragment extends Fragment implements View.OnClickListener {
             helper.add(editTodoHelper);
         }
 
-        TodoAdapterV2 todoAdapterV2 = new TodoAdapterV2(getContext());
-        todoAdapterV2.openDB();
-        todoAdapterV2.editTodo(title, helper);
-        todoAdapterV2.closeDB();
+        TodoAdapter todoAdapter = new TodoAdapter(getContext());
+        todoAdapter.openDB();
+        todoAdapter.editTodo(title, helper);
+        todoAdapter.closeDB();
 
         mainActivity.closeFragment(this, new TodoFragment());
     }

@@ -2,15 +2,12 @@ package com.example.todo.fragments;
 
 
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,12 +15,8 @@ import android.widget.LinearLayout;
 
 import com.example.todo.MainActivity;
 import com.example.todo.R;
-import com.example.todo.database.TodoAdapter;
-import com.example.todo.database.TodoAdapterV2;
 import com.example.todo.utils.TodoRecyclerViewAdapter;
-import com.example.todo.utils.TodoRecyclerViewAdapterV2;
 import com.example.todo.utils.objects.TodoObject;
-import com.example.todo.utils.setteings.Settings;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
@@ -38,8 +31,6 @@ public class TodoFragment extends Fragment implements View.OnClickListener {
 
     private ArrayList<TodoObject> data;
     private Context context;
-
-    private TodoAdapter todoAdapter;
     private TodoObject todoObject;
 
     private MainActivity mainActivity;
@@ -83,7 +74,7 @@ public class TodoFragment extends Fragment implements View.OnClickListener {
         todoList.setHasFixedSize(false);
         layoutManager = new LinearLayoutManager(context, LinearLayout.VERTICAL, false);
         todoList.setLayoutManager(layoutManager);
-        adapterTodoRecyclerView = new TodoRecyclerViewAdapterV2(context);
+        adapterTodoRecyclerView = new TodoRecyclerViewAdapter(context);
         adapterTodoRecyclerView.getItemCount();
         todoList.setAdapter(adapterTodoRecyclerView);
     }
