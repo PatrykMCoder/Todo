@@ -175,6 +175,11 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
 
     @Override
     public void onClick(View v) {
-
+        switch (v.getId()) {
+            case R.id.editTODO:
+                title = title.replace(" ", "_");
+                mainActivity.initFragment(new EditTodoFragment(title), true);
+                break;
+        }
     }
 }

@@ -4,11 +4,8 @@ package com.example.todo.fragments;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
-
-
-import androidx.fragment.app.Fragment;
-
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -19,32 +16,36 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import androidx.fragment.app.Fragment;
+
 import com.example.todo.MainActivity;
 import com.example.todo.R;
 import com.example.todo.database.TodoAdapter;
+import com.example.todo.helpers.CreateTodoHelper;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class AddNewTodoFragment extends Fragment implements View.OnClickListener {
 
+    private final static String TAG = "AddNewTodoFragment";
+    List<CreateTodoHelper> data;
     private Context context;
-
     private EditText newTitleEditText;
     private LinearLayout box;
-    private CheckBox checkBox;
+    private CheckBox checkBoxDone;
     private EditText newTaskEditText;
     private FloatingActionButton saveTodoButton;
-
-    ArrayList<String> data;
-
     private TodoAdapter todoAdapter;
     private MainActivity mainActivity;
-
     private String title;
-    private String description;
-    private final static String TAG = "AddNewTodoFragment";
+    private String task;
+    private String tag;
+    private int done;
     private int createdElement = 1;
+
+    private CreateTodoHelper createTodoHelper;
 
     public AddNewTodoFragment() {
         // Required empty public constructor
@@ -78,7 +79,7 @@ public class AddNewTodoFragment extends Fragment implements View.OnClickListener
 
     @Override
     public void onClick(View view) {
-        if(view.getId() == R.id.save_todo){
+        if (view.getId() == R.id.save_todo) {
             saveTodo();
         }
     }
@@ -88,21 +89,30 @@ public class AddNewTodoFragment extends Fragment implements View.OnClickListener
         linearLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         linearLayout.setOrientation(LinearLayout.HORIZONTAL);
 
-        checkBox = new CheckBox(context);
+        checkBoxDone = new CheckBox(context);
         newTaskEditText = new EditText(context);
         newTaskEditText.setId(createdElement);
         newTaskEditText.setHint("Enter task(press enter to submit end create other edit text)");
         newTaskEditText.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         newTaskEditText.setBackgroundColor(Color.WHITE);
+        newTaskEditText.setMaxLines(1);
+        newTaskEditText.setInputType(InputType.TYPE_CLASS_TEXT);
 
         newTaskEditText.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if (event.getAction() == KeyEvent.ACTION_DOWN) {
                     if (keyCode == KeyEvent.KEYCODE_ENTER) {
-                        data.add(newTaskEditText.getText().toString());
-                        createElements();
-                        return true;
+                        if (!newTaskEditText.getText().toString().isEmpty()) {
+                            title = newTitleEditText.getText().toString();
+                            task = newTaskEditText.getText().toString();
+                            tag = "";
+                            done = checkBoxDone.isChecked() ? 1 : 0;
+                            createTodoHelper = new CreateTodoHelper(task, done, tag);
+                            data.add(createTodoHelper);
+                            createElements();
+                            return true;
+                        }
                     }
                 }
                 return false;
@@ -128,26 +138,29 @@ public class AddNewTodoFragment extends Fragment implements View.OnClickListener
             }
         });
 
-        linearLayout.addView(checkBox);
+        linearLayout.addView(checkBoxDone);
         linearLayout.addView(newTaskEditText);
 
         box.addView(linearLayout);
         createdElement++;
     }
 
-    private void saveTodo(){
+    private void saveTodo() {
         title = newTitleEditText.getText().toString();
-        data.add(newTaskEditText.getText().toString());
+        task = newTaskEditText.getText().toString();
+        done = checkBoxDone.isChecked() ? 1 : 0;
+        tag = "";
+        createTodoHelper = new CreateTodoHelper(task, done, tag);
+        data.add(createTodoHelper);
         todoAdapter = new TodoAdapter(context, title, data);
         todoAdapter.openDB();
 
-        if(!title.isEmpty()){
-            if(data != null && data.size() > 0) {
+        if (!title.isEmpty()) {
+            if (data != null && data.size() > 0) {
                 todoAdapter.saveToDB();
-            }
-            else
+            } else
                 Toast.makeText(context, "You can't save empty TODO 😞", Toast.LENGTH_SHORT).show();
-        }else {
+        } else {
             // TODO: 05/02/2020 show dialog with information about set title for todo
         }
 
