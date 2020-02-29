@@ -13,7 +13,6 @@ import androidx.annotation.Nullable;
 import com.example.todo.helpers.EditTodoHelper;
 import com.example.todo.helpers.GetDataHelper;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class TodoAdapterV2 {
@@ -84,7 +83,7 @@ public class TodoAdapterV2 {
         title = title.replace(" ", "_");
         ContentValues contentValues = new ContentValues();
         for (int i = 0; i <= len; i++) {
-            contentValues.put("task", String.format("'%s'", dataTask.get(i)));
+            contentValues.put("task", String.format("%s", dataTask.get(i)));
             contentValues.put("tag", "");
             contentValues.put("done", 0);
 
@@ -111,15 +110,15 @@ public class TodoAdapterV2 {
         return data;
     }
 
-    public void deleteTodo(String title){
+    public void deleteTodo(String title) {
         String q = String.format("DROP TABLE %s", title.replace(" ", "_"));
         database.delete(title, null, null);
     }
 
-    public void editTodo(String title, ArrayList<EditTodoHelper> dataToEdit){
+    public void editTodo(String title, ArrayList<EditTodoHelper> dataToEdit) {
         ContentValues contentValues = new ContentValues();
 
-        for(int i = 0; i < dataToEdit.size(); i++){
+        for (int i = 0; i < dataToEdit.size(); i++) {
             String task = dataToEdit.get(i).getTask();
             int done = dataToEdit.get(i).getDone();
             String tag = dataToEdit.get(i).getTag();
@@ -130,6 +129,22 @@ public class TodoAdapterV2 {
 
             database.update(title, contentValues, "id = " + (i + 1), null);
         }
+    }
+
+    public void changeStatusTask(String titleDB, String task, int status) {
+        String q = String.format("SELECT id FROM %s where task = '%s'", titleDB.replace(" ", "_"), task);
+        int id = 0;
+        Cursor cursor = database.rawQuery(q, null);
+        cursor.moveToFirst();
+        id = cursor.getInt(cursor.getColumnIndex("id"));
+        cursor.close();
+
+        Log.d(TAG, "changeStatusTask: " + id);
+
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("done", status);
+
+        database.update(titleDB, contentValues, String.format("id = %s", id), null);
     }
 
     private class DBHelper extends SQLiteOpenHelper {
