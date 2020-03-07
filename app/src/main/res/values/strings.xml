@@ -13,4 +13,10 @@
         <item>Date reaming</item>
     </string-array>
 
+
+    <string-array name="tags">
+        <item>No tag</item>
+        <item>Important</item>
+        <item>No important</item>
+    </string-array>
 </resources>

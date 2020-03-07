@@ -17,6 +17,8 @@ import com.example.todo.R;
 import com.example.todo.fragments.TodoDetailsFragment;
 import com.example.todo.utils.objects.TodoObject;
 
+import org.w3c.dom.Text;
+
 import java.io.File;
 import java.util.ArrayList;
 
@@ -67,7 +69,6 @@ public class TodoRecyclerViewAdapter extends RecyclerView.Adapter<TodoRecyclerVi
         mainActivity = (MainActivity) context;
 
         holder.titleTextView.setText(titles.get(position).replace("_", " "));
-
         holder.cardView.setOnClickListener(view -> {
             String title = holder.titleTextView.getText().toString();
             title =title.replace(" ", "_");;
@@ -98,16 +99,13 @@ public class TodoRecyclerViewAdapter extends RecyclerView.Adapter<TodoRecyclerVi
 
     public class TodoListViewHolder extends RecyclerView.ViewHolder {
         public TextView titleTextView;
-        public TextView descriptionTextView;
         public CheckBox doneCheckBox;
         // public LinearLayout layoutItemTodo;
         public CardView cardView;
-
         public TodoListViewHolder(@NonNull View itemView) {
             super(itemView);
 
             titleTextView = itemView.findViewById(R.id.todoTitle);
-            descriptionTextView = itemView.findViewById(R.id.todoDescription);
             cardView = itemView.findViewById(R.id.cardView);
         }
     }

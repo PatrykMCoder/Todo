@@ -46,9 +46,7 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
     private TextView titleTextView;
     private TextView taskTextView;
     private CheckBox doneCheckBox;
-    private TextView dataCreateTextView;
-    private TextView dataReamingTextView;
-    private ImageView backgroundColorView;
+    private TextView tagView;
 
     private FloatingActionMenu floatingActionMenu;
     private com.github.clans.fab.FloatingActionButton editFAB;
@@ -85,6 +83,7 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
         helperForCheckBox = new ArrayList<>();
 
         titleTextView = rootView.findViewById(R.id.title_preview);
+        tagView = rootView.findViewById(R.id.tag_view);
 
         box = rootView.findViewById(R.id.box);
         floatingActionMenu = rootView.findViewById(R.id.menu);
@@ -132,6 +131,9 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
         for (int i = 0; i < data.size(); i++) {
             createElements(i);
         }
+        if(data.get(0).getTag().equals("") || data.get(0).getTag().equals("No tag"))
+            tagView.setText("TAG: no tag");
+        else tagView.setText(String.format("TAG: %s", data.get(0).getTag()));
     }
 
     private void createElements(int position) {
