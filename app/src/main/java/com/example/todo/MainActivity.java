@@ -40,11 +40,6 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        if(Build.VERSION.SDK_INT >= 10)
-            getSupportActionBar().hide();
-        else
-            getActionBar().hide();
         loadSettings();
         initView();
         initFragment(new TodoFragment(getApplicationContext()), false);

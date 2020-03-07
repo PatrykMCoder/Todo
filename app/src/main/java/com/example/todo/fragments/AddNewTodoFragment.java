@@ -9,6 +9,9 @@ import android.text.InputType;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
@@ -16,12 +19,14 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
 import com.example.todo.MainActivity;
 import com.example.todo.R;
 import com.example.todo.database.TodoAdapter;
 import com.example.todo.helpers.CreateTodoHelper;
+import com.example.todo.helpers.TagsHelper;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
@@ -60,9 +65,8 @@ public class AddNewTodoFragment extends Fragment implements View.OnClickListener
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        setHasOptionsMenu(true);
         final View rootView = inflater.inflate(R.layout.fragment_add_new_todo, container, false);
 
         newTitleEditText = rootView.findViewById(R.id.new_title_todo);
@@ -72,7 +76,6 @@ public class AddNewTodoFragment extends Fragment implements View.OnClickListener
         data = new ArrayList<>();
 
         saveTodoButton.setOnClickListener(this);
-
         createElements();
         return rootView;
     }
@@ -82,6 +85,27 @@ public class AddNewTodoFragment extends Fragment implements View.OnClickListener
         if (view.getId() == R.id.save_todo) {
             saveTodo();
         }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.edit_todo_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.add_tag_todo:
+                //display option fragment for select tag and show in bottom screen tag
+                DialogFragment selectTagDialog = new SelectTodoTagFragment();
+                if(getFragmentManager() != null)
+                    selectTagDialog.show(getFragmentManager(), "select tag");
+                break;
+            default:
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void createElements() {
@@ -106,7 +130,6 @@ public class AddNewTodoFragment extends Fragment implements View.OnClickListener
                         if (!newTaskEditText.getText().toString().isEmpty()) {
                             title = newTitleEditText.getText().toString();
                             task = newTaskEditText.getText().toString();
-                            tag = "";
                             done = checkBoxDone.isChecked() ? 1 : 0;
                             createTodoHelper = new CreateTodoHelper(task, done, tag);
                             data.add(createTodoHelper);
@@ -116,25 +139,6 @@ public class AddNewTodoFragment extends Fragment implements View.OnClickListener
                     }
                 }
                 return false;
-            }
-        });
-
-        newTaskEditText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-//                if(s.length() < 1){
-//                    createElements();
-//                }
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
             }
         });
 
@@ -149,9 +153,14 @@ public class AddNewTodoFragment extends Fragment implements View.OnClickListener
         title = newTitleEditText.getText().toString();
         task = newTaskEditText.getText().toString();
         done = checkBoxDone.isChecked() ? 1 : 0;
-        tag = "";
         createTodoHelper = new CreateTodoHelper(task, done, tag);
         data.add(createTodoHelper);
+
+
+        for(int i = 0; i < data.size(); i++){
+            data.get(i).setTag(TagsHelper.getTag());
+        }
+
         todoAdapter = new TodoAdapter(context, title, data);
         todoAdapter.openDB();
 
@@ -166,5 +175,7 @@ public class AddNewTodoFragment extends Fragment implements View.OnClickListener
 
         todoAdapter.closeDB();
         mainActivity.closeFragment(this, new TodoFragment());
+
+        TagsHelper.setTag("No tag");
     }
 }
