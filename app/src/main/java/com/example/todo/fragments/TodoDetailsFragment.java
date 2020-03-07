@@ -168,7 +168,7 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
             if (compoundButton.getTag().equals(String.format("d_%s", i))) {
                 TodoAdapter todoAdapter = new TodoAdapter(context);
                 todoAdapter.openDB();
-                todoAdapter.changeStatusTask(title, data.get(i).getTask(), b ? 1 : 0);
+                todoAdapter.changeStatusTask(title.replace(" ", "_"), data.get(i).getTask(), b ? 1 : 0);
                 todoAdapter.closeDB();
                 break;
             }
