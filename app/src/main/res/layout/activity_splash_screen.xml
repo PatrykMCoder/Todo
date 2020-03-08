@@ -14,20 +14,11 @@
         android:textSize="50dp"
         android:layout_centerHorizontal="true"/>
 
-    <ImageView
-        android:id="@+id/iconSplash"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_launcher_background"
-        android:layout_centerHorizontal="true"
-        android:layout_below="@+id/titleSplash"
-        android:padding="50dp"/>
-
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Plan and write!"
         android:textSize="50dp"
         android:layout_centerHorizontal="true"
-        android:layout_below="@+id/iconSplash"/>
+        android:layout_below="@+id/titleSplash"/>
 </RelativeLayout>
