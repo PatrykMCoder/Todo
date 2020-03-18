@@ -95,11 +95,11 @@ public class AddNewTodoFragment extends Fragment implements View.OnClickListener
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.add_tag_todo:
                 //display option fragment for select tag and show in bottom screen tag
                 DialogFragment selectTagDialog = new SelectTodoTagFragment();
-                if(getFragmentManager() != null)
+                if (getFragmentManager() != null)
                     selectTagDialog.show(getFragmentManager(), "select tag");
                 break;
             default:
@@ -151,31 +151,34 @@ public class AddNewTodoFragment extends Fragment implements View.OnClickListener
 
     private void saveTodo() {
         title = newTitleEditText.getText().toString();
-        task = newTaskEditText.getText().toString();
-        done = checkBoxDone.isChecked() ? 1 : 0;
-        createTodoHelper = new CreateTodoHelper(task, done, tag);
-        data.add(createTodoHelper);
-
-
-        for(int i = 0; i < data.size(); i++){
-            data.get(i).setTag(TagsHelper.getTag());
-        }
-
-        todoAdapter = new TodoAdapter(context, title, data);
-        todoAdapter.openDB();
-
         if (!title.isEmpty()) {
-            if (data != null && data.size() > 0) {
-                todoAdapter.saveToDB();
-            } else
-                Toast.makeText(context, "You can't save empty TODO 😞", Toast.LENGTH_SHORT).show();
-        } else {
-            // TODO: 05/02/2020 show dialog with information about set title for todo
-        }
+            task = newTaskEditText.getText().toString();
+            done = checkBoxDone.isChecked() ? 1 : 0;
+            createTodoHelper = new CreateTodoHelper(task, done, tag);
+            data.add(createTodoHelper);
 
-        todoAdapter.closeDB();
-        mainActivity.closeFragment(this, new TodoFragment());
 
-        TagsHelper.setTag("No tag");
+            for (int i = 0; i < data.size(); i++) {
+                data.get(i).setTag(TagsHelper.getTag());
+            }
+
+            todoAdapter = new TodoAdapter(context, title, data);
+            todoAdapter.openDB();
+
+            if (!title.isEmpty()) {
+                if (data != null && data.size() > 0) {
+                    todoAdapter.saveToDB();
+                } else
+                    Toast.makeText(context, "You can't save empty TODO 😞", Toast.LENGTH_SHORT).show();
+            } else {
+                // TODO: 05/02/2020 show dialog with information about set title for todo
+            }
+
+            todoAdapter.closeDB();
+            mainActivity.closeFragment(this, new TodoFragment());
+
+            TagsHelper.setTag("No tag");
+        }else
+            Toast.makeText(context, "Title can not be empty.", Toast.LENGTH_SHORT).show();
     }
 }
