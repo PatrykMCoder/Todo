@@ -30,6 +30,13 @@
                 android:textColor="@color/textColorWhite"
                 android:textSize="25dp" />
 
+            <TextView
+                android:id="@+id/testPercent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Percent task"
+                android:textSize="10dp"/>
+
         </LinearLayout>
 
     </androidx.cardview.widget.CardView>

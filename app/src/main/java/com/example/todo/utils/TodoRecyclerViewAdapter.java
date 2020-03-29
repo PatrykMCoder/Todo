@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.todo.MainActivity;
 import com.example.todo.R;
+import com.example.todo.database.TodoAdapter;
 import com.example.todo.fragments.TodoDetailsFragment;
 import com.example.todo.utils.objects.TodoObject;
 
@@ -24,10 +25,13 @@ import java.util.ArrayList;
 
 public class TodoRecyclerViewAdapter extends RecyclerView.Adapter<TodoRecyclerViewAdapter.TodoListViewHolder> {
     private ArrayList<TodoObject> data;
+    private TodoAdapter todoAdapter;
     private final static String TAG = "TODORECYCLERVIEW";
     private MainActivity mainActivity;
     private String description;
     private int done, id, counter;
+
+    private float percentDone = 0;
 
     private ArrayList<String> titles;
 
@@ -71,9 +75,16 @@ public class TodoRecyclerViewAdapter extends RecyclerView.Adapter<TodoRecyclerVi
         holder.titleTextView.setText(titles.get(position).replace("_", " "));
         holder.cardView.setOnClickListener(view -> {
             String title = holder.titleTextView.getText().toString();
-            title =title.replace(" ", "_");;
+            title = title.replace(" ", "_");;
             mainActivity.initFragment(new TodoDetailsFragment(title), true);
         });
+
+        todoAdapter = new TodoAdapter(context, titles.get(position).replace("_", " "));
+        todoAdapter.openDB();
+        percentDone = todoAdapter.getPercentDoneTask(titles.get(position).replace("_", " "));
+        todoAdapter.closeDB();
+
+        holder.percentTaskTextView.setText( "" + percentDone);
 
         holder.cardView.setOnLongClickListener(view -> true);
     }
@@ -97,16 +108,19 @@ public class TodoRecyclerViewAdapter extends RecyclerView.Adapter<TodoRecyclerVi
         return counter;
     }
 
-    public class TodoListViewHolder extends RecyclerView.ViewHolder {
-        public TextView titleTextView;
-        public CheckBox doneCheckBox;
+    static class TodoListViewHolder extends RecyclerView.ViewHolder {
+        private TextView titleTextView;
+        private TextView percentTaskTextView;
+        private CheckBox doneCheckBox;
         // public LinearLayout layoutItemTodo;
-        public CardView cardView;
-        public TodoListViewHolder(@NonNull View itemView) {
+        private CardView cardView;
+
+        TodoListViewHolder(@NonNull View itemView) {
             super(itemView);
 
             titleTextView = itemView.findViewById(R.id.todoTitle);
             cardView = itemView.findViewById(R.id.cardView);
+            percentTaskTextView = itemView.findViewById(R.id.testPercent);
         }
     }
 }
