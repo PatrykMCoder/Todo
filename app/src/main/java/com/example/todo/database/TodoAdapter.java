@@ -6,6 +6,8 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.database.sqlite.SQLiteReadOnlyDatabaseException;
+import android.os.Build;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
@@ -14,6 +16,8 @@ import com.example.todo.helpers.CreateTodoHelper;
 import com.example.todo.helpers.EditTodoHelper;
 import com.example.todo.helpers.GetDataHelper;
 
+import java.io.File;
+import java.nio.file.OpenOption;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,7 +42,6 @@ public class TodoAdapter {
 
     public TodoAdapter(Context context, String title) {
         this.context = context;
-
 
         title = title.replace(" ", "_");
         nameForDB = title + ".db";
@@ -121,6 +124,31 @@ public class TodoAdapter {
         }
         cursor.close();
         return data;
+    }
+
+    public float getPercentDoneTask(String title){
+        ArrayList<GetDataHelper> data = new ArrayList<>();
+        float doneTask = 0;
+        float notDoneTask = 0;
+        float percent = 0;
+        String q = String.format("SELECT done from %s", title.replace(" ", "_"));
+        GetDataHelper getDataHelper;
+
+        Cursor cursor = database.rawQuery(q, null);
+        cursor.moveToFirst();
+
+        while (cursor.moveToNext()){
+            int done = cursor.getInt(cursor.getColumnIndex("done"));
+            if (done == 1){
+                doneTask += 1;
+            }
+
+            notDoneTask += 1;
+        }
+
+        cursor.close();
+
+        return (doneTask/notDoneTask) * 100;
     }
 
     public void deleteTodo(String title) {
