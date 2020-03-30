@@ -1,12 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#F88B5A</color>
-    <color name="colorPrimaryDark">#F88B5A</color>
-    <color name="colorAccent">#F88B5A</color>
+    <color name="colorPrimary">#02FF91</color>
+    <color name="colorPrimaryDark">#02FF91</color>
+    <color name="colorAccent">#02FF91</color>
 
-    <color name="colorCard1">#F3A782</color>
-
-    <color name="colorFAB">#F88B5A</color>
-
-    <color name="textColorWhite">#FFFFFF</color>
+    <color name="colorFAB">#02FF91</color>
 </resources>

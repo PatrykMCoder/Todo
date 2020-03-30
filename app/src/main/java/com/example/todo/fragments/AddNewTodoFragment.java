@@ -4,9 +4,7 @@ package com.example.todo.fragments;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.text.Editable;
 import android.text.InputType;
-import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -119,8 +117,10 @@ public class AddNewTodoFragment extends Fragment implements View.OnClickListener
         newTaskEditText.setHint("Enter task(press enter to submit end create other edit text)");
         newTaskEditText.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         newTaskEditText.setBackgroundColor(Color.WHITE);
+        newTaskEditText.setTextSize(20);
         newTaskEditText.setMaxLines(1);
         newTaskEditText.setInputType(InputType.TYPE_CLASS_TEXT);
+        newTaskEditText.setTextColor(Color.BLACK);
 
         newTaskEditText.setOnKeyListener(new View.OnKeyListener() {
             @Override

@@ -6,6 +6,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -18,9 +20,8 @@ import com.example.todo.database.TodoAdapter;
 import com.example.todo.fragments.TodoDetailsFragment;
 import com.example.todo.utils.objects.TodoObject;
 
-import org.w3c.dom.Text;
-
 import java.io.File;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 public class TodoRecyclerViewAdapter extends RecyclerView.Adapter<TodoRecyclerViewAdapter.TodoListViewHolder> {
@@ -71,6 +72,8 @@ public class TodoRecyclerViewAdapter extends RecyclerView.Adapter<TodoRecyclerVi
     @Override
     public void onBindViewHolder(@NonNull final TodoListViewHolder holder, final int position) {
         mainActivity = (MainActivity) context;
+        boolean checkNan;
+        DecimalFormat decimalFormat = new DecimalFormat("#.##");
 
         holder.titleTextView.setText(titles.get(position).replace("_", " "));
         holder.cardView.setOnClickListener(view -> {
@@ -84,7 +87,12 @@ public class TodoRecyclerViewAdapter extends RecyclerView.Adapter<TodoRecyclerVi
         percentDone = todoAdapter.getPercentDoneTask(titles.get(position).replace("_", " "));
         todoAdapter.closeDB();
 
-        holder.percentTaskTextView.setText( "" + percentDone);
+        holder.allTaskDoneImageView.setVisibility(percentDone >= 100                                  ? View.VISIBLE : View.GONE);
+        holder.allTaskDoneImageView.setImageResource((checkNan = Double.valueOf(percentDone).isNaN()) ? R.drawable.ic_error_red_24dp : R.drawable.ic_done_green_24dp);
+        holder.percentProgressBar.setVisibility(percentDone < 100                                     ? View.VISIBLE : View.GONE);
+
+        holder.percentTaskTextView.setText(String.format("%s %%", decimalFormat.format(Math.floor(percentDone))));
+        holder.percentProgressBar.setProgress((int) percentDone);
 
         holder.cardView.setOnLongClickListener(view -> true);
     }
@@ -111,16 +119,20 @@ public class TodoRecyclerViewAdapter extends RecyclerView.Adapter<TodoRecyclerVi
     static class TodoListViewHolder extends RecyclerView.ViewHolder {
         private TextView titleTextView;
         private TextView percentTaskTextView;
+        private ProgressBar percentProgressBar;
         private CheckBox doneCheckBox;
         // public LinearLayout layoutItemTodo;
         private CardView cardView;
+        private ImageView allTaskDoneImageView;
 
         TodoListViewHolder(@NonNull View itemView) {
             super(itemView);
 
             titleTextView = itemView.findViewById(R.id.todoTitle);
             cardView = itemView.findViewById(R.id.cardView);
-            percentTaskTextView = itemView.findViewById(R.id.testPercent);
+            percentTaskTextView = itemView.findViewById(R.id.percentDoneTask);
+            percentProgressBar = itemView.findViewById(R.id.percentProgress);
+            allTaskDoneImageView = itemView.findViewById(R.id.all_task_done_image);
         }
     }
 }
