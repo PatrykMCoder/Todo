@@ -3,6 +3,7 @@ package com.example.todo.fragments;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -10,9 +11,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 
@@ -59,6 +60,8 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
     private ArrayList<GetDataHelper> data;
     private ArrayList<String> helperForCheckBox;
 
+    private View rootView;
+
     public TodoDetailsFragment() {
 
     }
@@ -78,7 +81,7 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        final View rootView = inflater.inflate(R.layout.fragment_todo_details, container, false);
+       rootView = inflater.inflate(R.layout.fragment_todo_details, container, false);
 
         helperForCheckBox = new ArrayList<>();
 
@@ -145,13 +148,23 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
         taskTextView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         taskTextView.setBackgroundColor(Color.WHITE);
         taskTextView.setTextSize(20);
+        taskTextView.setTextColor(Color.BLACK);
+        taskTextView.setPadding(0, 20, 0, 20);
 
         taskTextView.setText(data.get(position).getTask().replace("'", ""));
+
+        taskTextView.setTag("t_" + position);
         doneCheckBox.setTag("d_" + position);
+
         doneCheckBox.setOnCheckedChangeListener(this);
 
         helperForCheckBox.add(doneCheckBox.getTag().toString());
         doneCheckBox.setChecked(data.get(position).getDone() == 1);
+
+        if (doneCheckBox.isChecked())
+            taskTextView.setPaintFlags(taskTextView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+        else
+            taskTextView.setPaintFlags(taskTextView.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
 
         linearLayout.addView(doneCheckBox);
         linearLayout.addView(taskTextView);
@@ -159,18 +172,35 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
         box.addView(linearLayout);
     }
 
-    private void updateUI() {
+    private void updateUI(boolean b, String tag) {
+        TextView textView;
+        if (rootView != null) {
+            textView = rootView.findViewWithTag(tag);
+            Log.d(TAG, "updateUI: " + textView);
+            if (b)
+                textView.setPaintFlags(textView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            else
+                textView.setPaintFlags(textView.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
+        }else {
+            mainActivity.closeFragment(this, new TodoFragment());
+            Toast.makeText(context, "Something wrong, try again.", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
     public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-        for (int i = 0; i < helperForCheckBox.size(); i++) {
-            if (compoundButton.getTag().equals(String.format("d_%s", i))) {
-                TodoAdapter todoAdapter = new TodoAdapter(context);
-                todoAdapter.openDB();
-                todoAdapter.changeStatusTask(title.replace(" ", "_"), data.get(i).getTask(), b ? 1 : 0);
-                todoAdapter.closeDB();
-                break;
+        if(compoundButton.isPressed()) {
+            String helperTag = "";
+            for (int i = 0; i < helperForCheckBox.size(); i++) {
+                if (compoundButton.getTag().equals(String.format("d_%s", i))) {
+                    TodoAdapter todoAdapter = new TodoAdapter(context);
+                    todoAdapter.openDB();
+                    todoAdapter.changeStatusTask(title.replace(" ", "_"), data.get(i).getTask(), b ? 1 : 0);
+                    todoAdapter.closeDB();
+                    helperTag = compoundButton.getTag().toString().replace("d", "t");
+                    updateUI(b, helperTag);
+                    break;
+                }
             }
         }
     }

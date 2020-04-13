@@ -1,64 +1,43 @@
 package com.example.todo;
 
+import android.annotation.SuppressLint;
+import android.os.Bundle;
+import android.view.MenuItem;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import android.annotation.SuppressLint;
-import android.os.Build;
-import android.os.Bundle;
-
-import android.util.Log;
-import android.view.MenuItem;
-import android.widget.Toast;
-
 import com.example.todo.fragments.SettingsFragment;
 import com.example.todo.fragments.TodoFragment;
-import com.example.todo.utils.setteings.Settings;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
-import com.google.android.gms.ads.MobileAds;
-import com.google.android.gms.ads.initialization.InitializationStatus;
-import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-
-import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
 
     private BottomNavigationView bottomNavigationView;
     private Fragment fragment;
-    private AdView adView;
-    private AdRequest request;
-
-    private ArrayList<Integer> colors = new ArrayList<>();
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        loadSettings();
         initView();
         initFragment(new TodoFragment(getApplicationContext()), false);
     }
 
     private void initAds(){
-        MobileAds.initialize(this, new OnInitializationCompleteListener(){
-
-            @Override
-            public void onInitializationComplete(InitializationStatus initializationStatus) {
-                    request = new AdRequest.Builder()
-                        .build();
-            }
-        });
-    }
-
-    private void loadSettings(){
-        Settings settings = new Settings(getApplicationContext());
-        colors = settings.loadBackgroundColor();
+//        MobileAds.initialize(this, new OnInitializationCompleteListener(){
+//
+//            @Override
+//            public void onInitializationComplete(InitializationStatus initializationStatus) {
+//                    request = new AdRequest.Builder()
+//                        .build();
+//            }
+//        });
     }
 
     @SuppressLint("ResourceType")
@@ -66,8 +45,8 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         bottomNavigationView = findViewById(R.id.nav_bar);
         bottomNavigationView.setOnNavigationItemSelectedListener(this);
 
-        adView = findViewById(R.id.ad_view);
-        AdRequest adRequest = new AdRequest.Builder().addTestDevice("A03BDA52BCF46627BDA62F08CD24AA2D").addTestDevice("6A59F7B812C24D21F3C41428379D5749").build();
+//        adView = findViewById(R.id.ad_view);
+//        AdRequest adRequest = new AdRequest.Builder().addTestDevice("A03BDA52BCF46627BDA62F08CD24AA2D").addTestDevice("6A59F7B812C24D21F3C41428379D5749").build();
 //        if(adRequest.isTestDevice(this)){
 //            adView.loadAd(adRequest);
 //            //test ad
@@ -77,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 //            adView.loadAd(request);
 //        }
 
-        Log.d("MY_ADDS", "initView: " + adRequest.isTestDevice(getApplicationContext()));
+//        Log.d("MY_ADDS", "initView: " + adRequest.isTestDevice(getApplicationContext()));
 
     }
 
