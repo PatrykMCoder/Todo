@@ -6,18 +6,22 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
+import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.todo.MainActivity;
 import com.example.todo.R;
 import com.example.todo.database.TodoAdapter;
-import com.example.todo.fragments.TodoDetailsFragment;
+import com.example.todo.utils.reminders.ReminderHelper;
+import com.example.todo.view.fragments.TodoDetailsFragment;
+import com.example.todo.view.dialogs.CreateReminderDialog;
 import com.example.todo.utils.objects.TodoObject;
 
 import java.io.File;

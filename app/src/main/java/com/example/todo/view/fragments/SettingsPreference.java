@@ -1,4 +1,4 @@
-package com.example.todo.fragments;
+package com.example.todo.view.fragments;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -8,9 +8,7 @@ import android.preference.CheckBoxPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
-import android.preference.PreferenceScreen;
 import android.util.Log;
-import android.widget.CheckBox;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -20,7 +18,6 @@ import com.example.todo.utils.setteings.Settings;
 import com.pes.androidmaterialcolorpickerdialog.ColorPicker;
 
 import java.util.ArrayList;
-import java.util.prefs.Preferences;
 
 public class SettingsPreference extends PreferenceFragment {
 

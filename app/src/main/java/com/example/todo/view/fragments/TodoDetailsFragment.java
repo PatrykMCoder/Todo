@@ -1,4 +1,4 @@
-package com.example.todo.fragments;
+package com.example.todo.view.fragments;
 
 
 import android.content.Context;
@@ -6,7 +6,11 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
@@ -15,6 +19,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
 import com.example.todo.MainActivity;
@@ -22,7 +29,11 @@ import com.example.todo.R;
 import com.example.todo.database.TodoAdapter;
 import com.example.todo.helpers.GetDataHelper;
 import com.example.todo.utils.objects.TodoObject;
+import com.example.todo.utils.reminders.ReminderHelper;
+import com.example.todo.view.dialogs.CreateReminderDialog;
 import com.github.clans.fab.FloatingActionMenu;
+import com.google.android.material.bottomappbar.BottomAppBar;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -50,6 +61,7 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
     private TextView tagView;
 
     private FloatingActionMenu floatingActionMenu;
+    private com.github.clans.fab.FloatingActionButton createReminderFAB;
     private com.github.clans.fab.FloatingActionButton editFAB;
     private com.github.clans.fab.FloatingActionButton archiveFAB;
     private com.github.clans.fab.FloatingActionButton deleteFAB;
@@ -89,13 +101,15 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
         tagView = rootView.findViewById(R.id.tag_view);
 
         box = rootView.findViewById(R.id.box);
+
         floatingActionMenu = rootView.findViewById(R.id.menu);
+        createReminderFAB = rootView.findViewById(R.id.create_reminder);
         editFAB = rootView.findViewById(R.id.editTODO);
         archiveFAB = rootView.findViewById(R.id.archiveTODO);
         deleteFAB = rootView.findViewById(R.id.deleteTODO);
 
         editFAB.setOnClickListener(this);
-
+        createReminderFAB.setOnClickListener(this);
         getDataToShow();
 
         deleteFAB.setOnClickListener(new View.OnClickListener() {
@@ -120,6 +134,12 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
         });
 
         return rootView;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.menu_nav_item, menu);
     }
 
     private void getDataToShow() {
@@ -211,6 +231,11 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
             case R.id.editTODO:
                 title = title.replace(" ", "_");
                 mainActivity.initFragment(new EditTodoFragment(title), true);
+                break;
+            case R.id.create_reminder:
+                DialogFragment dialogFragment = new CreateReminderDialog();
+                ReminderHelper.setTitle(titleTextView.getText().toString().replace("_", " "));
+                dialogFragment.show(((MainActivity) context).getSupportFragmentManager(), "create reminder");
                 break;
         }
     }

@@ -1,4 +1,4 @@
-package com.example.todo.fragments;
+package com.example.todo.view.fragments;
 
 import android.content.Context;
 import android.os.Bundle;

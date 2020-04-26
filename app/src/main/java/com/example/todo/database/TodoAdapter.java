@@ -70,7 +70,7 @@ public class TodoAdapter {
         if (helper != null || title != null) {
             nameForDB = (title.replace(" ", "_")) + ".db";
             title = title.replace(" ", "_");
-            q_createTable = String.format("CREATE TABLE %s (id INTEGER PRIMARY KEY AUTOINCREMENT, task TEXT NOT NULL, tag INTEGER, done INTEGER);", title);
+            q_createTable = String.format("CREATE TABLE %s (id INTEGER PRIMARY KEY AUTOINCREMENT, task TEXT NOT NULL, tag INTEGER, done INTEGER, last_edited DATE NOT NULL);", title);
 
         } else
             q_createTable = "CREATE TABLE " + title.replace(" ", "_");
@@ -102,6 +102,7 @@ public class TodoAdapter {
             contentValues.put("task", String.format("%s", helper.get(i).getTask()));
             contentValues.put("tag", String.format("%s", helper.get(i).getTag()));
             contentValues.put("done", String.format("%s", helper.get(i).getDone()));
+            contentValues.put("last_edited", String.format("s", helper.get(i).getLastEdited()));
 
             database.insert(title, null, contentValues);
         }
