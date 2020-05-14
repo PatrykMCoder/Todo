@@ -1,17 +1,13 @@
-package com.example.todo.fragments;
+package com.example.todo.view.fragments;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -19,8 +15,6 @@ import androidx.fragment.app.DialogFragment;
 
 import com.example.todo.R;
 import com.example.todo.helpers.TagsHelper;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 

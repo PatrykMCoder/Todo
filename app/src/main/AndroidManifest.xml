@@ -5,11 +5,11 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
-    <uses-permission android:name="android.permission.USE_FINGERPRINT"/>
-
-    <uses-feature android:name="android.hardware.fingerprint"
-        android:required="false"/>
+    <uses-feature
+        android:name="android.hardware.fingerprint"
+        android:required="false" />
 
     <application
         android:allowBackup="true"
@@ -18,7 +18,7 @@
         android:roundIcon="@drawable/ic_launcher_background"
         android:supportsRtl="true"
         android:theme="@style/Theme.Design.Light.NoActionBar">
-
+        <activity android:name=".ReminderAlarmActivity"/>
         <activity android:name=".SplashScreenActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -26,17 +26,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
+        <activity android:name=".MainActivity"></activity>
         <activity
-            android:name=".MainActivity">
-        </activity>
-        <activity android:name=".fragments.SettingsFragment"
+            android:name=".view.fragments.SettingsFragment"
             android:background="?android:windowBackground"
-            android:clickable = "true"/>
+            android:clickable="true" />
 
-        <meta-data
-            android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-4871499696146883~1687909048" />
+        <receiver android:name=".utils.reminders.ReminderBroadcastReceiver"/>
     </application>
 
 </manifest>

@@ -19,4 +19,17 @@
         <item>Important</item>
         <item>No important</item>
     </string-array>
+
+    <string-array name="reminder_repeat_type">
+        <item>None</item>
+        <item>4 times a day reminder</item>
+        <item>1 time reminder per day</item>
+        <item>reminder every 1/2/3/4/5 hours(add select time)</item>
+    </string-array>
+
+    <string-array name="reminder_display_type">
+        <item>Only notification</item>
+        <item>Notification and open application with song</item>
+        <item>Only open application with song</item>
+    </string-array>
 </resources>

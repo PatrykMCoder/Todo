@@ -4,8 +4,8 @@ android {
     compileSdkVersion 29
     buildToolsVersion "29.0.2"
     defaultConfig {
-        applicationId "com.example.todo"
-        minSdkVersion 16
+        applicationId "com.pmprogramms.todo"
+        minSdkVersion 21
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
@@ -33,9 +33,8 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
     implementation 'androidx.recyclerview:recyclerview:1.0.0'
     implementation 'com.google.android.material:material:1.0.0'
-    implementation 'com.android.support:cardview-v7:28.0.0'
-
-    //add link to about
+    //implementation 'com.android.support:cardview-v7:28.0.0'
+    implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'com.github.clans:fab:1.6.4'
     implementation 'com.pes.materialcolorpicker:library:1.2.5'
 }

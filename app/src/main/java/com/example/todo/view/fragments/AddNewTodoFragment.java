@@ -1,10 +1,11 @@
-package com.example.todo.fragments;
+package com.example.todo.view.fragments;
 
 
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.InputType;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -27,7 +28,9 @@ import com.example.todo.helpers.CreateTodoHelper;
 import com.example.todo.helpers.TagsHelper;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 public class AddNewTodoFragment extends Fragment implements View.OnClickListener {
@@ -131,7 +134,7 @@ public class AddNewTodoFragment extends Fragment implements View.OnClickListener
                             title = newTitleEditText.getText().toString();
                             task = newTaskEditText.getText().toString();
                             done = checkBoxDone.isChecked() ? 1 : 0;
-                            createTodoHelper = new CreateTodoHelper(task, done, tag);
+                            createTodoHelper = new CreateTodoHelper(task, done, tag, getCurrentDateString());
                             data.add(createTodoHelper);
                             createElements();
                             return true;
@@ -149,12 +152,22 @@ public class AddNewTodoFragment extends Fragment implements View.OnClickListener
         createdElement++;
     }
 
+    private String getCurrentDateString() {
+        String date = "";
+        Calendar calendar = Calendar.getInstance();
+
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM hh:mm");
+        date = simpleDateFormat.format(calendar.getTime());
+        Log.d(TAG, "getCurrentDateString: " + date);
+        return date;
+    }
+
     private void saveTodo() {
         title = newTitleEditText.getText().toString();
         if (!title.isEmpty()) {
             task = newTaskEditText.getText().toString();
             done = checkBoxDone.isChecked() ? 1 : 0;
-            createTodoHelper = new CreateTodoHelper(task, done, tag);
+            createTodoHelper = new CreateTodoHelper(task, done, tag, getCurrentDateString());
             data.add(createTodoHelper);
 
 

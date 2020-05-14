@@ -4,11 +4,13 @@ public class EditTodoHelper {
     private String task;
     private int done;
     private String tag;
+    private String lastEdited;
 
-    public EditTodoHelper(String task, int done, String tag) {
+    public EditTodoHelper(String task, int done, String tag, String lastEdited) {
         this.task = task;
         this.done = done;
         this.tag = tag;
+        this.lastEdited = lastEdited;
     }
 
     public String getTask() {
@@ -33,5 +35,13 @@ public class EditTodoHelper {
 
     public void setTag(String tag) {
         this.tag = tag;
+    }
+
+    public String getLastEdited() {
+        return lastEdited;
+    }
+
+    public void setLastEdited(String lastEdited) {
+        this.lastEdited = lastEdited;
     }
 }

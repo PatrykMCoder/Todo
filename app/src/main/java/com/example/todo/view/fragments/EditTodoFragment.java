@@ -1,4 +1,4 @@
-package com.example.todo.fragments;
+package com.example.todo.view.fragments;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -20,7 +20,9 @@ import com.example.todo.helpers.EditTodoHelper;
 import com.example.todo.helpers.GetDataHelper;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 
 public class EditTodoFragment extends Fragment implements View.OnClickListener {
@@ -127,7 +129,7 @@ public class EditTodoFragment extends Fragment implements View.OnClickListener {
             String task = editText.getText().toString();
             int done = (checkBox.isChecked() ? 1 : 0);
 
-            editTodoHelper = new EditTodoHelper(task, done, "");
+            editTodoHelper = new EditTodoHelper(task, done, "", getCurrentDateString());
             helper.add(editTodoHelper);
         }
 
@@ -137,5 +139,14 @@ public class EditTodoFragment extends Fragment implements View.OnClickListener {
         todoAdapter.closeDB();
 
         mainActivity.closeFragment(this, new TodoFragment());
+    }
+
+    private String getCurrentDateString() {
+        String date = "";
+        Calendar calendar = Calendar.getInstance();
+
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM hh:mm");
+        date = simpleDateFormat.format(calendar.getTime());
+        return date;
     }
 }
