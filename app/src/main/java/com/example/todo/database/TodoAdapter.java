@@ -102,7 +102,7 @@ public class TodoAdapter {
             contentValues.put("task", String.format("%s", helper.get(i).getTask()));
             contentValues.put("tag", String.format("%s", helper.get(i).getTag()));
             contentValues.put("done", String.format("%s", helper.get(i).getDone()));
-            contentValues.put("last_edited", String.format("s", helper.get(i).getLastEdited()));
+            contentValues.put("last_edited", String.format("%s", helper.get(i).getLastEdited()));
 
             database.insert(title, null, contentValues);
         }
@@ -111,16 +111,17 @@ public class TodoAdapter {
     public ArrayList<GetDataHelper> loadAllData(String title) {
         ArrayList<GetDataHelper> data = new ArrayList<>();
 
-        String q = String.format("SELECT task, done, tag from %s", title);
+        String q = String.format("SELECT task, done, tag, last_edited from %s", title);
         Cursor cursor = database.rawQuery(q, null);
         GetDataHelper getDataHelper;
 
-        cursor.moveToPosition(-1);
+        cursor.moveToFirst();
         while (cursor.moveToNext()) {
             String task = cursor.getString(cursor.getColumnIndex("task"));
             int done = cursor.getInt(cursor.getColumnIndex("done"));
             String tag = cursor.getString(cursor.getColumnIndex("tag"));
-            getDataHelper = new GetDataHelper(task, done, tag);
+            String lastEdited = cursor.getString(cursor.getColumnIndex("last_edited"));
+            getDataHelper = new GetDataHelper(task, done, tag, lastEdited);
             data.add(getDataHelper);
         }
         cursor.close();
@@ -164,10 +165,12 @@ public class TodoAdapter {
             String task = dataToEdit.get(i).getTask();
             int done = dataToEdit.get(i).getDone();
             String tag = dataToEdit.get(i).getTag();
+            String lastEdited = dataToEdit.get(i).getLastEdited();
 
             contentValues.put("task", task);
             contentValues.put("done", done);
             contentValues.put("tag", tag);
+            contentValues.put("last_edited", lastEdited);
 
             database.update(title, contentValues, "id = " + (i + 1), null);
         }

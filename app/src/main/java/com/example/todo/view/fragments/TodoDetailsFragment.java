@@ -2,25 +2,26 @@ package com.example.todo.view.fragments;
 
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.ContextMenu;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
@@ -28,15 +29,15 @@ import com.example.todo.MainActivity;
 import com.example.todo.R;
 import com.example.todo.database.TodoAdapter;
 import com.example.todo.helpers.GetDataHelper;
+import com.example.todo.helpers.TagsHelper;
 import com.example.todo.utils.objects.TodoObject;
 import com.example.todo.utils.reminders.ReminderHelper;
 import com.example.todo.view.dialogs.CreateReminderDialog;
 import com.github.clans.fab.FloatingActionMenu;
-import com.google.android.material.bottomappbar.BottomAppBar;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Map;
 
 public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCheckedChangeListener, View.OnClickListener {
 
@@ -59,6 +60,8 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
     private TextView taskTextView;
     private CheckBox doneCheckBox;
     private TextView tagView;
+    private TextView lastEditedView;
+    private ImageView reminderStatusImageView;
 
     private FloatingActionMenu floatingActionMenu;
     private com.github.clans.fab.FloatingActionButton createReminderFAB;
@@ -73,6 +76,8 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
     private ArrayList<String> helperForCheckBox;
 
     private View rootView;
+
+    private SharedPreferences remindersTitlePreference;
 
     public TodoDetailsFragment() {
 
@@ -93,12 +98,14 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-       rootView = inflater.inflate(R.layout.fragment_todo_details, container, false);
+        rootView = inflater.inflate(R.layout.fragment_todo_details, container, false);
 
         helperForCheckBox = new ArrayList<>();
 
         titleTextView = rootView.findViewById(R.id.title_preview);
-        tagView = rootView.findViewById(R.id.tag_view);
+        tagView = rootView.findViewById(R.id.tag);
+        lastEditedView = rootView.findViewById(R.id.last_edited);
+        reminderStatusImageView = rootView.findViewById(R.id.reminder_status);
 
         box = rootView.findViewById(R.id.box);
 
@@ -110,6 +117,7 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
 
         editFAB.setOnClickListener(this);
         createReminderFAB.setOnClickListener(this);
+        tagView.setOnClickListener(this);
         getDataToShow();
 
         deleteFAB.setOnClickListener(new View.OnClickListener() {
@@ -146,7 +154,6 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
         todoAdapter = new TodoAdapter(context, title);
         todoAdapter.openDB();
         data = todoAdapter.loadAllData(title);
-        Log.d(TAG, "getDataToShow: " + data.size());
         todoAdapter.closeDB();
         title = title.replace("_", " ");
         titleTextView.setText(title);
@@ -154,9 +161,20 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
         for (int i = 0; i < data.size(); i++) {
             createElements(i);
         }
-        if(data.get(0).getTag().equals("") || data.get(0).getTag().equals("No tag"))
-            tagView.setText("TAG: no tag");
-        else tagView.setText(String.format("TAG: %s", data.get(0).getTag()));
+        tagView.setText(String.format("TAG: %s", data.get(0).getTag()));
+
+        if (!data.get(0).getLastEdited().equals(""))
+            lastEditedView.setText(String.format("Last edited: %s", data.get(0).getLastEdited()));
+
+        remindersTitlePreference = context.getSharedPreferences("reminders_title", Context.MODE_PRIVATE);
+        for (Map.Entry<String, ?> s:
+             remindersTitlePreference.getAll().entrySet()) {
+            Log.d(TAG, "getDataToShow: " + s);
+            if (s.getValue().toString().replace(" ", "_").equals(titleTextView.getText().toString()))
+                reminderStatusImageView.setImageResource(R.drawable.ic_notifications_green_24dp);
+            else
+                reminderStatusImageView.setImageResource(R.drawable.ic_notifications_none_gray_24dp);
+        }
     }
 
     private void createElements(int position) {
@@ -196,12 +214,11 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
         TextView textView;
         if (rootView != null) {
             textView = rootView.findViewWithTag(tag);
-            Log.d(TAG, "updateUI: " + textView);
             if (b)
                 textView.setPaintFlags(textView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
             else
                 textView.setPaintFlags(textView.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
-        }else {
+        } else {
             mainActivity.closeFragment(this, new TodoFragment());
             Toast.makeText(context, "Something wrong, try again.", Toast.LENGTH_SHORT).show();
         }
@@ -209,7 +226,7 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
 
     @Override
     public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-        if(compoundButton.isPressed()) {
+        if (compoundButton.isPressed()) {
             String helperTag = "";
             for (int i = 0; i < helperForCheckBox.size(); i++) {
                 if (compoundButton.getTag().equals(String.format("d_%s", i))) {
@@ -228,15 +245,18 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.editTODO:
+            case R.id.editTODO: {
                 title = title.replace(" ", "_");
                 mainActivity.initFragment(new EditTodoFragment(title), true);
                 break;
-            case R.id.create_reminder:
+            }
+
+            case R.id.create_reminder: {
                 DialogFragment dialogFragment = new CreateReminderDialog();
                 ReminderHelper.setTitle(titleTextView.getText().toString().replace("_", " "));
                 dialogFragment.show(((MainActivity) context).getSupportFragmentManager(), "create reminder");
                 break;
+            }
         }
     }
 }

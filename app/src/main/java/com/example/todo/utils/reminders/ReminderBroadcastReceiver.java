@@ -3,16 +3,17 @@ package com.example.todo.utils.reminders;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.util.Log;
 
-import com.example.todo.MainActivity;
 import com.example.todo.ReminderAlarmActivity;
 import com.example.todo.utils.notifications.Notification;
 
 public class ReminderBroadcastReceiver extends BroadcastReceiver {
 
     private static final String TAG = "ReminderBCReceiver";
-    private int index;
+    private int indexDisplay;
+    private int indexRepeat;
     private String todoTitle;
     private Context context;
 
@@ -23,17 +24,25 @@ public class ReminderBroadcastReceiver extends BroadcastReceiver {
         this.context = context;
 
         notification = new Notification(context);
-        index = intent.getIntExtra("displayType", -1);
+        indexDisplay = intent.getIntExtra("displayType", -1);
+        indexRepeat = intent.getIntExtra("repeatType", -1);
         ReminderDisplayType reminderDisplayType = null;
+        ReminderRepeatType reminderRepeatType = null;
 
-        if (index > -1 && index < ReminderDisplayType.values().length) {
-            reminderDisplayType = ReminderDisplayType.values()[index];
+        if (indexDisplay > -1 && indexDisplay < ReminderDisplayType.values().length) {
+            reminderDisplayType = ReminderDisplayType.values()[indexDisplay];
+        } else {
+            //handle error
+        }
+
+        if (indexRepeat > -1 && indexRepeat < ReminderDisplayType.values().length) {
+            reminderRepeatType = ReminderRepeatType.values()[indexRepeat];
         } else {
             //handle error
         }
 
         todoTitle = intent.getStringExtra("todoName");
-        Log.d(TAG, "onReceive: " + reminderDisplayType);
+
         if (reminderDisplayType != null)
             switch (reminderDisplayType) {
                 case ONLY_NOTIFICATION:
@@ -52,6 +61,22 @@ public class ReminderBroadcastReceiver extends BroadcastReceiver {
         else{
             //handle error
         }
+
+        if(reminderRepeatType != null){
+            switch (reminderRepeatType){
+                case NONE: {
+                    //remove from shared preference
+                    SharedPreferences sharedPreferences = context.getSharedPreferences("reminders_title", Context.MODE_PRIVATE);
+                    SharedPreferences.Editor deleter = sharedPreferences.edit();
+                    deleter.remove(todoTitle.toString().replace(" ", "_"));
+                    deleter.apply();
+                }
+                default: break;
+            }
+        }else{
+            //handle error
+        }
+
     }
 
     private void showNotification(){

@@ -14,14 +14,12 @@ public class Reminder {
     private long time;
     private ReminderRepeatType typeRepeatReminder;
     private ReminderDisplayType typeDisplayReminder;
-    private boolean repeatReminder;
     private String titleTodoForReminder;
 
-    public Reminder(Context context, String titleTodoForReminder, long time, boolean repeatReminder, ReminderRepeatType typeRepeatReminder, ReminderDisplayType typeDisplayReminder) {
+    public Reminder(Context context, String titleTodoForReminder, long time, ReminderRepeatType typeRepeatReminder, ReminderDisplayType typeDisplayReminder) {
         this.context = context;
         this.titleTodoForReminder = titleTodoForReminder;
         this.time = time;
-        this.repeatReminder = repeatReminder;
         this.typeRepeatReminder = typeRepeatReminder;
         this.typeDisplayReminder = typeDisplayReminder;
     }
@@ -32,9 +30,10 @@ public class Reminder {
         Intent intent = new Intent(context, ReminderBroadcastReceiver.class);
         intent.putExtra("todoName", titleTodoForReminder);
         intent.putExtra("displayType", typeDisplayReminder.ordinal());
-
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        if (!repeatReminder)
+        intent.putExtra("repeatType", typeRepeatReminder.ordinal());
+        long id = System.currentTimeMillis();
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, (int)id, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        if (typeRepeatReminder == ReminderRepeatType.NONE)
             alarmManager.set(AlarmManager.RTC_WAKEUP, time, pendingIntent);
         else {
             alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, time, calculateRepeatTime(), pendingIntent);
