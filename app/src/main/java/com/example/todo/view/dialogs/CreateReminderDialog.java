@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.format.DateFormat;
@@ -49,18 +50,20 @@ public class CreateReminderDialog extends DialogFragment {
     private ReminderRepeatType reminderRepeatType;
     private ReminderDisplayType reminderDisplayType;
 
+    private SharedPreferences remindersTitlePreference;
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         this.context = context;
+
+        remindersTitlePreference = context.getSharedPreferences("reminders_title", Context.MODE_PRIVATE);
     }
 
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         super.onCreateDialog(savedInstanceState);
-        // add date select! not only time!
         initSpinnerAdapter();
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
@@ -107,11 +110,12 @@ public class CreateReminderDialog extends DialogFragment {
                 if (c.before(Calendar.getInstance()))
                     c.add(Calendar.DATE, 1);
 
-                boolean repeatReminder = false;
                 getSelectedItemFromSpinners();
 
-                Reminder reminder = new Reminder(context, title, c.getTimeInMillis(), repeatReminder, reminderRepeatType, reminderDisplayType);
+                Reminder reminder = new Reminder(context, title, c.getTimeInMillis(), reminderRepeatType, reminderDisplayType);
                 reminder.createReminder();
+
+                remindersTitlePreference.edit().putString(title.replace(" ", "_"), title.replace(" ", "_")).apply();
 
             }
         });

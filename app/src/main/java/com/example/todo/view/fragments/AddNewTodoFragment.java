@@ -43,6 +43,7 @@ public class AddNewTodoFragment extends Fragment implements View.OnClickListener
     private CheckBox checkBoxDone;
     private EditText newTaskEditText;
     private FloatingActionButton saveTodoButton;
+    private FloatingActionButton setTagButton;
     private TodoAdapter todoAdapter;
     private MainActivity mainActivity;
     private String title;
@@ -72,20 +73,30 @@ public class AddNewTodoFragment extends Fragment implements View.OnClickListener
 
         newTitleEditText = rootView.findViewById(R.id.new_title_todo);
         saveTodoButton = rootView.findViewById(R.id.save_todo);
+        setTagButton = rootView.findViewById(R.id.set_tag);
         box = rootView.findViewById(R.id.box);
 
         data = new ArrayList<>();
 
         saveTodoButton.setOnClickListener(this);
+        setTagButton.setOnClickListener(this);
         createElements();
         return rootView;
     }
 
     @Override
     public void onClick(View view) {
-        if (view.getId() == R.id.save_todo) {
-            saveTodo();
-        }
+       switch (view.getId()) {
+           case R.id.save_todo:{
+               saveTodo();
+               break;
+           }
+           case R.id.set_tag: {
+                DialogFragment dialogFragment = new SelectTodoTagFragment();
+                dialogFragment.show(getFragmentManager(), "set tag todo");
+                break;
+           }
+       }
     }
 
     @Override
@@ -97,12 +108,6 @@ public class AddNewTodoFragment extends Fragment implements View.OnClickListener
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.add_tag_todo:
-                //display option fragment for select tag and show in bottom screen tag
-                DialogFragment selectTagDialog = new SelectTodoTagFragment();
-                if (getFragmentManager() != null)
-                    selectTagDialog.show(getFragmentManager(), "select tag");
-                break;
             default:
                 break;
         }
@@ -167,6 +172,7 @@ public class AddNewTodoFragment extends Fragment implements View.OnClickListener
         if (!title.isEmpty()) {
             task = newTaskEditText.getText().toString();
             done = checkBoxDone.isChecked() ? 1 : 0;
+            tag = TagsHelper.getTag();
             createTodoHelper = new CreateTodoHelper(task, done, tag, getCurrentDateString());
             data.add(createTodoHelper);
 
