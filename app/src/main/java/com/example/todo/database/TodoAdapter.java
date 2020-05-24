@@ -98,7 +98,7 @@ public class TodoAdapter {
     public void saveToDB() {
         title = title.replace(" ", "_");
         ContentValues contentValues = new ContentValues();
-        for (int i = 0; i <=  helper.size() - 1; i++) {
+        for (int i = 0; i < helper.size(); i++) {
             contentValues.put("task", String.format("%s", helper.get(i).getTask()));
             contentValues.put("tag", String.format("%s", helper.get(i).getTag()));
             contentValues.put("done", String.format("%s", helper.get(i).getDone()));
@@ -106,6 +106,7 @@ public class TodoAdapter {
 
             database.insert(title, null, contentValues);
         }
+        Log.d(TAG, "saveToDB: " + contentValues);
     }
 
     public ArrayList<GetDataHelper> loadAllData(String title) {
@@ -115,7 +116,7 @@ public class TodoAdapter {
         Cursor cursor = database.rawQuery(q, null);
         GetDataHelper getDataHelper;
 
-        cursor.moveToFirst();
+        cursor.moveToPosition(-1);
         while (cursor.moveToNext()) {
             String task = cursor.getString(cursor.getColumnIndex("task"));
             int done = cursor.getInt(cursor.getColumnIndex("done"));
@@ -150,7 +151,7 @@ public class TodoAdapter {
 
         cursor.close();
 
-        return (doneTask/notDoneTask) * 100;
+        return (doneTask == 0 ? 1 : doneTask/notDoneTask) * 100;
     }
 
     public void deleteTodo(String title) {
