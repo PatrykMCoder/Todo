@@ -3,8 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".view.fragments.AddNewTodoFragment"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:context=".view.fragments.AddNewTodoFragment">
 
 
     <EditText
@@ -14,9 +14,9 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:hint="Enter title..."
         android:background="#00FFFFFF"
-        android:editable="false"/>
+        android:editable="false"
+        android:hint="Enter title..." />
 
     <ScrollView
         android:id="@+id/scroll_view"
@@ -34,6 +34,28 @@
 
     </ScrollView>
 
+    <LinearLayout
+        android:id="@+id/box_new_item"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_below="@id/scroll_view"
+        android:orientation="horizontal"
+        android:layout_marginStart="20dp">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_add_box_gray_24dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="Tap to add new element"
+            android:textColor="#B9B9B9" />
+    </LinearLayout>
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/save_todo"
         android:layout_width="wrap_content"
@@ -44,7 +66,7 @@
         android:layout_marginEnd="20dp"
         android:layout_marginRight="20dp"
         android:layout_marginBottom="20dp"
-        android:src="@drawable/ic_save_white_24dp"
-        android:background="@color/colorFAB"/>
+        android:background="@color/colorFAB"
+        android:src="@drawable/ic_save_white_24dp" />
 
 </RelativeLayout>

@@ -6,8 +6,6 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.database.sqlite.SQLiteReadOnlyDatabaseException;
-import android.os.Build;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
@@ -16,8 +14,6 @@ import com.example.todo.helpers.CreateTodoHelper;
 import com.example.todo.helpers.EditTodoHelper;
 import com.example.todo.helpers.GetDataHelper;
 
-import java.io.File;
-import java.nio.file.OpenOption;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -106,7 +102,6 @@ public class TodoAdapter {
 
             database.insert(title, null, contentValues);
         }
-        Log.d(TAG, "saveToDB: " + contentValues);
     }
 
     public ArrayList<GetDataHelper> loadAllData(String title) {
@@ -129,7 +124,7 @@ public class TodoAdapter {
         return data;
     }
 
-    public float getPercentDoneTask(String title){
+    public float getPercentDoneTask(String title) {
         ArrayList<GetDataHelper> data = new ArrayList<>();
         float doneTask = 0;
         float notDoneTask = 0;
@@ -140,9 +135,9 @@ public class TodoAdapter {
         Cursor cursor = database.rawQuery(q, null);
         cursor.moveToFirst();
 
-        while (cursor.moveToNext()){
+        while (cursor.moveToNext()) {
             int done = cursor.getInt(cursor.getColumnIndex("done"));
-            if (done == 1){
+            if (done == 1) {
                 doneTask += 1;
             }
 
@@ -151,7 +146,7 @@ public class TodoAdapter {
 
         cursor.close();
 
-        return (doneTask == 0 ? 1 : doneTask/notDoneTask) * 100;
+        return (doneTask == 0 ? 1 : doneTask / notDoneTask) * 100;
     }
 
     public void deleteTodo(String title) {
@@ -159,7 +154,9 @@ public class TodoAdapter {
         database.delete(title, null, null);
     }
 
-    public void editTodo(String title, ArrayList<EditTodoHelper> dataToEdit) {
+    public void editTodo(String title, ArrayList<EditTodoHelper> dataToEdit, int oldSize) {
+        database.execSQL("delete from " + title);
+
         ContentValues contentValues = new ContentValues();
 
         for (int i = 0; i < dataToEdit.size(); i++) {
@@ -168,12 +165,15 @@ public class TodoAdapter {
             String tag = dataToEdit.get(i).getTag();
             String lastEdited = dataToEdit.get(i).getLastEdited();
 
-            contentValues.put("task", task);
-            contentValues.put("done", done);
-            contentValues.put("tag", tag);
-            contentValues.put("last_edited", lastEdited);
+            contentValues.put("task", String.format("%s", dataToEdit.get(i).getTask()));
+            contentValues.put("tag", String.format("%s", dataToEdit.get(i).getTag()));
+            contentValues.put("done", String.format("%s", dataToEdit.get(i).getDone()));
+            contentValues.put("last_edited", String.format("%s", dataToEdit.get(i).getLastEdited()));
 
-            database.update(title, contentValues, "id = " + (i + 1), null);
+            database.insert(title, null, contentValues);
+
+            Log.d(TAG, "editTodo: " + contentValues);
+            //todo fix it. it is only for clear full db. try to find better solution
         }
     }
 
