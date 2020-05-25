@@ -88,14 +88,14 @@ public class TodoRecyclerViewAdapter extends RecyclerView.Adapter<TodoRecyclerVi
 
         todoAdapter = new TodoAdapter(context, titles.get(position).replace("_", " "));
         todoAdapter.openDB();
-        percentDone = todoAdapter.getPercentDoneTask(titles.get(position).replace("_", " "));
+        percentDone = todoAdapter.getPercentDoneTask();
         todoAdapter.closeDB();
 
         holder.allTaskDoneImageView.setVisibility(percentDone >= 100                                  ? View.VISIBLE : View.GONE);
         holder.allTaskDoneImageView.setImageResource((checkNan = Double.valueOf(percentDone).isNaN()) ? R.drawable.ic_error_red_24dp : R.drawable.ic_done_green_24dp);
         holder.percentProgressBar.setVisibility(percentDone < 100                                     ? View.VISIBLE : View.GONE);
 
-        holder.percentTaskTextView.setText(String.format("%s %%", decimalFormat.format(Math.floor(percentDone))));
+        holder.percentTaskTextView.setText(String.format("%s %%", Math.floor(percentDone)));
         holder.percentProgressBar.setProgress((int) percentDone);
 
         holder.cardView.setOnLongClickListener(view -> true);

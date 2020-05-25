@@ -124,29 +124,31 @@ public class TodoAdapter {
         return data;
     }
 
-    public float getPercentDoneTask(String title) {
+    public float getPercentDoneTask() {
         ArrayList<GetDataHelper> data = new ArrayList<>();
         float doneTask = 0;
-        float notDoneTask = 0;
+        float allTask = 0;
         float percent = 0;
         String q = String.format("SELECT done from %s", title.replace(" ", "_"));
         GetDataHelper getDataHelper;
 
         Cursor cursor = database.rawQuery(q, null);
-        cursor.moveToFirst();
+        cursor.moveToPosition(-1);
 
         while (cursor.moveToNext()) {
-            int done = cursor.getInt(cursor.getColumnIndex("done"));
-            if (done == 1) {
-                doneTask += 1;
-            }
+            float done = cursor.getInt(cursor.getColumnIndex("done"));
 
-            notDoneTask += 1;
+            if (done == 1) doneTask += 1;
+
         }
+
+        allTask = cursor.getCount();
 
         cursor.close();
 
-        return (doneTask == 0 ? 1 : doneTask / notDoneTask) * 100;
+        Log.d(TAG, "getPercentDoneTask: " + allTask);
+
+        return (doneTask / allTask) * 100;
     }
 
     public void deleteTodo(String title) {
