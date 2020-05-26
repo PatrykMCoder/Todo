@@ -27,6 +27,7 @@ import com.example.todo.helpers.CreateTodoHelper;
 import com.example.todo.helpers.TagsHelper;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -35,7 +36,6 @@ import java.util.List;
 public class AddNewTodoFragment extends Fragment implements View.OnClickListener {
 
     private final static String TAG = "AddNewTodoFragment";
-    List<CreateTodoHelper> data;
     private Context context;
     private EditText newTitleEditText;
     private LinearLayout box;
@@ -81,8 +81,6 @@ public class AddNewTodoFragment extends Fragment implements View.OnClickListener
         box = rootView.findViewById(R.id.box);
         l = rootView.findViewById(R.id.box_new_item);
 
-        data = new ArrayList<>();
-
         saveTodoButton.setOnClickListener(this);
         setTagButton.setOnClickListener(this);
         l.setOnClickListener(this);
@@ -109,22 +107,6 @@ public class AddNewTodoFragment extends Fragment implements View.OnClickListener
         }
     }
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.edit_todo_menu, menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            default:
-                break;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-
     private void createElements() {
         LinearLayout linearLayout = new LinearLayout(context);
         linearLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -141,22 +123,10 @@ public class AddNewTodoFragment extends Fragment implements View.OnClickListener
         newTaskEditText.setMaxLines(1);
         newTaskEditText.setInputType(InputType.TYPE_CLASS_TEXT);
         newTaskEditText.setTextColor(Color.BLACK);
+        newTaskEditText.requestFocus();
 
         checkBoxDone.setTag("c_" + createdElement);
         newTaskEditText.setTag("t_" + createdElement);
-
-        newTaskEditText.setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if (event.getAction() == KeyEvent.ACTION_DOWN) {
-                    if (keyCode == KeyEvent.KEYCODE_ENTER) {
-                        createElements();
-                        return true;
-                    }
-                }
-                return false;
-            }
-        });
 
         linearLayout.addView(checkBoxDone);
         linearLayout.addView(newTaskEditText);
@@ -167,19 +137,14 @@ public class AddNewTodoFragment extends Fragment implements View.OnClickListener
     }
 
     private String getCurrentDateString() {
-        String date = "";
         Calendar calendar = Calendar.getInstance();
-
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM hh:mm");
-        date = simpleDateFormat.format(calendar.getTime());
-        return date;
+        return SimpleDateFormat.getDateTimeInstance().format(calendar.getTime());
     }
 
     private void saveTodo() {
+        ArrayList<CreateTodoHelper> data = new ArrayList<>();
         title = newTitleEditText.getText().toString();
         if (!title.isEmpty()) {
-            data.clear();
-
             for (int i = 0; i < createdElement; i++) {
                 newTaskEditText = rootView.findViewWithTag("t_" + i);
                 checkBoxDone = rootView.findViewWithTag("c_" + i);
@@ -194,9 +159,7 @@ public class AddNewTodoFragment extends Fragment implements View.OnClickListener
             }
 
             todoAdapter = new TodoAdapter(context, title, data);
-            todoAdapter.openDB();
             todoAdapter.saveToDB();
-            todoAdapter.closeDB();
 
             mainActivity.closeFragment(this, new TodoFragment());
         } else

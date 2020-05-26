@@ -31,12 +31,9 @@ public class SplashScreenActivity extends AppCompatActivity {
     }
 
     private void getAllPermission(){
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-
-                //todo update this method requesting
-                requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, 1000);
-            }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            //todo update this method requesting
+            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, 1000);
         }
     }
 }

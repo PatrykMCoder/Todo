@@ -41,15 +41,13 @@ public class SelectTodoTagFragment extends DialogFragment {
     }
 
     private void loadTags() {
-//        adapterSelect = ArrayAdapter.createFromResource(context, R.array.tags, R.layout.support_simple_spinner_dropdown_item);
-
         SharedPreferences sharedPreferences = context.getSharedPreferences("custom_tags", Context.MODE_PRIVATE);
         ArrayList<String> dataTags = new ArrayList<>();
 
         dataTags.clear();
         dataTags.addAll(Arrays.asList(getResources().getStringArray(R.array.tags)));
 
-        for (Object o : sharedPreferences.getAll().values()){
+        for (Object o : sharedPreferences.getAll().values()) {
             dataTags.add(o.toString());
         }
 
@@ -66,21 +64,21 @@ public class SelectTodoTagFragment extends DialogFragment {
         selectTags = view.findViewById(R.id.tags_select);
         selectTags.setAdapter(adapterSelect);
 
-        builder.setView(view);
+        builder.setView(view)
 
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                TagsHelper.setTag(selectTags.getSelectedItem().toString());
-            }
-        })
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        TagsHelper.setTag(selectTags.getSelectedItem().toString());
+                    }
+                })
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
                     }
                 })
-                .setNeutralButton("Add custom and save", new DialogInterface.OnClickListener() {
+                .setNeutralButton("Add custom", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         addCustomTag(getFragmentManager());
@@ -110,21 +108,21 @@ public class SelectTodoTagFragment extends DialogFragment {
                 dialog.dismiss();
             }
         })
-            .setPositiveButton("Save", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    String tag = input.getText().toString();
-                    SharedPreferences sharedPreferences = context.getSharedPreferences("custom_tags", Context.MODE_PRIVATE);
-                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                .setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        String tag = input.getText().toString();
+                        SharedPreferences sharedPreferences = context.getSharedPreferences("custom_tags", Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
 
-                    editor.putString(tag.replace(" ", "_"), tag);
+                        editor.putString(tag.replace(" ", "_"), tag);
 
-                    editor.apply();
-                    Toast.makeText(context, "Set now your tag 😄", Toast.LENGTH_LONG).show();
+                        editor.apply();
+                        Toast.makeText(context, "Set now your tag 😄", Toast.LENGTH_LONG).show();
 
-                    show(fragmentManager, "set custom tag");
-                }
-            });
+                        show(fragmentManager, "set custom tag");
+                    }
+                });
 
         builder.create().show();
     }

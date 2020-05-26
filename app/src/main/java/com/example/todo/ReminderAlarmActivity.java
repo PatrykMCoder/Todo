@@ -36,8 +36,6 @@ public class ReminderAlarmActivity extends AppCompatActivity implements View.OnC
         titleTextView = findViewById(R.id.title_todo);
         buttonOpenApp = findViewById(R.id.open_app);
 
-       // animatedView = findViewById(R.id.animated_view);
-
         titleTextView.setText("Reminder for: \n" + getIntent().getStringExtra("todoName"));
         buttonOpenApp.setOnClickListener(this);
 
