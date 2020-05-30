@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.example.todo.ReminderAlarmActivity;
+import com.example.todo.utils.formats.StringFormater;
 import com.example.todo.utils.notifications.Notification;
 
 public class ReminderBroadcastReceiver extends BroadcastReceiver {
@@ -68,7 +69,7 @@ public class ReminderBroadcastReceiver extends BroadcastReceiver {
                     //remove from shared preference
                     SharedPreferences sharedPreferences = context.getSharedPreferences("reminders_title", Context.MODE_PRIVATE);
                     SharedPreferences.Editor deleter = sharedPreferences.edit();
-                    deleter.remove(todoTitle.toString().replace(" ", "_"));
+                    deleter.remove(new StringFormater(todoTitle).formatTitle());
                     deleter.apply();
                 }
                 default: break;

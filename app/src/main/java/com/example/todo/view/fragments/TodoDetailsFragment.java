@@ -144,6 +144,7 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
         }
         tag = data.get(0).getTag();
         tagView.setText(String.format("TAG: %s", tag));
+        reminderStatusImageView.setImageResource(R.drawable.ic_notifications_none_gray_24dp);
 
         if (!data.get(0).getLastEdited().equals(""))
             lastEditedView.setText(String.format("Last edited: %s", data.get(0).getLastEdited()));
@@ -151,10 +152,9 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
         remindersTitlePreference = context.getSharedPreferences("reminders_title", Context.MODE_PRIVATE);
         for (Map.Entry<String, ?> s:
              remindersTitlePreference.getAll().entrySet()) {
-            if (new StringFormater(s.toString()).formatTitleFromObject().equals(titleTextView.getText().toString()))
+
+            if (new StringFormater(s.getValue().toString()).deformatTitle().equals(titleTextView.getText().toString()))
                 reminderStatusImageView.setImageResource(R.drawable.ic_notifications_green_24dp);
-            else
-                reminderStatusImageView.setImageResource(R.drawable.ic_notifications_none_gray_24dp);
         }
     }
 
