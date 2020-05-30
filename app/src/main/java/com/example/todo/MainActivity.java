@@ -1,7 +1,6 @@
 package com.example.todo;
 
 import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -12,7 +11,6 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import com.example.todo.view.fragments.SettingsFragment;
 import com.example.todo.view.fragments.TodoFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -27,72 +25,48 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initView();
-        initFragment(new TodoFragment(getApplicationContext()), false);
-    }
-
-    private void initAds(){
-//        MobileAds.initialize(this, new OnInitializationCompleteListener(){
-//
-//            @Override
-//            public void onInitializationComplete(InitializationStatus initializationStatus) {
-//                    request = new AdRequest.Builder()
-//                        .build();
-//            }
-//        });
+        initFragment(new TodoFragment(), false);
     }
 
     @SuppressLint("ResourceType")
-    private void initView(){
+    private void initView() {
         bottomNavigationView = findViewById(R.id.nav_bar);
         bottomNavigationView.setOnNavigationItemSelectedListener(this);
-
-//        adView = findViewById(R.id.ad_view);
-//        AdRequest adRequest = new AdRequest.Builder().addTestDevice("A03BDA52BCF46627BDA62F08CD24AA2D").addTestDevice("6A59F7B812C24D21F3C41428379D5749").build();
-//        if(adRequest.isTestDevice(this)){
-//            adView.loadAd(adRequest);
-//            //test ad
-//        }else{
-//            //ad
-//            initAds();
-//            adView.loadAd(request);
-//        }
-
-//        Log.d("MY_ADDS", "initView: " + adRequest.isTestDevice(getApplicationContext()));
-
     }
 
-    public void initFragment(final Fragment fragment, boolean addToBackStage){
+    public void initFragment(final Fragment fragment, boolean addToBackStage) {
         this.fragment = fragment;
         final FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
         fragmentTransaction.replace(R.id.containerFragment, fragment);
 
-        if(addToBackStage)
+        if (addToBackStage)
             fragmentTransaction.addToBackStack(null);
 
         fragmentTransaction.commit();
     }
 
-    public void closeFragment(Fragment oldFragment, Fragment newFragment){
+    public void closeFragment(Fragment oldFragment, Fragment newFragment) {
         assert fragment.getFragmentManager() != null;
         fragment.getFragmentManager().beginTransaction().remove(oldFragment).replace(R.id.containerFragment, newFragment).commit();
     }
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-        switch (menuItem.getItemId()){
+        switch (menuItem.getItemId()) {
             case R.id.todo_item:
-                initFragment(new TodoFragment(getApplicationContext()), true);
+                initFragment(new TodoFragment(), true);
                 return true;
             case R.id.note_item:
 //                initFragment(new NoteFragment(), true);
                 Toast.makeText(getApplicationContext(), "Available in future :)", Toast.LENGTH_LONG).show();
                 return false;
             case R.id.settings_item:
-                initFragment(new SettingsFragment(), true);
-                return true;
-                default: break;
+                Toast.makeText(getApplicationContext(), "Available in future :)", Toast.LENGTH_LONG).show();
+                return false;
+            default:
+                break;
 
         }
         return false;

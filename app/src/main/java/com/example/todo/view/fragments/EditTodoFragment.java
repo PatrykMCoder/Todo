@@ -19,6 +19,7 @@ import com.example.todo.database.TodoAdapter;
 import com.example.todo.helpers.EditTodoHelper;
 import com.example.todo.helpers.GetDataHelper;
 import com.example.todo.helpers.TagsHelper;
+import com.example.todo.utils.formats.StringFormater;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.text.SimpleDateFormat;
@@ -45,16 +46,12 @@ public class EditTodoFragment extends Fragment implements View.OnClickListener {
     private LinearLayout l;
 
     private int tmpPosition;
-    private int oldSize;
-
-    private ArrayList<EditTodoHelper> editTodoHelpers;
-    private ArrayList<EditTodoHelper> editTodoHelpers2;
 
     public EditTodoFragment() {
 
     }
 
-    public EditTodoFragment(String title) {
+    EditTodoFragment(String title) {
         this.title = title;
     }
 
@@ -78,8 +75,6 @@ public class EditTodoFragment extends Fragment implements View.OnClickListener {
         l.setOnClickListener(this);
 
         loadData();
-        editTodoHelpers = new ArrayList<>();
-        copyDataToOtherArray();
         return rootView;
     }
 
@@ -94,25 +89,20 @@ public class EditTodoFragment extends Fragment implements View.OnClickListener {
                 createElement();
                 break;
             }
-            default:
-                break;
         }
     }
 
     private void loadData() {
-        TodoAdapter todoAdapter = new TodoAdapter(getContext());
-        todoAdapter.openDB();
-        dataHelper = todoAdapter.loadAllData(title);
-        todoAdapter.closeDB();
+        TodoAdapter todoAdapter = new TodoAdapter(getContext(), title);
+        dataHelper = todoAdapter.loadAllData();
 
         for (int i = 0; i < dataHelper.size(); i++)
-            createElements(i);
+            createElementsWithData(i);
 
         tmpPosition = dataHelper.size();
-        oldSize = dataHelper.size();
     }
 
-    private void createElements(int position) {
+    private void createElementsWithData(int position) {
         LinearLayout linearLayout = new LinearLayout(context);
         linearLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         linearLayout.setOrientation(LinearLayout.HORIZONTAL);
@@ -133,14 +123,6 @@ public class EditTodoFragment extends Fragment implements View.OnClickListener {
     }
 
     private void createElement() {
-        if (tmpPosition != editTodoHelpers.size()) {
-            task = taskEditText.getText().toString();
-            done = doneCheckBox.isChecked() ? 1 : 0;
-
-            EditTodoHelper editTodoHelper = new EditTodoHelper(task, done, getTag(), getCurrentDateString());
-            editTodoHelpers.add(editTodoHelper);
-        }
-
         LinearLayout linearLayout = new LinearLayout(context);
         linearLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         linearLayout.setOrientation(LinearLayout.HORIZONTAL);
@@ -150,6 +132,8 @@ public class EditTodoFragment extends Fragment implements View.OnClickListener {
         taskEditText.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         taskEditText.setBackgroundColor(Color.WHITE);
         taskEditText.setTextSize(20);
+        taskEditText.requestFocus();
+        taskEditText.setMaxLines(1);
 
         taskEditText.setTag("t_" + tmpPosition);
         doneCheckBox.setTag("d_" + tmpPosition);
@@ -165,53 +149,27 @@ public class EditTodoFragment extends Fragment implements View.OnClickListener {
         EditText editText;
         CheckBox checkBox;
 
-        task = taskEditText.getText().toString();
-        done = doneCheckBox.isChecked() ? 1 : 0;
-        EditTodoHelper editTodoHelper = new EditTodoHelper(task, done, getTag(), getCurrentDateString());
-        editTodoHelpers.add(editTodoHelper);
+        ArrayList<EditTodoHelper> dataHelper = new ArrayList<>();
+        EditTodoHelper editTodoHelper;
 
-        editTodoHelpers2 = new ArrayList<>();
-
-        for (int i = 0; i < editTodoHelpers.size(); i++) {
+        for (int i = 0; i < tmpPosition; i++) {
             editText = rootView.findViewWithTag("t_" + i);
             checkBox = rootView.findViewWithTag("d_" + i);
 
             editTodoHelper = new EditTodoHelper(editText.getText().toString(), checkBox.isChecked() ? 1 : 0, TagsHelper.getTag(), getCurrentDateString());
 
-            editTodoHelpers2.add(editTodoHelper);
+            dataHelper.add(editTodoHelper);
 
         }
 
-        String title = titleEditText.getText().toString().replace(" ", "_");
         TodoAdapter todoAdapter = new TodoAdapter(getContext());
-        todoAdapter.openDB();
-        todoAdapter.editTodo(title, editTodoHelpers2, oldSize);
-        todoAdapter.closeDB();
+        todoAdapter.editTodo(new StringFormater(titleEditText.getText().toString()).formatTitle(), dataHelper);
 
         mainActivity.closeFragment(this, new TodoFragment());
     }
 
-    private void copyDataToOtherArray() {
-        for (int i = 0; i < dataHelper.size(); i++) {
-            String task = dataHelper.get(i).getTask();
-            int done = dataHelper.get(i).getDone();
-            String tag = dataHelper.get(i).getTag();
-            EditTodoHelper editTodoHelper = new EditTodoHelper(task, done, tag, getCurrentDateString());
-            editTodoHelpers.add(editTodoHelper);
-        }
-    }
-
-    private void deleteDuplicate() {
-        // TODO: 24/05/2020 fix it
-
-    }
-
     private String getCurrentDateString() {
-        String date = "";
         Calendar calendar = Calendar.getInstance();
-
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM hh:mm");
-        date = simpleDateFormat.format(calendar.getTime());
-        return date;
+        return SimpleDateFormat.getDateTimeInstance().format(calendar.getTime());
     }
 }

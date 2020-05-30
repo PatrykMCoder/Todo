@@ -14,8 +14,6 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TimePicker;
 
@@ -82,67 +80,52 @@ public class CreateReminderDialog extends DialogFragment {
 
         builder.setTitle("Create reminder");
 
-        builder.setView(v);
+        builder.setView(v)
+                .setPositiveButton("Create", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        String title = ReminderHelper.getTitle();
 
-        builder.setPositiveButton("Create", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                String title = ReminderHelper.getTitle();
+                        Calendar c = Calendar.getInstance();
 
-                Calendar c = Calendar.getInstance();
+                        int day = datePicker.getDayOfMonth();
+                        int month = datePicker.getMonth();
+                        int year = datePicker.getYear();
 
-                int day = datePicker.getDayOfMonth();
-                int month = datePicker.getMonth();
-                int year = datePicker.getYear();
+                        c.set(Calendar.DAY_OF_MONTH, day);
+                        c.set(Calendar.MONTH, month);
+                        c.set(Calendar.YEAR, year);
 
-                c.set(Calendar.DAY_OF_MONTH, day);
-                c.set(Calendar.MONTH, month);
-                c.set(Calendar.YEAR, year);
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                            c.set(Calendar.HOUR_OF_DAY, timePicker.getHour());
+                            c.set(Calendar.MINUTE, timePicker.getMinute());
+                        } else {
+                            c.set(Calendar.HOUR_OF_DAY, timePicker.getCurrentHour());
+                            c.set(Calendar.MINUTE, timePicker.getCurrentMinute());
+                        }
 
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    c.set(Calendar.HOUR_OF_DAY, timePicker.getHour());
-                    c.set(Calendar.MINUTE, timePicker.getMinute());
-                } else {
-                    c.set(Calendar.HOUR_OF_DAY, timePicker.getCurrentHour());
-                    c.set(Calendar.MINUTE, timePicker.getCurrentMinute());
-                }
+                        if (c.before(Calendar.getInstance()))
+                            c.add(Calendar.DATE, 1);
 
-                if (c.before(Calendar.getInstance()))
-                    c.add(Calendar.DATE, 1);
+                        getSelectedItemFromSpinners();
 
-                getSelectedItemFromSpinners();
+                        Reminder reminder = new Reminder(context, title, c.getTimeInMillis(), reminderRepeatType, reminderDisplayType);
+                        reminder.createReminder();
 
-                Reminder reminder = new Reminder(context, title, c.getTimeInMillis(), reminderRepeatType, reminderDisplayType);
-                reminder.createReminder();
+                        remindersTitlePreference.edit().putString(title.replace(" ", "_"), title.replace(" ", "_")).apply();
 
-                remindersTitlePreference.edit().putString(title.replace(" ", "_"), title.replace(" ", "_")).apply();
+                    }
+                })
 
-            }
-        });
-
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                dialogInterface.dismiss();
-            }
-        });
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                    }
+                });
 
         return builder.create();
     }
-
-    private int dialogWidth() {
-        WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-        Display display = windowManager.getDefaultDisplay();
-
-        if (display != null) {
-            DisplayMetrics displayMetrics = new DisplayMetrics();
-            windowManager.getDefaultDisplay().getMetrics(displayMetrics);
-
-            return displayMetrics.widthPixels;
-        }
-        return 0;
-    }
-
 
     private void initSpinnerAdapter() {
         typeRepeatReminderAdapter = new ArrayAdapter<String>(context, R.layout.custom_spinner_item,

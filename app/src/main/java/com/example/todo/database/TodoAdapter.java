@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 import com.example.todo.helpers.CreateTodoHelper;
 import com.example.todo.helpers.EditTodoHelper;
 import com.example.todo.helpers.GetDataHelper;
+import com.example.todo.utils.formats.StringFormater;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +27,7 @@ public class TodoAdapter {
     private String title;
 
     private ArrayList<String> dataTask;
-    private List<CreateTodoHelper> helper;
+    private ArrayList<CreateTodoHelper> helper;
 
     private String q_createTable;
     private String q_dropTable;
@@ -39,21 +40,12 @@ public class TodoAdapter {
     public TodoAdapter(Context context, String title) {
         this.context = context;
 
-        title = title.replace(" ", "_");
+        title = new StringFormater(title).formatTitle();
         nameForDB = title + ".db";
         this.title = title;
     }
 
-    public TodoAdapter(Context context, String title, ArrayList<String> data) {
-        this.context = context;
-        this.title = title;
-        this.dataTask = data;
-
-        createQueryNewTable();
-        createQueryDropTable();
-    }
-
-    public TodoAdapter(Context context, String title, List<CreateTodoHelper> helper) {
+    public TodoAdapter(Context context, String title, ArrayList<CreateTodoHelper> helper) {
         this.context = context;
         this.title = title;
         this.helper = helper;
@@ -64,35 +56,31 @@ public class TodoAdapter {
 
     private void createQueryNewTable() {
         if (helper != null || title != null) {
-            nameForDB = (title.replace(" ", "_")) + ".db";
-            title = title.replace(" ", "_");
+            nameForDB = new StringFormater(title).formatTitle() + ".db";
+            title = new StringFormater(title).formatTitle();
             q_createTable = String.format("CREATE TABLE %s (id INTEGER PRIMARY KEY AUTOINCREMENT, task TEXT NOT NULL, tag INTEGER, done INTEGER, last_edited DATE NOT NULL);", title);
-
-        } else
-            q_createTable = "CREATE TABLE " + title.replace(" ", "_");
+        }
     }
 
     private void createQueryDropTable() {
         q_dropTable = "DROP TABLE IF EXISTS " + title;
     }
 
-    public void openDB() {
+    private void openDB() {
         dbHelper = new DBHelper(context, nameForDB, null, 1);
         try {
             database = dbHelper.getWritableDatabase();
         } catch (SQLException e) {
             database = dbHelper.getReadableDatabase();
-            e.printStackTrace();
-            Log.d(TAG, "openDB: EXCEPTION: " + e.getMessage());
         }
     }
 
-    public void closeDB() {
+    private void closeDB() {
         dbHelper.close();
     }
 
     public void saveToDB() {
-        title = title.replace(" ", "_");
+        openDB();
         ContentValues contentValues = new ContentValues();
         for (int i = 0; i < helper.size(); i++) {
             contentValues.put("task", String.format("%s", helper.get(i).getTask()));
@@ -102,9 +90,11 @@ public class TodoAdapter {
 
             database.insert(title, null, contentValues);
         }
+        closeDB();
     }
 
-    public ArrayList<GetDataHelper> loadAllData(String title) {
+    public ArrayList<GetDataHelper> loadAllData() {
+        openDB();
         ArrayList<GetDataHelper> data = new ArrayList<>();
 
         String q = String.format("SELECT task, done, tag, last_edited from %s", title);
@@ -121,15 +111,17 @@ public class TodoAdapter {
             data.add(getDataHelper);
         }
         cursor.close();
+        closeDB();
         return data;
     }
 
     public float getPercentDoneTask() {
+        openDB();
         ArrayList<GetDataHelper> data = new ArrayList<>();
         float doneTask = 0;
         float allTask = 0;
         float percent = 0;
-        String q = String.format("SELECT done from %s", title.replace(" ", "_"));
+        String q = String.format("SELECT done from %s", title);
         GetDataHelper getDataHelper;
 
         Cursor cursor = database.rawQuery(q, null);
@@ -145,18 +137,19 @@ public class TodoAdapter {
         allTask = cursor.getCount();
 
         cursor.close();
-
-        Log.d(TAG, "getPercentDoneTask: " + allTask);
-
+        closeDB();
         return (doneTask / allTask) * 100;
     }
 
     public void deleteTodo(String title) {
-        String q = String.format("DROP TABLE %s", title.replace(" ", "_"));
+        openDB();
+        String q = String.format("DROP TABLE %s", title);
         database.delete(title, null, null);
+        closeDB();
     }
 
-    public void editTodo(String title, ArrayList<EditTodoHelper> dataToEdit, int oldSize) {
+    public void editTodo(String title, ArrayList<EditTodoHelper> dataToEdit) {
+        openDB();
         database.execSQL("delete from " + title);
 
         ContentValues contentValues = new ContentValues();
@@ -173,26 +166,25 @@ public class TodoAdapter {
             contentValues.put("last_edited", String.format("%s", dataToEdit.get(i).getLastEdited()));
 
             database.insert(title, null, contentValues);
-
-            Log.d(TAG, "editTodo: " + contentValues);
-            //todo fix it. it is only for clear full db. try to find better solution
         }
+        closeDB();
     }
 
-    public void changeStatusTask(String titleDB, String task, int status) {
-        String q = String.format("SELECT id FROM %s where task = '%s'", titleDB.replace(" ", "_"), task);
+    public void changeStatusTask(String title, String task, int status) {
+        openDB();
+        title = new StringFormater(title).formatTitle();
+        String q = String.format("SELECT id FROM %s where task = '%s'", title, task);
         int id = 0;
         Cursor cursor = database.rawQuery(q, null);
         cursor.moveToFirst();
         id = cursor.getInt(cursor.getColumnIndex("id"));
         cursor.close();
 
-        Log.d(TAG, "changeStatusTask: " + id);
-
         ContentValues contentValues = new ContentValues();
         contentValues.put("done", status);
 
-        database.update(titleDB, contentValues, String.format("id = %s", id), null);
+        database.update(title, contentValues, String.format("id = %s", id), null);
+        closeDB();
     }
 
     private class DBHelper extends SQLiteOpenHelper {

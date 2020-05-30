@@ -5,10 +5,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -16,7 +14,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -30,7 +27,7 @@ import com.example.todo.R;
 import com.example.todo.database.TodoAdapter;
 import com.example.todo.helpers.GetDataHelper;
 import com.example.todo.helpers.TagsHelper;
-import com.example.todo.utils.objects.TodoObject;
+import com.example.todo.utils.formats.StringFormater;
 import com.example.todo.utils.reminders.ReminderHelper;
 import com.example.todo.view.dialogs.CreateReminderDialog;
 import com.github.clans.fab.FloatingActionMenu;
@@ -46,14 +43,11 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
     private int id = 0;
 
     private TodoAdapter todoAdapter;
-    private TodoObject todoObject;
 
     private String title;
     private String description;
     private String done;
-    private String dataCreate;
-    private String dataReaming;
-
+    private String tag;
 
     private LinearLayout box;
     private TextView titleTextView;
@@ -123,45 +117,33 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
         deleteFAB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                todoAdapter.openDB();
-                todoAdapter.deleteTodo(title.replace(" ", "_"));
-                todoAdapter.closeDB();
-                //delete file from device
+                todoAdapter.deleteTodo(new StringFormater(title).formatTitle());
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-                    File file = new File(context.getDataDir() + "/databases/" + title + ".db");
-                    if (file.exists()) {
-                        file.delete();
-                        Log.d(TAG, "onClick: delete");
-                    }
+                    File file = new File(context.getDataDir() + "/databases/" + new StringFormater(title).formatTitle() + ".db");
+
+                    file.delete();
                 } else {
                     //todo > this same for recycler
                 }
 
-                mainActivity.closeFragment(TodoDetailsFragment.this, new TodoFragment(getContext()));
+                mainActivity.closeFragment(TodoDetailsFragment.this, new TodoFragment());
             }
         });
 
         return rootView;
     }
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.menu_nav_item, menu);
-    }
-
     private void getDataToShow() {
         todoAdapter = new TodoAdapter(context, title);
-        todoAdapter.openDB();
-        data = todoAdapter.loadAllData(title);
-        todoAdapter.closeDB();
-        title = title.replace("_", " ");
+        data = todoAdapter.loadAllData();
+        title = new StringFormater(title).deformatTitle();
         titleTextView.setText(title);
 
         for (int i = 0; i < data.size(); i++) {
             createElements(i);
         }
-        tagView.setText(String.format("TAG: %s", data.get(0).getTag()));
+        tag = data.get(0).getTag();
+        tagView.setText(String.format("TAG: %s", tag));
 
         if (!data.get(0).getLastEdited().equals(""))
             lastEditedView.setText(String.format("Last edited: %s", data.get(0).getLastEdited()));
@@ -169,8 +151,7 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
         remindersTitlePreference = context.getSharedPreferences("reminders_title", Context.MODE_PRIVATE);
         for (Map.Entry<String, ?> s:
              remindersTitlePreference.getAll().entrySet()) {
-            Log.d(TAG, "getDataToShow: " + s);
-            if (s.getValue().toString().replace(" ", "_").equals(titleTextView.getText().toString()))
+            if (new StringFormater(s.toString()).formatTitleFromObject().equals(titleTextView.getText().toString()))
                 reminderStatusImageView.setImageResource(R.drawable.ic_notifications_green_24dp);
             else
                 reminderStatusImageView.setImageResource(R.drawable.ic_notifications_none_gray_24dp);
@@ -189,7 +170,7 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
         taskTextView.setTextColor(Color.BLACK);
         taskTextView.setPadding(0, 20, 0, 20);
 
-        taskTextView.setText(data.get(position).getTask().replace("'", ""));
+        taskTextView.setText(data.get(position).getTask());
 
         taskTextView.setTag("t_" + position);
         doneCheckBox.setTag("d_" + position);
@@ -199,10 +180,9 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
         helperForCheckBox.add(doneCheckBox.getTag().toString());
         doneCheckBox.setChecked(data.get(position).getDone() == 1);
 
-        if (doneCheckBox.isChecked())
-            taskTextView.setPaintFlags(taskTextView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-        else
-            taskTextView.setPaintFlags(taskTextView.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
+        taskTextView.setPaintFlags(doneCheckBox.isChecked() ?
+                taskTextView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG :
+                taskTextView.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
 
         linearLayout.addView(doneCheckBox);
         linearLayout.addView(taskTextView);
@@ -214,10 +194,8 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
         TextView textView;
         if (rootView != null) {
             textView = rootView.findViewWithTag(tag);
-            if (b)
-                textView.setPaintFlags(textView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-            else
-                textView.setPaintFlags(textView.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
+            textView.setPaintFlags(b ? textView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG :
+                    textView.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
         } else {
             mainActivity.closeFragment(this, new TodoFragment());
             Toast.makeText(context, "Something wrong, try again.", Toast.LENGTH_SHORT).show();
@@ -231,9 +209,7 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
             for (int i = 0; i < helperForCheckBox.size(); i++) {
                 if (compoundButton.getTag().equals(String.format("d_%s", i))) {
                     TodoAdapter todoAdapter = new TodoAdapter(context);
-                    todoAdapter.openDB();
-                    todoAdapter.changeStatusTask(title.replace(" ", "_"), data.get(i).getTask(), b ? 1 : 0);
-                    todoAdapter.closeDB();
+                    todoAdapter.changeStatusTask(new StringFormater(title).formatTitle(), data.get(i).getTask(), b ? 1 : 0);
                     helperTag = compoundButton.getTag().toString().replace("d", "t");
                     updateUI(b, helperTag);
                     break;
@@ -246,14 +222,15 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.editTODO: {
-                title = title.replace(" ", "_");
+                title = new StringFormater(title).formatTitle();
                 mainActivity.initFragment(new EditTodoFragment(title), true);
+                TagsHelper.setTag(tag);
                 break;
             }
 
             case R.id.create_reminder: {
                 DialogFragment dialogFragment = new CreateReminderDialog();
-                ReminderHelper.setTitle(titleTextView.getText().toString().replace("_", " "));
+                ReminderHelper.setTitle(new StringFormater(titleTextView.getText().toString()).formatTitle());
                 dialogFragment.show(((MainActivity) context).getSupportFragmentManager(), "create reminder");
                 break;
             }

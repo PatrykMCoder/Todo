@@ -37,8 +37,6 @@ public class Notification {
             NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             if (context != null && notificationManager != null)
                 notificationManager.createNotificationChannel(channel);
-            else
-                Log.d(TAG, "createNotificationsChanel: someone is wrong. check log");
         }
     }
 
