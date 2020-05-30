@@ -16,8 +16,4 @@ public class StringFormater {
     public String deformatTitle() {
         return text.replace("_", " ");
     }
-
-    public String formatTitleFromObject(){
-        return text.replace("_", " ");
-    }
 }
