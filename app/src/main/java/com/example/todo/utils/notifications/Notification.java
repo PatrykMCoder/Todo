@@ -47,7 +47,6 @@ public class Notification {
         builder.setContentTitle(String.format("Reminder for: %s", titleTodo.replace("_", " ")));
         builder.setContentIntent(PendingIntent.getActivity(context, 0, new Intent(context, MainActivity.class), PendingIntent.FLAG_UPDATE_CURRENT));
         builder.setAutoCancel(true);
-        //todo add buttons for action snooze
 
         NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
         notificationManagerCompat.notify(Integer.parseInt(NotificationChannels.REMINDER_CHANNEL_ID), builder.build());

@@ -5,11 +5,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.InputType;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
@@ -27,11 +23,9 @@ import com.example.todo.helpers.CreateTodoHelper;
 import com.example.todo.helpers.TagsHelper;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
 
 public class AddNewTodoFragment extends Fragment implements View.OnClickListener {
 
@@ -54,9 +48,7 @@ public class AddNewTodoFragment extends Fragment implements View.OnClickListener
 
     private CreateTodoHelper createTodoHelper;
 
-    private LinearLayout l;
-
-    // TODO: 25/05/2020 FIX IT BECAUSE IT IS VERY DIRTY
+    private LinearLayout linearLayout;
 
     public AddNewTodoFragment() {
         // Required empty public constructor
@@ -79,11 +71,11 @@ public class AddNewTodoFragment extends Fragment implements View.OnClickListener
         saveTodoButton = rootView.findViewById(R.id.save_todo);
         setTagButton = rootView.findViewById(R.id.set_tag);
         box = rootView.findViewById(R.id.box);
-        l = rootView.findViewById(R.id.box_new_item);
+        linearLayout = rootView.findViewById(R.id.box_new_item);
 
         saveTodoButton.setOnClickListener(this);
         setTagButton.setOnClickListener(this);
-        l.setOnClickListener(this);
+        linearLayout.setOnClickListener(this);
         createElements();
         return rootView;
     }

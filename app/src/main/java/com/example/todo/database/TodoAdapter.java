@@ -19,9 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TodoAdapter {
-    private final static String TAG = "TodoAdapterV2";
+    private final static String TAG = "TodoAdapter";
     private static String nameForDB;
-    // TODO: 2020-02-05 WE HAVE EMPTY ARRAY OF TODO
     private Context context;
     private DBHelper dbHelper;
     private String title;

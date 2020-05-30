@@ -118,15 +118,15 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
             @Override
             public void onClick(View v) {
                 todoAdapter.deleteTodo(new StringFormater(title).formatTitle());
+                String path = "";
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-                    File file = new File(context.getDataDir() + "/databases/" + new StringFormater(title).formatTitle() + ".db");
-
-                    file.delete();
+                    path = context.getDataDir() + "/databases";
                 } else {
-                    //todo > this same for recycler
+                    path = "data/data/" + context.getPackageName() + "/databases/";
                 }
-
-                mainActivity.closeFragment(TodoDetailsFragment.this, new TodoFragment());
+                File fileToRemove = new File(String.valueOf(path) + "/" + new StringFormater(title).formatTitle() + ".db");
+                if (fileToRemove.delete())
+                    mainActivity.closeFragment(TodoDetailsFragment.this, new TodoFragment());
             }
         });
 
@@ -150,8 +150,8 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
             lastEditedView.setText(String.format("Last edited: %s", data.get(0).getLastEdited()));
 
         remindersTitlePreference = context.getSharedPreferences("reminders_title", Context.MODE_PRIVATE);
-        for (Map.Entry<String, ?> s:
-             remindersTitlePreference.getAll().entrySet()) {
+        for (Map.Entry<String, ?> s :
+                remindersTitlePreference.getAll().entrySet()) {
 
             if (new StringFormater(s.getValue().toString()).deformatTitle().equals(titleTextView.getText().toString()))
                 reminderStatusImageView.setImageResource(R.drawable.ic_notifications_green_24dp);
