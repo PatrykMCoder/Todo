@@ -37,18 +37,17 @@ public class TodoRecyclerViewAdapter extends RecyclerView.Adapter<TodoRecyclerVi
 
     private File file;
     private File[] listFile;
+    private String path;
 
     private Context context;
 
     public TodoRecyclerViewAdapter(Context context) {
         this.context = context;
 
-        // TODO: 2020-02-18 update else statement
-        String path = null;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
             path = context.getDataDir() + "/databases";
         }else{
-            path = "";
+            path = "data/data/" + context.getPackageName() + "/databases/";
         }
 
         file = new File(path);
@@ -83,8 +82,6 @@ public class TodoRecyclerViewAdapter extends RecyclerView.Adapter<TodoRecyclerVi
 
         holder.percentTaskTextView.setText(String.format("%s %%", Math.floor(percentDone)));
         holder.percentProgressBar.setProgress((int) percentDone);
-
-        holder.cardView.setOnLongClickListener(view -> true); //todo remove file.
     }
 
     @Override

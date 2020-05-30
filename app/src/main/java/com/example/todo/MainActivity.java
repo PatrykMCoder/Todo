@@ -1,12 +1,17 @@
 package com.example.todo;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -14,16 +19,21 @@ import androidx.fragment.app.FragmentTransaction;
 import com.example.todo.view.fragments.TodoFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
 
     private BottomNavigationView bottomNavigationView;
     private Fragment fragment;
-
+    private String[] permissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        getAllPermission();
         initView();
         initFragment(new TodoFragment(), false);
     }
@@ -70,6 +80,24 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
         }
         return false;
+    }
+
+    private void getAllPermission() {
+        int i = 0;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            List<String> needPermission = new ArrayList<>();
+            for (String s : permissions) {
+                if (ContextCompat.checkSelfPermission(this, s) != PackageManager.PERMISSION_GRANTED) {
+                    needPermission.add(s);
+                }
+            }
+            for (String s : needPermission) {
+                if (!needPermission.isEmpty()) {
+                    ActivityCompat.requestPermissions(this, new String[]{needPermission.get(i)}, 1234);
+                }
+                i++;
+            }
+        }
     }
 
     @Override

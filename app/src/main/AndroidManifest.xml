@@ -26,11 +26,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity"></activity>
-        <activity
-            android:name=".view.fragments.SettingsFragment"
-            android:background="?android:windowBackground"
-            android:clickable="true" />
+        <activity android:name=".MainActivity"/>
 
         <receiver android:name=".utils.reminders.ReminderBroadcastReceiver"/>
     </application>
