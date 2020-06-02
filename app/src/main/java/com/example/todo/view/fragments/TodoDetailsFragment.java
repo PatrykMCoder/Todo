@@ -6,10 +6,9 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
@@ -93,7 +92,6 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_todo_details, container, false);
-
         helperForCheckBox = new ArrayList<>();
 
         titleTextView = rootView.findViewById(R.id.title_preview);
@@ -133,6 +131,13 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
         return rootView;
     }
 
+    private String formatForTextLastEdit(String data) {
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        mainActivity.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        int pixelsWidth = displayMetrics.widthPixels;
+        return pixelsWidth < 1200 ? String.format("Edited:\n%s", data) : String.format("Edited: %s", data);
+    }
+
     private void getDataToShow() {
         todoAdapter = new TodoAdapter(context, title);
         data = todoAdapter.loadAllData();
@@ -147,7 +152,7 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
         reminderStatusImageView.setImageResource(R.drawable.ic_notifications_none_gray_24dp);
 
         if (!data.get(0).getLastEdited().equals(""))
-            lastEditedView.setText(String.format("Last edited: %s", data.get(0).getLastEdited()));
+            lastEditedView.setText((formatForTextLastEdit(data.get(0).getLastEdited())));
 
         remindersTitlePreference = context.getSharedPreferences("reminders_title", Context.MODE_PRIVATE);
         for (Map.Entry<String, ?> s :
