@@ -43,8 +43,6 @@ public class Reminder {
     private long calculateRepeatTime() {
         if (typeRepeatReminder == ReminderRepeatType.FOUR_TIMES_PER_DAY) {
             return AlarmManager.INTERVAL_HOUR * 6;
-        } else if (typeRepeatReminder == ReminderRepeatType.N_HOUR_PER_DAY) {
-            return AlarmManager.INTERVAL_HOUR;
         } else if (typeRepeatReminder == ReminderRepeatType.ONE_TIME_PER_DAY) {
             return AlarmManager.INTERVAL_DAY;
         }else if(typeRepeatReminder == ReminderRepeatType.NONE){
