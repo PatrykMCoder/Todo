@@ -93,13 +93,11 @@ public class TodoRecyclerViewAdapter extends RecyclerView.Adapter<TodoRecyclerVi
                 String name = f.getName();
                 String nameWithoutExtension;
                 nameWithoutExtension = name.split("\\.")[0];
-                titles.add(nameWithoutExtension);
                 if(name.endsWith(".db")){
+                    titles.add(nameWithoutExtension);
                     counter++;
                 }
             }
-
-        Log.d(TAG, "onBindViewHolder: " + titles);
         return counter;
     }
 
