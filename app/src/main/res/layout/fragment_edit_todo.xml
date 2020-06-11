@@ -3,20 +3,24 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#ffffff"
     android:orientation="vertical"
+    android:padding="10dp"
     tools:context=".view.fragments.AddNewTodoFragment">
 
 
     <EditText
         android:id="@+id/title_edit"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
-        android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
+        android:autofillHints="@null"
         android:background="#00FFFFFF"
-        android:editable="false"
-        android:hint="Enter title..." />
+        android:hint="Enter title..."
+        android:inputType="none"
+        android:paddingBottom="10dp"
+        android:textSize="20sp" />
 
     <ScrollView
         android:id="@+id/scroll_view"
@@ -39,13 +43,14 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_below="@id/scroll_view"
-        android:orientation="horizontal"
-        android:layout_marginStart="20dp">
+        android:layout_marginStart="20dp"
+        android:orientation="horizontal">
 
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:contentDescription="Add item"
             android:src="@drawable/ic_add_box_gray_24dp" />
 
         <TextView
@@ -61,12 +66,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
         android:layout_alignParentBottom="true"
         android:layout_marginEnd="20dp"
-        android:layout_marginRight="20dp"
         android:layout_marginBottom="20dp"
-        android:background="@color/colorFAB"
+        android:backgroundTint="@color/colorFAB"
         android:src="@drawable/ic_save_white_24dp" />
 
 </RelativeLayout>

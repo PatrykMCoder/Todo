@@ -134,7 +134,7 @@ public class EditTodoFragment extends Fragment implements View.OnClickListener {
         taskEditText.setTextSize(20);
         taskEditText.requestFocus();
         taskEditText.setMaxLines(1);
-
+        taskEditText.setHint("Enter task");
         taskEditText.setTag("t_" + tmpPosition);
         doneCheckBox.setTag("d_" + tmpPosition);
 
