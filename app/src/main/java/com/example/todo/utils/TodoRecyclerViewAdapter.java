@@ -80,7 +80,7 @@ public class TodoRecyclerViewAdapter extends RecyclerView.Adapter<TodoRecyclerVi
         holder.allTaskDoneImageView.setImageResource((Double.valueOf(percentDone).isNaN()) ? R.drawable.ic_error_red_24dp : R.drawable.ic_done_green_24dp);
         holder.percentProgressBar.setVisibility(percentDone < 100                                     ? View.VISIBLE : View.GONE);
 
-        holder.percentTaskTextView.setText(String.format("%s %%", Math.floor(percentDone)));
+        holder.percentTaskTextView.setText(String.format("Done in: %s %%", Math.floor(percentDone)));
         holder.percentProgressBar.setProgress((int) percentDone);
     }
 

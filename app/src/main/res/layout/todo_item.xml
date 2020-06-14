@@ -38,7 +38,7 @@
                 android:layout_below="@+id/todoTitle"
                 android:text="Percent task"
                 android:textColor="#000000"
-                android:textSize="10dp" />
+                android:textSize="12sp" />
 
             <ProgressBar
                 android:id="@+id/percentProgress"
@@ -46,10 +46,8 @@
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
                 android:layout_alignParentBottom="true"
                 android:layout_marginEnd="25dp"
-                android:layout_marginRight="0dp"
                 android:layout_marginBottom="25dp"
                 android:background="@drawable/circular_shape"
                 android:progressDrawable="@drawable/circular_progress_bar"
@@ -60,15 +58,13 @@
 
             <ImageView
                 android:id="@+id/all_task_done_image"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
                 android:layout_marginTop="25dp"
                 android:src="@drawable/ic_done_green_24dp"
                 android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
                 android:layout_alignParentBottom="true"
                 android:layout_marginEnd="25dp"
-                android:layout_marginRight="0dp"
                 android:layout_marginBottom="25dp" />
 
         </RelativeLayout>
