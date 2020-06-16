@@ -3,9 +3,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".view.fragments.AddNewTodoFragment"
-    android:orientation="vertical"
-    android:padding="10dp">
+    tools:context=".view.fragments.AddNewTodoFragment" >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="10dp">
 
     <EditText
         android:id="@+id/new_title_todo"
@@ -56,6 +59,8 @@
             android:text="Tap to add new element"
             android:textColor="#B9B9B9" />
     </LinearLayout>
+
+    </RelativeLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/set_tag"

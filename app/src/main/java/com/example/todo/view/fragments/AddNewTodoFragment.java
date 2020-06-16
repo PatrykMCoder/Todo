@@ -20,7 +20,10 @@ import com.example.todo.MainActivity;
 import com.example.todo.R;
 import com.example.todo.database.TodoAdapter;
 import com.example.todo.helpers.CreateTodoHelper;
+import com.example.todo.helpers.HideAppBarHelper;
 import com.example.todo.helpers.TagsHelper;
+import com.example.todo.utils.formats.StringFormater;
+import com.example.todo.utils.loader.LoaderDatabases;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.text.SimpleDateFormat;
@@ -57,9 +60,11 @@ public class AddNewTodoFragment extends Fragment implements View.OnClickListener
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        this.context = context;
 
+        this.context = context;
         mainActivity = (MainActivity) context;
+
+        new HideAppBarHelper(mainActivity).hideBar();
     }
 
     @Override
@@ -89,7 +94,7 @@ public class AddNewTodoFragment extends Fragment implements View.OnClickListener
             }
             case R.id.set_tag: {
                 DialogFragment dialogFragment = new SelectTodoTagFragment();
-                dialogFragment.show(getFragmentManager(), "set tag todo");
+                dialogFragment.show(mainActivity.getSupportFragmentManager(), "set tag todo");
                 break;
             }
             case R.id.box_new_item: {
@@ -135,25 +140,27 @@ public class AddNewTodoFragment extends Fragment implements View.OnClickListener
 
     private void saveTodo() {
         ArrayList<CreateTodoHelper> data = new ArrayList<>();
-        title = newTitleEditText.getText().toString();
+        title = newTitleEditText.getText().toString().trim();
         if (!title.isEmpty()) {
-            for (int i = 0; i < createdElement; i++) {
-                newTaskEditText = rootView.findViewWithTag("t_" + i);
-                checkBoxDone = rootView.findViewWithTag("c_" + i);
+            if (!new LoaderDatabases(context).checkFileExist(title)) {
+                for (int i = 0; i < createdElement; i++) {
+                    newTaskEditText = rootView.findViewWithTag("t_" + i);
+                    checkBoxDone = rootView.findViewWithTag("c_" + i);
 
-                task = newTaskEditText.getText().toString();
-                done = checkBoxDone.isChecked() ? 1 : 0;
-                tag = TagsHelper.getTag();
+                    task = newTaskEditText.getText().toString();
+                    done = checkBoxDone.isChecked() ? 1 : 0;
+                    tag = TagsHelper.getTag();
 
-                createTodoHelper = new CreateTodoHelper(task, done, tag, getCurrentDateString());
-                data.add(createTodoHelper);
+                    createTodoHelper = new CreateTodoHelper(task, done, tag, getCurrentDateString());
+                    data.add(createTodoHelper);
+                }
 
-            }
+                todoAdapter = new TodoAdapter(context, title, data);
+                todoAdapter.saveToDB();
 
-            todoAdapter = new TodoAdapter(context, title, data);
-            todoAdapter.saveToDB();
-
-            mainActivity.closeFragment(this, new TodoFragment());
+                mainActivity.closeFragment(this, new TodoFragment());
+            } else
+                Toast.makeText(context, "Todo exist!", Toast.LENGTH_SHORT).show();
         } else
             Toast.makeText(context, "Title can not be empty.", Toast.LENGTH_SHORT).show();
     }

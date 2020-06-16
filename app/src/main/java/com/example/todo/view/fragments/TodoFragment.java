@@ -11,14 +11,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 
 import com.example.todo.MainActivity;
 import com.example.todo.R;
+import com.example.todo.helpers.HideAppBarHelper;
 import com.example.todo.utils.TodoRecyclerViewAdapter;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
-import java.util.ArrayList;
 
 public class TodoFragment extends Fragment implements View.OnClickListener {
 
@@ -33,7 +31,8 @@ public class TodoFragment extends Fragment implements View.OnClickListener {
     private MainActivity mainActivity;
     private static final String TAG = "TodoFragment";
 
-    public TodoFragment(){
+
+    public TodoFragment() {
         // Required empty public constructor
     }
 
@@ -49,7 +48,9 @@ public class TodoFragment extends Fragment implements View.OnClickListener {
                              Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.fragment_todo, container, false);
         addNewTodo = rootView.findViewById(R.id.add_new_todo);
+
         addNewTodo.setOnClickListener(this);
+
         initRecyclerView(rootView);
 
         return rootView;
@@ -58,10 +59,11 @@ public class TodoFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onResume() {
         super.onResume();
+
+        new HideAppBarHelper(mainActivity).showBar();
     }
 
-
-    private void initRecyclerView(View v){
+    private void initRecyclerView(View v) {
         todoList = v.findViewById(R.id.todoListRecyclerView);
         todoList.setNestedScrollingEnabled(false);
         todoList.setHasFixedSize(false);
