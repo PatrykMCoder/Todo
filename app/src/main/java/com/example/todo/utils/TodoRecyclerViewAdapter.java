@@ -18,6 +18,7 @@ import com.example.todo.MainActivity;
 import com.example.todo.R;
 import com.example.todo.database.TodoAdapter;
 import com.example.todo.utils.formats.StringFormater;
+import com.example.todo.utils.loader.LoaderDatabases;
 import com.example.todo.view.fragments.TodoDetailsFragment;
 
 import java.io.File;
@@ -35,23 +36,16 @@ public class TodoRecyclerViewAdapter extends RecyclerView.Adapter<TodoRecyclerVi
 
     private ArrayList<String> titles;
 
-    private File file;
-    private File[] listFile;
-    private String path;
-
     private Context context;
 
     public TodoRecyclerViewAdapter(Context context) {
         this.context = context;
+        loadData();
+    }
 
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-            path = context.getDataDir() + "/databases";
-        }else{
-            path = "data/data/" + context.getPackageName() + "/databases/";
-        }
-
-        file = new File(path);
-        listFile = file.listFiles();
+    private void loadData(){
+        LoaderDatabases loaderDatabases = new LoaderDatabases(context);
+        titles = loaderDatabases.loadTitles();
     }
 
     @NonNull
@@ -86,19 +80,7 @@ public class TodoRecyclerViewAdapter extends RecyclerView.Adapter<TodoRecyclerVi
 
     @Override
     public int getItemCount() {
-        counter = 0;
-        titles = new ArrayList<>();
-        if(listFile != null)
-            for(File f: listFile){
-                String name = f.getName();
-                String nameWithoutExtension;
-                nameWithoutExtension = name.split("\\.")[0];
-                if(name.endsWith(".db")){
-                    titles.add(nameWithoutExtension);
-                    counter++;
-                }
-            }
-        return counter;
+        return titles.size();
     }
 
     static class TodoListViewHolder extends RecyclerView.ViewHolder {
