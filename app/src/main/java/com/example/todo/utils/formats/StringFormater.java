@@ -16,4 +16,18 @@ public class StringFormater {
     public String deformatTitle() {
         return text.replace("_", " ");
     }
+
+    public boolean isWhiteCharLast(){
+        return text.endsWith(" ");
+    }
+
+    public String deleteWhiteChar() {
+        int l = text.length();
+
+        if(text.endsWith(" ")){
+            text = text.substring(0, l - 1);
+        }
+
+        return text;
+    }
 }

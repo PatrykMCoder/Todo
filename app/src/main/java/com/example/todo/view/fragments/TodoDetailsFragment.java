@@ -29,6 +29,7 @@ import com.example.todo.helpers.TagsHelper;
 import com.example.todo.utils.formats.StringFormater;
 import com.example.todo.utils.reminders.ReminderHelper;
 import com.example.todo.view.dialogs.CreateReminderDialog;
+import com.example.todo.view.dialogs.DeleteTodoAskDialog;
 import com.github.clans.fab.FloatingActionMenu;
 
 import java.io.File;
@@ -115,16 +116,8 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
         deleteFAB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                todoAdapter.deleteTodo(new StringFormater(title).formatTitle());
-                String path = "";
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-                    path = context.getDataDir() + "/databases";
-                } else {
-                    path = "data/data/" + context.getPackageName() + "/databases/";
-                }
-                File fileToRemove = new File(String.valueOf(path) + "/" + new StringFormater(title).formatTitle() + ".db");
-                if (fileToRemove.delete())
-                    mainActivity.closeFragment(TodoDetailsFragment.this, new TodoFragment());
+                DialogFragment dialogFragment = new DeleteTodoAskDialog(context, mainActivity, TodoDetailsFragment.this, title);
+                dialogFragment.show(mainActivity.getSupportFragmentManager(), "delete todo");
             }
         });
 
@@ -149,7 +142,7 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
         }
         tag = data.get(0).getTag();
         tagView.setText(String.format("TAG: %s", tag));
-        reminderStatusImageView.setImageResource(R.drawable.ic_notifications_none_gray_24dp);
+        reminderStatusImageView.setImageResource(R.drawable.ic_outline_notifications_off_24);
 
         if (!data.get(0).getLastEdited().equals(""))
             lastEditedView.setText((formatForTextLastEdit(data.get(0).getLastEdited())));
