@@ -8,6 +8,7 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/todoListRecyclerView"
+        android:paddingTop="80dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
@@ -18,9 +19,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:layout_gravity="bottom|end"
         android:layout_marginEnd="20dp"
-        android:layout_marginBottom="25dp"
+        android:layout_marginBottom="20dp"
         android:backgroundTint="@color/colorFAB"
         android:src="@drawable/ic_add_white_24dp"/>
 </RelativeLayout>

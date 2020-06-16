@@ -25,10 +25,12 @@ import com.example.todo.MainActivity;
 import com.example.todo.R;
 import com.example.todo.database.TodoAdapter;
 import com.example.todo.helpers.GetDataHelper;
+import com.example.todo.helpers.HideAppBarHelper;
 import com.example.todo.helpers.TagsHelper;
 import com.example.todo.utils.formats.StringFormater;
 import com.example.todo.utils.reminders.ReminderHelper;
 import com.example.todo.view.dialogs.CreateReminderDialog;
+import com.example.todo.view.dialogs.DeleteTodoAskDialog;
 import com.github.clans.fab.FloatingActionMenu;
 
 import java.io.File;
@@ -84,13 +86,15 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+
         this.context = context;
         mainActivity = (MainActivity) context;
+
+        new HideAppBarHelper(mainActivity).hideBar();
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_todo_details, container, false);
         helperForCheckBox = new ArrayList<>();
 
@@ -115,16 +119,8 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
         deleteFAB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                todoAdapter.deleteTodo(new StringFormater(title).formatTitle());
-                String path = "";
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-                    path = context.getDataDir() + "/databases";
-                } else {
-                    path = "data/data/" + context.getPackageName() + "/databases/";
-                }
-                File fileToRemove = new File(String.valueOf(path) + "/" + new StringFormater(title).formatTitle() + ".db");
-                if (fileToRemove.delete())
-                    mainActivity.closeFragment(TodoDetailsFragment.this, new TodoFragment());
+                DialogFragment dialogFragment = new DeleteTodoAskDialog(context, mainActivity, TodoDetailsFragment.this, title);
+                dialogFragment.show(mainActivity.getSupportFragmentManager(), "delete todo");
             }
         });
 
@@ -135,7 +131,7 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
         DisplayMetrics displayMetrics = new DisplayMetrics();
         mainActivity.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         int pixelsWidth = displayMetrics.widthPixels;
-        return pixelsWidth < 1200 ? String.format("Edited:\n%s", data) : String.format("Edited: %s", data);
+        return pixelsWidth < 800 ? String.format("Edited:\n%s", data) : String.format("Edited: %s", data);
     }
 
     private void getDataToShow() {
@@ -149,7 +145,7 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
         }
         tag = data.get(0).getTag();
         tagView.setText(String.format("TAG: %s", tag));
-        reminderStatusImageView.setImageResource(R.drawable.ic_notifications_none_gray_24dp);
+        reminderStatusImageView.setImageResource(R.drawable.ic_outline_notifications_off_24);
 
         if (!data.get(0).getLastEdited().equals(""))
             lastEditedView.setText((formatForTextLastEdit(data.get(0).getLastEdited())));

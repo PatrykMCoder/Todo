@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/archive_todo"
+        android:icon="@drawable/ic_outline_archive_24"
+        android:title="Archive todo" />
+
+    <item
+        android:id="@+id/archive_note"
+        android:icon="@drawable/ic_outline_note_24"
+        android:title="Archive note" />
+
+    <item
+        android:id="@+id/tags"
+        android:title="Tags"
+        android:icon="@drawable/ic_outline_label_24"/>
+
+    <item
+        android:id="@+id/reminders"
+        android:icon="@drawable/ic_outline_notifications_24"
+        android:title="Reminders" />
+
+    <item
+        android:id="@+id/contact_with_me"
+        android:icon="@drawable/ic_outline_message_24"
+        android:title="Contact with me" />
+
+    <item
+        android:id="@+id/send_feedback"
+        android:icon="@drawable/ic_outline_feedback_24"
+        android:title="Send feedback" />
+
+</menu>
