@@ -90,7 +90,7 @@ public class AddNewTodoFragment extends Fragment implements View.OnClickListener
             }
             case R.id.set_tag: {
                 DialogFragment dialogFragment = new SelectTodoTagFragment();
-                dialogFragment.show(getFragmentManager(), "set tag todo");
+                dialogFragment.show(mainActivity.getSupportFragmentManager(), "set tag todo");
                 break;
             }
             case R.id.box_new_item: {

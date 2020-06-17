@@ -2,6 +2,7 @@ package com.example.todo.view.fragments;
 
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -11,14 +12,15 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
+import android.widget.EditText;
+import android.widget.ImageButton;
 
 import com.example.todo.MainActivity;
 import com.example.todo.R;
+import com.example.todo.helpers.TitleSearchHandle;
 import com.example.todo.utils.TodoRecyclerViewAdapter;
+import com.example.todo.view.fragments.search.SearchActivity;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
-import java.util.ArrayList;
 
 public class TodoFragment extends Fragment implements View.OnClickListener {
 
@@ -33,7 +35,11 @@ public class TodoFragment extends Fragment implements View.OnClickListener {
     private MainActivity mainActivity;
     private static final String TAG = "TodoFragment";
 
-    public TodoFragment(){
+    private View includeView;
+    private EditText searchEditText;
+    private ImageButton openSlideMenu;
+
+    public TodoFragment() {
         // Required empty public constructor
     }
 
@@ -49,7 +55,17 @@ public class TodoFragment extends Fragment implements View.OnClickListener {
                              Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.fragment_todo, container, false);
         addNewTodo = rootView.findViewById(R.id.add_new_todo);
+
+        includeView = rootView.findViewById(R.id.custom_app_bar);
+
+        searchEditText = includeView.findViewById(R.id.search_label);
+        openSlideMenu = includeView.findViewById(R.id.open_slide_menu);
+
         addNewTodo.setOnClickListener(this);
+
+        searchEditText.setOnClickListener(this);
+        openSlideMenu.setOnClickListener(this);
+
         initRecyclerView(rootView);
 
         return rootView;
@@ -60,8 +76,7 @@ public class TodoFragment extends Fragment implements View.OnClickListener {
         super.onResume();
     }
 
-
-    private void initRecyclerView(View v){
+    private void initRecyclerView(View v) {
         todoList = v.findViewById(R.id.todoListRecyclerView);
         todoList.setNestedScrollingEnabled(false);
         todoList.setHasFixedSize(false);
@@ -82,6 +97,11 @@ public class TodoFragment extends Fragment implements View.OnClickListener {
     public void onClick(View view) {
         if (view.getId() == R.id.add_new_todo) {
             mainActivity.initFragment(new AddNewTodoFragment(), true);
+        } else if (view.getId() == R.id.search_label) {
+            Intent intent = new Intent(context, SearchActivity.class);
+            intent.setAction(Intent.ACTION_SEARCH);
+            startActivity(intent);
+        } else if (view.getId() == R.id.open_slide_menu) {
         }
     }
 }

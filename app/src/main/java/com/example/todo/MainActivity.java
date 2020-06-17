@@ -18,6 +18,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.example.todo.helpers.TitleSearchHandle;
+import com.example.todo.view.fragments.TodoDetailsFragment;
 import com.example.todo.view.fragments.TodoFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -37,7 +39,11 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
         getAllPermission();
         initView();
-        initFragment(new TodoFragment(), false);
+
+        if(TitleSearchHandle.getTitle() != null)
+            initFragment(new TodoDetailsFragment(TitleSearchHandle.getTitle()), false);
+        else
+            initFragment(new TodoFragment(), false);
     }
 
     @SuppressLint("ResourceType")
@@ -68,7 +74,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
         switch (menuItem.getItemId()) {
             case R.id.todo_item:
-                initFragment(new TodoFragment(), true);
+                initFragment(new TodoFragment(), false);
                 return true;
             case R.id.note_item:
 //                initFragment(new NoteFragment(), true);
