@@ -21,6 +21,7 @@ import com.example.todo.R;
 import com.example.todo.database.TodoAdapter;
 import com.example.todo.helpers.CreateTodoHelper;
 import com.example.todo.helpers.TagsHelper;
+import com.example.todo.utils.formats.StringFormater;
 import com.example.todo.utils.loader.LoaderDatabases;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -138,6 +139,10 @@ public class AddNewTodoFragment extends Fragment implements View.OnClickListener
         ArrayList<CreateTodoHelper> data = new ArrayList<>();
         title = newTitleEditText.getText().toString();
         if (!title.isEmpty()) {
+
+            while (new StringFormater(title).isWhiteCharLast())
+                title = new StringFormater(title).deleteWhiteChar();
+
             if (!new LoaderDatabases(context).checkFileExist(title)) {
                 for (int i = 0; i < createdElement; i++) {
                     newTaskEditText = rootView.findViewWithTag("t_" + i);
