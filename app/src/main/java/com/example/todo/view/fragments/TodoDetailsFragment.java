@@ -131,7 +131,7 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
         DisplayMetrics displayMetrics = new DisplayMetrics();
         mainActivity.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         int pixelsWidth = displayMetrics.widthPixels;
-        return pixelsWidth < 1200 ? String.format("Edited:\n%s", data) : String.format("Edited: %s", data);
+        return pixelsWidth < 800 ? String.format("Edited:\n%s", data) : String.format("Edited: %s", data);
     }
 
     private void getDataToShow() {

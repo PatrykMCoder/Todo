@@ -2,7 +2,6 @@ package com.example.todo.view.fragments;
 
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -12,15 +11,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
-import android.widget.ImageButton;
 
 import com.example.todo.MainActivity;
 import com.example.todo.R;
 import com.example.todo.helpers.HideAppBarHelper;
-import com.example.todo.helpers.TitleSearchHandle;
 import com.example.todo.utils.TodoRecyclerViewAdapter;
-import com.example.todo.view.fragments.search.SearchActivity;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class TodoFragment extends Fragment implements View.OnClickListener {
