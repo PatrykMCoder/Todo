@@ -6,12 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <include
-        android:id="@+id/custom_app_bar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        layout="@layout/custom_app_bar" />
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/todoListRecyclerView"
         android:paddingTop="80dp"
