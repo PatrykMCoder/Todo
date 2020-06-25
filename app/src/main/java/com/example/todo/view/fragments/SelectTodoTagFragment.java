@@ -18,6 +18,7 @@ import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 
 import com.example.todo.R;
+import com.example.todo.helpers.LoadTagsHelper;
 import com.example.todo.helpers.TagsHelper;
 
 import java.util.ArrayList;
@@ -41,17 +42,9 @@ public class SelectTodoTagFragment extends DialogFragment {
     }
 
     private void loadTags() {
-        SharedPreferences sharedPreferences = context.getSharedPreferences("custom_tags", Context.MODE_PRIVATE);
-        ArrayList<String> dataTags = new ArrayList<>();
+        ArrayList<String> tags = new LoadTagsHelper(context).loadTags();
 
-        dataTags.clear();
-        dataTags.addAll(Arrays.asList(getResources().getStringArray(R.array.tags)));
-
-        for (Object o : sharedPreferences.getAll().values()) {
-            dataTags.add(o.toString());
-        }
-
-        adapterSelect = new ArrayAdapter<>(context, R.layout.support_simple_spinner_dropdown_item, dataTags);
+        adapterSelect = new ArrayAdapter<>(context, R.layout.support_simple_spinner_dropdown_item, tags);
     }
 
     @NonNull

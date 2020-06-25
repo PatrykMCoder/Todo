@@ -25,6 +25,7 @@ import com.example.todo.MainActivity;
 import com.example.todo.R;
 import com.example.todo.database.TodoAdapter;
 import com.example.todo.helpers.GetDataHelper;
+import com.example.todo.helpers.HideAppBarHelper;
 import com.example.todo.helpers.TagsHelper;
 import com.example.todo.utils.formats.StringFormater;
 import com.example.todo.utils.reminders.ReminderHelper;
@@ -85,13 +86,15 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+
         this.context = context;
         mainActivity = (MainActivity) context;
+
+        new HideAppBarHelper(mainActivity).hideBar();
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_todo_details, container, false);
         helperForCheckBox = new ArrayList<>();
 
