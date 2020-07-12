@@ -23,6 +23,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.example.todo.helpers.TitleSearchHandle;
+import com.example.todo.utils.screen.NotificationBar;
 import com.example.todo.view.fragments.TodoDetailsFragment;
 import com.example.todo.view.fragments.TodoFragment;
 import com.example.todo.view.search.SearchActivity;
@@ -51,7 +52,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        new NotificationBar(getWindow()).updateColorNotificationBar();
         getAllPermission();
         initView();
 
