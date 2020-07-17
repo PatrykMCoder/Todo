@@ -37,4 +37,5 @@ dependencies {
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'com.github.clans:fab:1.6.4'
     implementation 'com.pes.materialcolorpicker:library:1.2.5'
+    implementation 'com.google.code.gson:gson:2.8.6'
 }
