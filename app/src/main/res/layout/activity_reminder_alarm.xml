@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.todo.ReminderAlarmActivity"
+    tools:context="com.pmprogramms.todo.ReminderAlarmActivity"
     android:background="@drawable/alarm_activity_background">
 
     <TextView
