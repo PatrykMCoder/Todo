@@ -5,86 +5,94 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <RelativeLayout
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_refresh"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#ffffff"
-        android:padding="10dp"
-        tools:context=".view.fragments.TodoDetailsFragment">
+        android:layout_marginEnd="-20dp">
 
-        <TextView
-            android:id="@+id/title_preview"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:paddingBottom="10dp"
-            android:textColor="#000000"
-            android:textSize="20sp" />
+            android:layout_height="match_parent"
+            android:background="#ffffff"
+            android:padding="10dp"
+            tools:context=".view.fragments.TodoDetailsFragment">
 
-        <ScrollView
-            android:id="@+id/scroll_view"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/title_preview">
-
-            <LinearLayout
-                android:id="@+id/box"
+            <TextView
+                android:id="@+id/title_preview"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="#ffffff"
-                android:orientation="vertical">
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:paddingBottom="10dp"
+                android:textColor="#000000"
+                android:textSize="20sp" />
 
-            </LinearLayout>
-
-        </ScrollView>
-
-        <androidx.cardview.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_alignParentBottom="true"
-            android:layout_marginStart="20dp"
-            android:layout_marginEnd="20dp"
-            android:layout_marginBottom="20dp"
-            app:cardCornerRadius="20dp"
-            app:cardElevation="8dp">
-
-            <RelativeLayout
+            <ScrollView
+                android:id="@+id/scroll_view"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/title_preview">
 
-                <TextView
-                    android:id="@+id/tag"
+                <LinearLayout
+                    android:id="@+id/box"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_marginStart="10dp"
-                    android:gravity="start"
-                    android:text="Tag: important" />
+                    android:background="#ffffff"
+                    android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/last_edited"
+                </LinearLayout>
+
+            </ScrollView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/menu_card"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_alignParentBottom="true"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="30dp"
+                android:layout_marginBottom="20dp"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="8dp">
+
+                <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_centerInParent="true"
-                    android:layout_centerHorizontal="true"
-                    android:freezesText="false"
-                    android:gravity="center"
-                    android:text="Edited\n23.07 12:00" />
+                    android:layout_height="match_parent">
 
-                <ImageView
-                    android:id="@+id/reminder_status"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_centerVertical="true"
-                    android:layout_marginEnd="10dp" />
+                    <TextView
+                        android:id="@+id/tag"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginStart="10dp"
+                        android:gravity="start"
+                        android:text="Tag" />
 
-            </RelativeLayout>
+                    <TextView
+                        android:id="@+id/last_edited"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:layout_centerHorizontal="true"
+                        android:freezesText="false"
+                        android:gravity="center"
+                        android:text="Edited\n23.07 12:00" />
 
-        </androidx.cardview.widget.CardView>
+                    <ImageView
+                        android:id="@+id/reminder_status"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginEnd="10dp" />
 
-    </RelativeLayout>
+                </RelativeLayout>
+
+            </androidx.cardview.widget.CardView>
+
+        </RelativeLayout>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     <com.github.clans.fab.FloatingActionMenu
         android:id="@+id/menu"

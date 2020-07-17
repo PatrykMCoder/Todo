@@ -4,6 +4,7 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -15,6 +16,10 @@ public class Reminder {
     private ReminderRepeatType typeRepeatReminder;
     private ReminderDisplayType typeDisplayReminder;
     private String titleTodoForReminder;
+
+    public Reminder(Context context) {
+        this.context = context;
+    }
 
     public Reminder(Context context, String titleTodoForReminder, long time, ReminderRepeatType typeRepeatReminder, ReminderDisplayType typeDisplayReminder) {
         this.context = context;
@@ -31,13 +36,22 @@ public class Reminder {
         intent.putExtra("todoName", titleTodoForReminder);
         intent.putExtra("displayType", typeDisplayReminder.ordinal());
         intent.putExtra("repeatType", typeRepeatReminder.ordinal());
-        long id = System.currentTimeMillis();
+        long id = time;
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, (int)id, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         if (typeRepeatReminder == ReminderRepeatType.NONE)
             alarmManager.set(AlarmManager.RTC_WAKEUP, time, pendingIntent);
         else {
             alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, time, calculateRepeatTime(), pendingIntent);
         }
+    }
+
+    public void removeReminder(String title, int id){
+        alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+
+        Intent intent = new Intent(context, ReminderBroadcastReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, id, intent, 0);
+        
+        alarmManager.cancel(pendingIntent);
     }
 
     private long calculateRepeatTime() {

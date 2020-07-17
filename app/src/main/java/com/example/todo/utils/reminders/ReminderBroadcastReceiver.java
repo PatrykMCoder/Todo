@@ -66,10 +66,9 @@ public class ReminderBroadcastReceiver extends BroadcastReceiver {
         if(reminderRepeatType != null){
             switch (reminderRepeatType){
                 case NONE: {
-                    //remove from shared preference
                     SharedPreferences sharedPreferences = context.getSharedPreferences("reminders_title", Context.MODE_PRIVATE);
                     SharedPreferences.Editor deleter = sharedPreferences.edit();
-                    deleter.remove(new StringFormater(todoTitle).formatTitle());
+                    deleter.remove(todoTitle);
                     deleter.apply();
                 }
                 default: break;

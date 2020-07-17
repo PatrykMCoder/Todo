@@ -1,39 +1,50 @@
 package com.example.todo.view.fragments;
 
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.cardview.widget.CardView;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.todo.MainActivity;
 import com.example.todo.R;
-import com.example.todo.database.TodoAdapter;
-import com.example.todo.helpers.GetDataHelper;
-import com.example.todo.helpers.HideAppBarHelper;
-import com.example.todo.helpers.TagsHelper;
+import com.example.todo.helpers.view.HideAppBarHelper;
+import com.example.todo.API.jsonhelper.JSONHelperEditTodo;
+import com.example.todo.API.MongoDBClient;
+import com.example.todo.API.jsonhelper.JSONHelperLoadDataTodo;
+import com.example.todo.API.taskstate.TaskState;
+import com.example.todo.utils.Messages;
 import com.example.todo.utils.formats.StringFormater;
 import com.example.todo.utils.reminders.ReminderHelper;
 import com.example.todo.view.dialogs.CreateReminderDialog;
 import com.example.todo.view.dialogs.DeleteTodoAskDialog;
 import com.github.clans.fab.FloatingActionMenu;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -41,14 +52,12 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
 
     private final static String TAG = "detailsfragment";
 
-    private int id = 0;
-
-    private TodoAdapter todoAdapter;
-
-    private String title;
-    private String description;
-    private String done;
+    private String todoID;
     private String tag;
+    private String title;
+    private String userID;
+    private boolean archive;
+    private boolean tmpArchive;
 
     private LinearLayout box;
     private TextView titleTextView;
@@ -57,6 +66,11 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
     private TextView tagView;
     private TextView lastEditedView;
     private ImageView reminderStatusImageView;
+    private ProgressDialog progressDialog;
+    private SwipeRefreshLayout swipeRefreshLayout;
+    private CardView menuCardView;
+    private ScrollView scrollView;
+
 
     private FloatingActionMenu floatingActionMenu;
     private com.github.clans.fab.FloatingActionButton createReminderFAB;
@@ -64,23 +78,33 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
     private com.github.clans.fab.FloatingActionButton archiveFAB;
     private com.github.clans.fab.FloatingActionButton deleteFAB;
 
-    private Context context;
+    public Context context;
     private MainActivity mainActivity;
 
-    private ArrayList<GetDataHelper> data;
     private ArrayList<String> helperForCheckBox;
 
     private View rootView;
 
     private SharedPreferences remindersTitlePreference;
+    private ArrayList<JSONHelperLoadDataTodo> arrayData;
+    private ArrayList<JSONHelperEditTodo> arrayDataEdit;
+    private ArrayList<JSONHelperEditTodo> dataHelper;
+    private int tmpPosition;
+
+    private String dateUpdatedAt;
 
     public TodoDetailsFragment() {
 
     }
 
-    public TodoDetailsFragment(String title) {
+    public TodoDetailsFragment(String userID, String todoID, String title, boolean archive) {
+        this.todoID = todoID;
         this.title = title;
-
+        this.userID = userID;
+        this.archive = archive;
+        tmpArchive = archive;
+        LoadTasksThread loadTasksThread = new LoadTasksThread();
+        loadTasksThread.execute();
     }
 
     @Override
@@ -103,7 +127,11 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
         lastEditedView = rootView.findViewById(R.id.last_edited);
         reminderStatusImageView = rootView.findViewById(R.id.reminder_status);
 
+        menuCardView = rootView.findViewById(R.id.menu_card);
+        scrollView = rootView.findViewById(R.id.scroll_view);
+
         box = rootView.findViewById(R.id.box);
+        swipeRefreshLayout = rootView.findViewById(R.id.swipe_refresh);
 
         floatingActionMenu = rootView.findViewById(R.id.menu);
         createReminderFAB = rootView.findViewById(R.id.create_reminder);
@@ -112,17 +140,40 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
         deleteFAB = rootView.findViewById(R.id.deleteTODO);
 
         editFAB.setOnClickListener(this);
+        archiveFAB.setOnClickListener(this);
+        deleteFAB.setOnClickListener(this);
         createReminderFAB.setOnClickListener(this);
         tagView.setOnClickListener(this);
-        getDataToShow();
 
-        deleteFAB.setOnClickListener(new View.OnClickListener() {
+        archiveFAB.setImageResource(archive ? R.drawable.ic_baseline_unarchive_24 : R.drawable.ic_archive_white_24dp);
+
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
-            public void onClick(View v) {
-                DialogFragment dialogFragment = new DeleteTodoAskDialog(context, mainActivity, TodoDetailsFragment.this, title);
-                dialogFragment.show(mainActivity.getSupportFragmentManager(), "delete todo");
+            public void onRefresh() {
+                box.removeAllViews();
+                LoadTasksThread loadTasksThread = new LoadTasksThread();
+                loadTasksThread.execute();
             }
         });
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            scrollView.setOnScrollChangeListener((v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
+                swipeRefreshLayout.setEnabled(scrollY == 0);
+                if (scrollY > oldScrollY) {
+                    if (menuCardView.getVisibility() != View.INVISIBLE) {
+                        Animation animation = AnimationUtils.loadAnimation(context, R.anim.menu_card_slide_down);
+                        menuCardView.setVisibility(View.INVISIBLE);
+                        menuCardView.startAnimation(animation);
+                    }
+                } else if (scrollY < oldScrollY) {
+                    if (menuCardView.getVisibility() != View.VISIBLE) {
+                        Animation animation = AnimationUtils.loadAnimation(context, R.anim.menu_card_slide_up);
+                        menuCardView.setVisibility(View.VISIBLE);
+                        menuCardView.startAnimation(animation);
+                    }
+                }
+            });
+        }
 
         return rootView;
     }
@@ -131,24 +182,28 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
         DisplayMetrics displayMetrics = new DisplayMetrics();
         mainActivity.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         int pixelsWidth = displayMetrics.widthPixels;
-        return pixelsWidth < 800 ? String.format("Edited:\n%s", data) : String.format("Edited: %s", data);
+        return pixelsWidth < 800 ? String.format("Edited:\n%s", data.split("T")[0]) : String.format("Edited: %s", data.split("T")[0]);
+    }
+
+    private String splitTextTag(String tag) {
+        if (tag.length() >= 7) {
+            tag = tag.substring(0, Math.min(tag.length(), 7)) + "...";
+        }
+        return tag;
     }
 
     private void getDataToShow() {
-        todoAdapter = new TodoAdapter(context, title);
-        data = todoAdapter.loadAllData();
-        title = new StringFormater(title).deformatTitle();
         titleTextView.setText(title);
-
-        for (int i = 0; i < data.size(); i++) {
-            createElements(i);
+        tagView.setText(String.format("Tag: %s", splitTextTag(tag)));
+        lastEditedView.setText(formatForTextLastEdit(dateUpdatedAt));
+        if (arrayData != null) {
+            for (int i = 0; i < arrayData.size(); i++) {
+                createElements(i);
+            }
+            tmpPosition = arrayData.size();
         }
-        tag = data.get(0).getTag();
-        tagView.setText(String.format("TAG: %s", tag));
-        reminderStatusImageView.setImageResource(R.drawable.ic_outline_notifications_off_24);
 
-        if (!data.get(0).getLastEdited().equals(""))
-            lastEditedView.setText((formatForTextLastEdit(data.get(0).getLastEdited())));
+        reminderStatusImageView.setImageResource(R.drawable.ic_outline_notifications_off_24);
 
         remindersTitlePreference = context.getSharedPreferences("reminders_title", Context.MODE_PRIVATE);
         for (Map.Entry<String, ?> s :
@@ -171,15 +226,14 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
         taskTextView.setTextColor(Color.BLACK);
         taskTextView.setPadding(0, 20, 0, 20);
 
-        taskTextView.setText(data.get(position).getTask());
+        taskTextView.setText(arrayData.get(position).task);
 
         taskTextView.setTag("t_" + position);
         doneCheckBox.setTag("d_" + position);
 
         doneCheckBox.setOnCheckedChangeListener(this);
 
-        helperForCheckBox.add(doneCheckBox.getTag().toString());
-        doneCheckBox.setChecked(data.get(position).getDone() == 1);
+        doneCheckBox.setChecked(arrayData.get(position).done);
 
         taskTextView.setPaintFlags(doneCheckBox.isChecked() ?
                 taskTextView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG :
@@ -199,41 +253,175 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
                     textView.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
         } else {
             mainActivity.closeFragment(this, new TodoFragment());
-            Toast.makeText(context, "Something wrong, try again.", Toast.LENGTH_SHORT).show();
+            new Messages(context).showMessage("Something wrong, try again.");
         }
+    }
+
+    private void updateTodo() {
+        EditText editText;
+        CheckBox checkBox;
+        JSONHelperEditTodo jhet;
+        dataHelper = new ArrayList<>();
+        for (int i = 0; i < tmpPosition; i++) {
+            taskTextView = rootView.findViewWithTag("t_" + i);
+            checkBox = rootView.findViewWithTag("d_" + i);
+            jhet = new JSONHelperEditTodo(taskTextView.getText().toString(), checkBox.isChecked());
+
+            dataHelper.add(jhet);
+        }
+
+        EditStatusTodoAsync editTodoAsync = new EditStatusTodoAsync();
+        editTodoAsync.execute();
+
+        LoadTasksThread loadTasksThread = new LoadTasksThread();
+        loadTasksThread.execute("notToUI");
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
     }
 
     @Override
     public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
         if (compoundButton.isPressed()) {
-            String helperTag = "";
-            for (int i = 0; i < helperForCheckBox.size(); i++) {
-                if (compoundButton.getTag().equals(String.format("d_%s", i))) {
-                    TodoAdapter todoAdapter = new TodoAdapter(context);
-                    todoAdapter.changeStatusTask(new StringFormater(title).formatTitle(), data.get(i).getTask(), b ? 1 : 0);
-                    helperTag = compoundButton.getTag().toString().replace("d", "t");
-                    updateUI(b, helperTag);
+            updateTodo();
+            updateUI(b, compoundButton.getTag().toString().replace("d", "t"));
+        }
+    }
+
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.editTODO: {
+                mainActivity.initFragment(new EditTodoFragment(title, userID, todoID, arrayData, tag, archive), true);
+                break;
+            }
+            case R.id.create_reminder: {
+                DialogFragment dialogFragment = new CreateReminderDialog();
+                ReminderHelper.setTitle(titleTextView.getText().toString());
+                dialogFragment.show(((MainActivity) context).getSupportFragmentManager(), "create reminder");
+                break;
+            }
+            case R.id.archiveTODO: {
+                ArchiveActionAsync archiveActionAsync = new ArchiveActionAsync();
+                archiveActionAsync.execute();
+
+                break;
+            }
+            case R.id.deleteTODO: {
+                DialogFragment dialogFragment = new DeleteTodoAskDialog(context, mainActivity, TodoDetailsFragment.this, title, userID, todoID);
+                dialogFragment.show(mainActivity.getSupportFragmentManager(), "delete todo");
+            }
+        }
+    }
+
+    class LoadTasksThread extends AsyncTask<String, String, TaskState> {
+
+        @Override
+        protected TaskState doInBackground(String... strings) {
+            MongoDBClient mongoDBClient = new MongoDBClient();
+            Gson gson = new Gson();
+            arrayData = new ArrayList<>();
+            arrayData = gson.fromJson(mongoDBClient.loadTodos(userID, todoID), new TypeToken<ArrayList<JSONHelperLoadDataTodo>>() {
+            }.getType());
+            tag = mongoDBClient.getTagTodo(userID, todoID);
+
+            if(tag == null) tag = "";
+
+            dateUpdatedAt = mongoDBClient.loadTodosLastEdit(userID, todoID);
+
+            if (arrayData != null) {
+                if (strings != null)
+                    for (String s : strings) {
+                        if (s.equals("notToUI")) return TaskState.DONE_NOT_TO_UI;
+                        else return TaskState.DONE;
+                    }
+                return TaskState.DONE;
+            }
+
+            return TaskState.NOT_DONE;
+        }
+
+        @Override
+        protected void onPostExecute(TaskState state) {
+            super.onPostExecute(state);
+            swipeRefreshLayout.setRefreshing(false);
+
+            switch (state) {
+                case DONE: {
+                    getDataToShow();
+                    break;
+                }
+                case NOT_DONE: {
+                    new Messages(context).showMessage("Something wrong, try again");
+                    break;
+                }
+                case DONE_NOT_TO_UI: {
                     break;
                 }
             }
         }
     }
 
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.editTODO: {
-                title = new StringFormater(title).formatTitle();
-                mainActivity.initFragment(new EditTodoFragment(title), true);
-                TagsHelper.setTag(tag);
-                break;
-            }
+    class EditStatusTodoAsync extends AsyncTask<String, String, TaskState> {
 
-            case R.id.create_reminder: {
-                DialogFragment dialogFragment = new CreateReminderDialog();
-                ReminderHelper.setTitle(new StringFormater(titleTextView.getText().toString()).formatTitle());
-                dialogFragment.show(((MainActivity) context).getSupportFragmentManager(), "create reminder");
-                break;
+        @Override
+        protected TaskState doInBackground(String... strings) {
+            MongoDBClient mongoDBClient = new MongoDBClient();
+            int code = mongoDBClient.editTodoTaskStatus(userID, todoID, dataHelper);
+            dateUpdatedAt = mongoDBClient.loadTodosLastEdit(userID, todoID);
+
+            if (code == 200 || code == 201) {
+                return TaskState.DONE;
+            }
+            return TaskState.NOT_DONE;
+        }
+
+        @Override
+        protected void onPostExecute(TaskState state) {
+            super.onPostExecute(state);
+
+            switch (state) {
+                case DONE: {
+                    lastEditedView.setText(formatForTextLastEdit(dateUpdatedAt));
+                    break;
+                }
+                case NOT_DONE: {
+                    new Messages(context).showMessage("Todo not updated, try again");
+                    break;
+                }
+            }
+        }
+    }
+
+    class ArchiveActionAsync extends AsyncTask<String, String, TaskState> {
+
+        @Override
+        protected TaskState doInBackground(String... strings) {
+            MongoDBClient mongoDBClient = new MongoDBClient();
+            int code = mongoDBClient.archiveTodoAction(userID, todoID, !archive);
+            if (code == 200 || code == 201)
+                return TaskState.DONE;
+            return TaskState.NOT_DONE;
+        }
+
+        @Override
+        protected void onPostExecute(TaskState taskState) {
+            super.onPostExecute(taskState);
+            switch (taskState) {
+                case DONE: {
+                    new Messages(context).showMessage(tmpArchive ? "Unarchive" : "Archive");
+                    archiveFAB.setImageResource(archive ? R.drawable.ic_archive_white_24dp : R.drawable.ic_baseline_unarchive_24);
+                    archive = !tmpArchive;
+                    tmpArchive = archive;
+                    break;
+                }
+                case NOT_DONE: {
+                    new Messages(context).showMessage("Something wrong, try again");
+                    break;
+                }
             }
         }
     }
