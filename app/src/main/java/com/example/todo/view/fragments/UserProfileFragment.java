@@ -2,6 +2,8 @@ package com.example.todo.view.fragments;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -10,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -23,6 +26,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.example.todo.LoginActivity;
 import com.example.todo.MainActivity;
 import com.example.todo.R;
 import com.example.todo.helpers.HideAppBarHelper;
@@ -36,7 +40,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-public class UserProfileFragment extends Fragment {
+public class UserProfileFragment extends Fragment implements View.OnClickListener {
     private View rootView;
     private MainActivity mainActivity;
     private ScrollView scrollView;
@@ -45,12 +49,14 @@ public class UserProfileFragment extends Fragment {
     private FrameLayout frameLayout;
     private ImageView waveImage;
     private SwipeRefreshLayout swipeRefreshLayout;
+    private Button logoutButton;
 
     private Context context;
     private String userID;
     private ArrayList<JSONHelperUser> userData;
     private JSONHelperUser userObject;
     private ProgressDialog progressDialog;
+    private SharedPreferences sharedPreferencesUserData;
 
     @Override
     public void onAttach(Context context) {
@@ -58,7 +64,8 @@ public class UserProfileFragment extends Fragment {
         mainActivity = (MainActivity) context;
         this.context = context;
         new HideAppBarHelper(mainActivity).hideBar();
-        userID = context.getSharedPreferences("user_data", Context.MODE_PRIVATE).getString("user_id", null);
+        sharedPreferencesUserData = context.getSharedPreferences("user_data", Context.MODE_PRIVATE);
+        userID = sharedPreferencesUserData.getString("user_id", null);
     }
 
     @Nullable
@@ -70,6 +77,8 @@ public class UserProfileFragment extends Fragment {
         usernameTextView = rootView.findViewById(R.id.user_name);
         emailTextView = rootView.findViewById(R.id.user_email);
         swipeRefreshLayout = rootView.findViewById(R.id.swipe_refresh);
+        logoutButton = rootView.findViewById(R.id.button_logout);
+        logoutButton.setOnClickListener(this);
         progressDialog = ProgressDialog.show(context, "Loading data", "Please wait...");
 
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -94,6 +103,19 @@ public class UserProfileFragment extends Fragment {
         welcomeUserTextView.setText(String.format("Welcome\n%s", username));
         usernameTextView.setText(String.format("Username: %s", username));
         emailTextView.setText(String.format("Email: %s", email));
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.button_logout: {
+                sharedPreferencesUserData.edit().putStringSet("user_id", null).apply();
+                Intent intent = new Intent(mainActivity, LoginActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+                break;
+            }
+        }
     }
 
     class LoadUserDataAsync extends AsyncTask<String, String, String> {
