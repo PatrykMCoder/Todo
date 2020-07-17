@@ -12,8 +12,8 @@
 
 
     <item
-        android:id="@+id/settings_item"
-        android:icon="@drawable/ic_settings_black_24dp"
-        android:title="SETTINGS"/>
+        android:id="@+id/user_profile"
+        android:icon="@drawable/ic_baseline_person_24"
+        android:title="PROFILE"/>
 
 </menu>
