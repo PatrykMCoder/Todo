@@ -1,9 +1,12 @@
 package com.example.todo.view.fragments;
 
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,17 +25,22 @@ import com.example.todo.database.TodoAdapter;
 import com.example.todo.helpers.CreateTodoHelper;
 import com.example.todo.helpers.HideAppBarHelper;
 import com.example.todo.helpers.TagsHelper;
+import com.example.todo.service.MongoDBClient;
+import com.example.todo.service.jsonhelper.JSONHelperSaveTodo;
 import com.example.todo.utils.formats.StringFormater;
 import com.example.todo.utils.loader.LoaderDatabases;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.gson.Gson;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 
 public class AddNewTodoFragment extends Fragment implements View.OnClickListener {
 
     private final static String TAG = "AddNewTodoFragment";
+    private String userID;
     private Context context;
     private EditText newTitleEditText;
     private LinearLayout box;
@@ -45,16 +53,23 @@ public class AddNewTodoFragment extends Fragment implements View.OnClickListener
     private String title;
     private String task;
     private String tag;
-    private int done;
+    private boolean done;
     private int createdElement = 0;
     private View rootView;
+
+    private ProgressDialog progressDialog;
 
     private CreateTodoHelper createTodoHelper;
 
     private LinearLayout linearLayout;
+    private ArrayList<JSONHelperSaveTodo> saveTodoData;
 
     public AddNewTodoFragment() {
         // Required empty public constructor
+    }
+
+    public AddNewTodoFragment(String userID) {
+        this.userID = userID;
     }
 
     @Override
@@ -139,29 +154,53 @@ public class AddNewTodoFragment extends Fragment implements View.OnClickListener
     }
 
     private void saveTodo() {
-        ArrayList<CreateTodoHelper> data = new ArrayList<>();
+        progressDialog = ProgressDialog.show(context, "Save...", "Please wait..");
+        saveTodoData = new ArrayList<>();
         title = newTitleEditText.getText().toString().trim();
         if (!title.isEmpty()) {
-            if (!new LoaderDatabases(context).checkFileExist(title)) {
-                for (int i = 0; i < createdElement; i++) {
-                    newTaskEditText = rootView.findViewWithTag("t_" + i);
-                    checkBoxDone = rootView.findViewWithTag("c_" + i);
+            for (int i = 0; i < createdElement; i++) {
+                newTaskEditText = rootView.findViewWithTag("t_" + i);
+                checkBoxDone = rootView.findViewWithTag("c_" + i);
+                task = newTaskEditText.getText().toString();
+                done = checkBoxDone.isChecked();
 
-                    task = newTaskEditText.getText().toString();
-                    done = checkBoxDone.isChecked() ? 1 : 0;
-                    tag = TagsHelper.getTag();
+                JSONHelperSaveTodo jshst = new JSONHelperSaveTodo(task, done);
+                saveTodoData.add(jshst);
+            }
 
-                    createTodoHelper = new CreateTodoHelper(task, done, tag, getCurrentDateString());
-                    data.add(createTodoHelper);
-                }
-
-                todoAdapter = new TodoAdapter(context, title, data);
-                todoAdapter.saveToDB();
-
-                mainActivity.closeFragment(this, new TodoFragment());
-            } else
-                Toast.makeText(context, "Todo exist!", Toast.LENGTH_SHORT).show();
+            SaveTodoThread saveTodoThread = new SaveTodoThread();
+            saveTodoThread.execute();
         } else
             Toast.makeText(context, "Title can not be empty.", Toast.LENGTH_SHORT).show();
+    }
+
+    class SaveTodoThread extends AsyncTask<String, String, String> {
+
+        @Override
+        protected String doInBackground(String... strings) {
+            MongoDBClient mongoDBClient = new MongoDBClient();
+            int code = mongoDBClient.createNewTodo(userID, title, saveTodoData);
+
+            if (code == 200 || code == 201)
+                return "done";
+
+            return "notDone";
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            progressDialog.dismiss();
+            if (s.equals("done")) {
+                mainActivity.closeFragment(AddNewTodoFragment.this, new TodoFragment());
+            } else {
+                new Handler().post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(context, "Cannot save todo, try again", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        }
     }
 }
