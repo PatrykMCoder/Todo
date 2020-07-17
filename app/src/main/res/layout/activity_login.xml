@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    android:id="@+id/root_view" xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.todo.LoginActivity">
+
+    <ImageView
+        android:id="@+id/icon_app"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:src="@mipmap/app_icon" />
+
+    <EditText
+        android:id="@+id/email_edit_text"
+        android:layout_width="400dp"
+        android:layout_height="60dp"
+        android:layout_below="@id/icon_app"
+        android:layout_centerHorizontal="true"
+        android:drawableEnd="@drawable/ic_baseline_alternate_email_24"
+        android:hint="Email"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingBottom="20dp"
+        android:inputType="textEmailAddress"/>
+
+    <EditText
+        android:id="@+id/password_edit_text"
+        android:layout_width="400dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/email_edit_text"
+        android:layout_centerHorizontal="true"
+        android:drawableEnd="@drawable/ic_baseline_lock_24"
+        android:hint="Password"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingBottom="20dp"
+        android:inputType="textPassword"/>
+
+    <Button
+        android:id="@+id/button_login"
+        android:layout_width="400dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/password_edit_text"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/button_login_background"
+        android:text="Login"
+        android:textColor="#ffffff" />
+
+    <TextView
+        android:id="@+id/open_register_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/button_login"
+        android:layout_centerHorizontal="true"
+        android:focusable="true"
+        android:text="No have account yet? Click here and create!"
+        android:textSize="16sp"
+        android:layout_marginTop="10dp"/>
+
+</RelativeLayout>
