@@ -26,12 +26,11 @@ import com.pmprogramms.todo.R;
 import com.pmprogramms.todo.helpers.user.UserData;
 import com.pmprogramms.todo.helpers.view.HideAppBarHelper;
 import com.pmprogramms.todo.API.APIClient;
-import com.pmprogramms.todo.API.jsonhelper.JSONHelperUser;
+import com.pmprogramms.todo.API.jsonhelper.user.JSONHelperUser;
 import com.pmprogramms.todo.API.taskstate.TaskState;
 import com.pmprogramms.todo.utils.text.Messages;
 import com.pmprogramms.todo.view.dialogs.PolicyDialog;
 import com.pmprogramms.todo.view.dialogs.SourceDialog;
-import com.google.gson.Gson;
 
 public class UserProfileFragment extends Fragment implements View.OnClickListener {
     private View rootView;
@@ -144,13 +143,9 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
         @Override
         protected TaskState doInBackground(String... strings) {
             APIClient APIClient = new APIClient();
-            String data = APIClient.loadDataUser(userID);
-            if (data != null) {
-                Gson gson = new Gson();
-                userObject = gson.fromJson(data, JSONHelperUser.class);
-                return userObject != null ? TaskState.DONE : TaskState.NOT_DONE;
-            }
-            return TaskState.NOT_DONE;
+            userObject = APIClient.loadDataUser(userID);
+            return userObject != null || !(userObject.email.equals("") && userObject.username.equals("")) ?
+            TaskState.DONE : TaskState.NOT_DONE;
         }
 
         @Override

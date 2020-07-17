@@ -23,7 +23,7 @@ import com.pmprogramms.todo.helpers.view.TagsHelper;
 import com.pmprogramms.todo.helpers.input.HideKeyboard;
 import com.pmprogramms.todo.API.jsonhelper.JSONHelperEditTodo;
 import com.pmprogramms.todo.API.APIClient;
-import com.pmprogramms.todo.API.jsonhelper.JSONHelperLoadDataTodo;
+import com.pmprogramms.todo.API.jsonhelper.JSONHelperDataTodo;
 import com.pmprogramms.todo.API.taskstate.TaskState;
 import com.pmprogramms.todo.utils.text.Messages;
 import com.pmprogramms.todo.view.dialogs.SelectTodoTagDialog;
@@ -34,7 +34,7 @@ import java.util.ArrayList;
 
 public class EditTodoFragment extends Fragment implements View.OnClickListener {
 
-    private ArrayList<JSONHelperLoadDataTodo> arrayData;
+    private ArrayList<JSONHelperDataTodo> arrayData;
     private EditText titleEditText;
     private EditText taskEditText;
     private CheckBox doneCheckBox;
@@ -60,7 +60,7 @@ public class EditTodoFragment extends Fragment implements View.OnClickListener {
 
     }
 
-    public EditTodoFragment(String title, String userID, String todoID, ArrayList<JSONHelperLoadDataTodo> arrayData, String tag, boolean archive) {
+    public EditTodoFragment(String title, String userID, String todoID, ArrayList<JSONHelperDataTodo> arrayData, String tag, boolean archive) {
         this.title = title;
         this.userID = userID;
         this.todoID = todoID;

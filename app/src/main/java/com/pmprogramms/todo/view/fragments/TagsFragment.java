@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.pmprogramms.todo.API.APIClient;
-import com.pmprogramms.todo.API.jsonhelper.JSONHelperLoadCustomTags;
+import com.pmprogramms.todo.API.jsonhelper.JSONHelperCustomTags;
 import com.pmprogramms.todo.API.taskstate.TaskState;
 import com.pmprogramms.todo.MainActivity;
 import com.pmprogramms.todo.R;
@@ -24,8 +24,6 @@ import com.pmprogramms.todo.helpers.user.UserData;
 import com.pmprogramms.todo.helpers.view.HideAppBarHelper;
 import com.pmprogramms.todo.utils.text.Messages;
 import com.pmprogramms.todo.utils.recyclerView.TagsRecyclerAdapter;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
 import java.util.ArrayList;
 
@@ -37,7 +35,7 @@ public class TagsFragment extends Fragment {
     private RecyclerView.LayoutManager layoutManager;
     private Context context;
 
-    private ArrayList<JSONHelperLoadCustomTags> helperLoadCustomTagsArrayList;
+    private ArrayList<JSONHelperCustomTags> helperLoadCustomTagsArrayList;
     private ArrayList<String> tags;
     private ArrayList<String> tagsID;
 
@@ -93,14 +91,11 @@ public class TagsFragment extends Fragment {
                 helperLoadCustomTagsArrayList.clear();
 
             APIClient APIClient = new APIClient();
-            String data = APIClient.loadUserTags(new UserData(context).getUserID());
-            if (data != null) {
-                Gson gson = new Gson();
-                helperLoadCustomTagsArrayList = gson.fromJson(data, new TypeToken<ArrayList<JSONHelperLoadCustomTags>>() {
-                }.getType());
+            helperLoadCustomTagsArrayList = APIClient.loadUserTags(new UserData(context).getUserID());
+            if (helperLoadCustomTagsArrayList != null)
                 return TaskState.DONE;
-            }
-            return TaskState.NOT_DONE;
+            else
+                return TaskState.NOT_DONE;
         }
 
         @Override
@@ -108,16 +103,15 @@ public class TagsFragment extends Fragment {
             super.onPostExecute(taskState);
             switch (taskState) {
                 case DONE: {
-                    if (helperLoadCustomTagsArrayList != null) {
-                        tags = new ArrayList<>();
-                        tagsID = new ArrayList<>();
-                        for (JSONHelperLoadCustomTags tag : helperLoadCustomTagsArrayList) {
-                            tags.add(tag.tag_name);
-                            tagsID.add(tag._id);
-                            initRecyclerView();
-                        }
-                        break;
+                    tags = new ArrayList<>();
+                    tagsID = new ArrayList<>();
+                    for (JSONHelperCustomTags tag : helperLoadCustomTagsArrayList) {
+                        tags.add(tag.tag_name);
+                        tagsID.add(tag._id);
+                        initRecyclerView();
                     }
+                    break;
+
                 }
                 case NOT_DONE: {
                     new Messages(context).showMessage("Something wrong, try again");

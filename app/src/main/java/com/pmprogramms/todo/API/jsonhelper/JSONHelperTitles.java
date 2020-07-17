@@ -2,7 +2,7 @@ package com.pmprogramms.todo.API.jsonhelper;
 
 import com.google.gson.annotations.SerializedName;
 
-public class JSONHelperLoadTitles {
+public class JSONHelperTitles {
     private String TAG = "jsonHelper";
 
     @SerializedName("title")
@@ -17,7 +17,7 @@ public class JSONHelperLoadTitles {
     @SerializedName("archive")
     public boolean archive;
 
-    public JSONHelperLoadTitles(String title, String id, String tag, boolean archive){
+    public JSONHelperTitles(String title, String id, String tag, boolean archive){
         this.title = title;
         this.id = id;
         this.tag = tag;

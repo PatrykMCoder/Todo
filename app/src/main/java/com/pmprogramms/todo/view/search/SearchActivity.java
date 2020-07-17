@@ -20,12 +20,10 @@ import com.pmprogramms.todo.MainActivity;
 import com.pmprogramms.todo.R;
 import com.pmprogramms.todo.helpers.user.UserData;
 import com.pmprogramms.todo.API.APIClient;
-import com.pmprogramms.todo.API.jsonhelper.JSONHelperLoadTitles;
+import com.pmprogramms.todo.API.jsonhelper.JSONHelperTitles;
 import com.pmprogramms.todo.API.taskstate.TaskState;
 import com.pmprogramms.todo.utils.text.Messages;
 import com.pmprogramms.todo.utils.recyclerView.SearchRecyclerViewAdapter;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -43,7 +41,7 @@ public class SearchActivity extends AppCompatActivity {
     private static final String TAG = "SearchActivity";
     private MainActivity mainActivity;
 
-    private ArrayList<JSONHelperLoadTitles> arrayTodos;
+    private ArrayList<JSONHelperTitles> arrayTodos;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,10 +97,10 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     private void search(String querySearch) {
-        Set<JSONHelperLoadTitles> result = new HashSet<>();
+        Set<JSONHelperTitles> result = new HashSet<>();
 
         if (!querySearch.isEmpty()) {
-            for (JSONHelperLoadTitles t : arrayTodos) {
+            for (JSONHelperTitles t : arrayTodos) {
                 if (t.title.toLowerCase().contains(querySearch.toLowerCase())) {
                     result.add(t);
                 }
@@ -113,7 +111,7 @@ public class SearchActivity extends AppCompatActivity {
         displayResult(result);
     }
 
-    private void displayResult(Set<JSONHelperLoadTitles> result) {
+    private void displayResult(Set<JSONHelperTitles> result) {
         adapterSearchRecyclerView = new SearchRecyclerViewAdapter(result);
         searchList.setAdapter(adapterSearchRecyclerView);
         adapterSearchRecyclerView.getItemCount();
@@ -140,9 +138,7 @@ public class SearchActivity extends AppCompatActivity {
                     arrayTodos.clear();
                 }
                 APIClient APIClient = new APIClient();
-                Gson gson = new Gson();
-                arrayTodos = gson.fromJson(APIClient.loadTitlesTodoUser(userID), new TypeToken<ArrayList<JSONHelperLoadTitles>>() {
-                }.getType());
+                arrayTodos = APIClient.loadTitlesTodoUser(userID);
                 return TaskState.DONE;
             }
             return TaskState.NOT_DONE;

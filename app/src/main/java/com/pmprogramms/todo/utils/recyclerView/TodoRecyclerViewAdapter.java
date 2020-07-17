@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.pmprogramms.todo.MainActivity;
 import com.pmprogramms.todo.R;
-import com.pmprogramms.todo.API.jsonhelper.JSONHelperLoadTitles;
+import com.pmprogramms.todo.API.jsonhelper.JSONHelperTitles;
 import com.pmprogramms.todo.view.fragments.TodoDetailsFragment;
 
 import java.util.ArrayList;
@@ -26,11 +26,11 @@ public class TodoRecyclerViewAdapter extends RecyclerView.Adapter<TodoRecyclerVi
 
     private float percentDone = 0;
 
-    private ArrayList<JSONHelperLoadTitles> arrayTodos;
+    private ArrayList<JSONHelperTitles> arrayTodos;
 
     private Context context;
 
-    public TodoRecyclerViewAdapter(Context context, ArrayList<JSONHelperLoadTitles> arrayTodos, String userID) {
+    public TodoRecyclerViewAdapter(Context context, ArrayList<JSONHelperTitles> arrayTodos, String userID) {
         this.arrayTodos = arrayTodos;
         this.context = context;
         this.userID = userID;

@@ -1,5 +1,15 @@
 package com.pmprogramms.todo.API.reader;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.pmprogramms.todo.API.jsonhelper.JSONHelperLastEdit;
+import com.pmprogramms.todo.API.jsonhelper.JSONHelperCustomTags;
+import com.pmprogramms.todo.API.jsonhelper.JSONHelperDataTodo;
+import com.pmprogramms.todo.API.jsonhelper.JSONHelperTag;
+import com.pmprogramms.todo.API.jsonhelper.JSONHelperTitles;
+import com.pmprogramms.todo.API.jsonhelper.user.JSONHelperUser;
+import com.pmprogramms.todo.API.jsonhelper.user.JSONHelperUserID;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -9,15 +19,16 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 
 public class ReaderFromJSON {
-    private HttpURLConnection connection;
+    private final HttpURLConnection connection;
 
     public ReaderFromJSON(HttpURLConnection connection) {
         this.connection = connection;
     }
 
-    public String readTitlesTodo() throws IOException, JSONException {
+    public ArrayList<JSONHelperTitles> readTitlesTodo() throws IOException, JSONException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8));
         StringBuilder builder = new StringBuilder();
         String line;
@@ -30,10 +41,11 @@ public class ReaderFromJSON {
 
         JSONObject jsonObject = new JSONObject(line);
         JSONArray dataObject = jsonObject.getJSONArray("data");
-        return dataObject.toString();
+        return new Gson().fromJson(dataObject.toString(), new TypeToken<ArrayList<JSONHelperTitles>>() {
+        }.getType());
     }
 
-    public String readTodos() throws IOException, JSONException {
+    public ArrayList<JSONHelperDataTodo> readTodos() throws IOException, JSONException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8));
         StringBuilder builder = new StringBuilder();
         String line;
@@ -49,10 +61,11 @@ public class ReaderFromJSON {
         JSONObject dataTodoObject = dataObject.getJSONObject(0);
         JSONArray dataTodoArray = dataTodoObject.getJSONArray("todos");
 
-        return dataTodoArray.toString();
+        return new Gson().fromJson(dataTodoArray.toString(), new TypeToken<ArrayList<JSONHelperDataTodo>>() {
+        }.getType());
     }
 
-    public String readUserData() throws IOException, JSONException {
+    public JSONHelperUser readUserData() throws IOException, JSONException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8));
         StringBuilder builder = new StringBuilder();
         String line;
@@ -65,10 +78,11 @@ public class ReaderFromJSON {
 
         JSONObject jsonObject = new JSONObject(line);
         JSONObject userObject = jsonObject.getJSONObject("data");
-        return userObject.toString();
+        return new Gson().fromJson(userObject.toString(), new TypeToken<JSONHelperUser>() {
+        }.getType());
     }
 
-    public String readTag() throws IOException, JSONException {
+    public JSONHelperTag readTag() throws IOException, JSONException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8));
         StringBuilder builder = new StringBuilder();
         String line;
@@ -82,11 +96,10 @@ public class ReaderFromJSON {
         JSONObject jsonObject = new JSONObject(line);
         JSONArray dataObject = jsonObject.getJSONArray("data");
         JSONObject dataTodoObject = dataObject.getJSONObject(0);
-
-        return dataTodoObject.getString("tag");
+        return new Gson().fromJson(dataTodoObject.toString(), JSONHelperTag.class);
     }
 
-    public String readTodosLastEdit() throws IOException, JSONException {
+    public JSONHelperLastEdit readTodosLastEdit() throws IOException, JSONException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8));
         StringBuilder builder = new StringBuilder();
         String line;
@@ -99,12 +112,12 @@ public class ReaderFromJSON {
 
         JSONObject jsonObject = new JSONObject(line);
         JSONArray dataObject = jsonObject.getJSONArray("data");
-        JSONObject dataObject2 = dataObject.getJSONObject(0);
+        JSONObject dataObjeTodo = dataObject.getJSONObject(0);
 
-        return dataObject2.getString("updatedAt");
+        return new Gson().fromJson(dataObjeTodo.toString(), JSONHelperLastEdit.class);
     }
 
-    public String getUserObjectID() throws IOException, JSONException {
+    public JSONHelperUserID getUserObjectID() throws IOException, JSONException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8));
         StringBuilder builder = new StringBuilder();
         String line;
@@ -118,10 +131,10 @@ public class ReaderFromJSON {
         JSONObject jsonObject = null;
         jsonObject = new JSONObject(line);
         JSONObject dataObject = jsonObject.getJSONObject("data");
-        return dataObject.getString("user_id");
+        return new Gson().fromJson(dataObject.toString(), JSONHelperUserID.class);
     }
 
-    public String getUserCustomTags(HttpURLConnection connection) throws IOException, JSONException {
+    public ArrayList<JSONHelperCustomTags> getUserCustomTags(HttpURLConnection connection) throws IOException, JSONException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8));
         StringBuilder builder = new StringBuilder();
         String line;
@@ -132,8 +145,7 @@ public class ReaderFromJSON {
 
         line = builder.toString();
 
-        JSONObject jsonObject = null;
-        jsonObject = new JSONObject(line);
-        return jsonObject.getJSONArray("data").toString();
+        JSONObject jsonObject = new JSONObject(line);
+        return new Gson().fromJson(jsonObject.get("data").toString(), new TypeToken<ArrayList<JSONHelperCustomTags>>(){}.getType());
     }
 }

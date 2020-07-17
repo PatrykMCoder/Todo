@@ -1,11 +1,16 @@
 package com.pmprogramms.todo.API;
 
-import android.util.Log;
-
 import androidx.annotation.Nullable;
 
 import com.pmprogramms.todo.API.jsonhelper.JSONHelperEditTodo;
+import com.pmprogramms.todo.API.jsonhelper.JSONHelperLastEdit;
+import com.pmprogramms.todo.API.jsonhelper.JSONHelperCustomTags;
+import com.pmprogramms.todo.API.jsonhelper.JSONHelperDataTodo;
+import com.pmprogramms.todo.API.jsonhelper.JSONHelperTag;
+import com.pmprogramms.todo.API.jsonhelper.JSONHelperTitles;
 import com.pmprogramms.todo.API.jsonhelper.JSONHelperSaveTodo;
+import com.pmprogramms.todo.API.jsonhelper.user.JSONHelperUser;
+import com.pmprogramms.todo.API.jsonhelper.user.JSONHelperUserID;
 import com.pmprogramms.todo.API.reader.ReaderFromJSON;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -17,7 +22,6 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -96,7 +100,8 @@ public class APIClient {
             dataOutputStream.flush();
             dataOutputStream.close();
 
-            userID = new ReaderFromJSON(connection).getUserObjectID();
+            JSONHelperUserID userObjectID = new ReaderFromJSON(connection).getUserObjectID();
+            userID = userObjectID.user_id;
 
             ArrayList<Object> data = new ArrayList<>();
 
@@ -106,10 +111,10 @@ public class APIClient {
         } catch (IOException | JSONException e) {
             e.printStackTrace();
         }
-        return null;
+        return new ArrayList<>();
     }
 
-    public String loadDataUser(String userID) {
+    public JSONHelperUser loadDataUser(String userID) {
         URL userURL = makeUrl("/user/" + userID);
         try {
             if (userURL != null) {
@@ -119,10 +124,10 @@ public class APIClient {
         } catch (IOException | JSONException e) {
             e.printStackTrace();
         }
-        return null;
+        return new JSONHelperUser("", "");
     }
 
-    public String loadTitlesTodoUser(String userID) {
+    public ArrayList<JSONHelperTitles> loadTitlesTodoUser(String userID) {
         try {
             URL todosURL = makeUrl("/todos/" + userID);
             if (todosURL != null) {
@@ -132,10 +137,10 @@ public class APIClient {
         } catch (IOException | JSONException e) {
             e.printStackTrace();
         }
-        return null;
+        return new ArrayList<>();
     }
 
-    public String loadTodos(String userID, String todoID) {
+    public ArrayList<JSONHelperDataTodo> loadTodos(String userID, String todoID) {
         try {
             URL todosURL = makeUrl("/todos/" + userID + "/" + todoID);
             if (todosURL != null) {
@@ -145,10 +150,10 @@ public class APIClient {
         } catch (IOException | JSONException e) {
             e.printStackTrace();
         }
-        return null;
+        return new ArrayList<>();
     }
 
-    public String loadTodosLastEdit(String userID, String todoID) {
+    public JSONHelperLastEdit loadTodosLastEdit(String userID, String todoID) {
         try {
             URL todosURL = makeUrl("/todos/" + userID + "/" + todoID);
             if (todosURL != null) {
@@ -159,7 +164,7 @@ public class APIClient {
             e.printStackTrace();
         }
 
-        return null;
+        return new JSONHelperLastEdit("");
     }
 
     public int editUserProfile(String userID, String username, String emailOld, @Nullable String emailNew, @Nullable String password) {
@@ -247,7 +252,7 @@ public class APIClient {
         return 0;
     }
 
-    public String getTagTodo(String userID, String todoID) {
+    public JSONHelperTag getTagTodo(String userID, String todoID) {
         try {
             URL todosURL = makeUrl("/todos/" + userID + "/" + todoID);
             if (todosURL != null) {
@@ -258,7 +263,7 @@ public class APIClient {
             e.printStackTrace();
         }
 
-        return null;
+        return new JSONHelperTag("");
     }
 
     public int editTodoTaskStatus(String userID, String todoID, ArrayList<JSONHelperEditTodo> todos) {
@@ -284,7 +289,7 @@ public class APIClient {
         return 0;
     }
 
-    public String loadUserTags(String userId) {
+    public ArrayList<JSONHelperCustomTags> loadUserTags(String userId) {
         try {
             URL loadCustomTagsUrl = makeUrl("/tags/" + userId);
             if (loadCustomTagsUrl != null) {
@@ -294,7 +299,7 @@ public class APIClient {
         } catch (IOException | JSONException e) {
             e.printStackTrace();
         }
-        return "";
+        return new ArrayList<>();
     }
 
     public int createUserCustomTag(String userID, String nameTag) {

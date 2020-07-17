@@ -18,14 +18,12 @@ import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 
 import com.pmprogramms.todo.API.APIClient;
-import com.pmprogramms.todo.API.jsonhelper.JSONHelperLoadCustomTags;
+import com.pmprogramms.todo.API.jsonhelper.JSONHelperCustomTags;
 import com.pmprogramms.todo.API.taskstate.TaskState;
 import com.pmprogramms.todo.R;
 import com.pmprogramms.todo.helpers.view.TagsHelper;
 import com.pmprogramms.todo.helpers.user.UserData;
 import com.pmprogramms.todo.utils.text.Messages;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
 import java.util.ArrayList;
 
@@ -33,7 +31,7 @@ public class SelectTodoTagDialog extends DialogFragment {
     private Context context;
     private ArrayList<String> tags;
     private ArrayAdapter<String> adapterSelect;
-    private ArrayList<JSONHelperLoadCustomTags> helperLoadCustomTagsArrayList;
+    private ArrayList<JSONHelperCustomTags> helperLoadCustomTagsArrayList;
 
     private FragmentManager fragmentManager;
 
@@ -127,14 +125,11 @@ public class SelectTodoTagDialog extends DialogFragment {
         @Override
         protected TaskState doInBackground(String... strings) {
             APIClient APIClient = new APIClient();
-            String data = APIClient.loadUserTags(new UserData(context).getUserID());
-            if (data != null) {
-                Gson gson = new Gson();
-                helperLoadCustomTagsArrayList = gson.fromJson(data, new TypeToken<ArrayList<JSONHelperLoadCustomTags>>() {
-                }.getType());
+            helperLoadCustomTagsArrayList = APIClient.loadUserTags(new UserData(context).getUserID());
+            if (helperLoadCustomTagsArrayList != null)
                 return TaskState.DONE;
-            }
-            return TaskState.NOT_DONE;
+            else
+                return TaskState.NOT_DONE;
         }
 
         @Override
@@ -142,15 +137,13 @@ public class SelectTodoTagDialog extends DialogFragment {
             super.onPostExecute(taskState);
             switch (taskState) {
                 case DONE: {
-                    if (helperLoadCustomTagsArrayList != null) {
-                        tags = new ArrayList<>();
-                        for (JSONHelperLoadCustomTags tag : helperLoadCustomTagsArrayList) {
-                            tags.add(tag.tag_name);
-                        }
-                        adapterSelect = new ArrayAdapter<>(context, R.layout.support_simple_spinner_dropdown_item, tags);
-                        selectTags.setAdapter(adapterSelect);
-                        break;
+                    tags = new ArrayList<>();
+                    for (JSONHelperCustomTags tag : helperLoadCustomTagsArrayList) {
+                        tags.add(tag.tag_name);
                     }
+                    adapterSelect = new ArrayAdapter<>(context, R.layout.support_simple_spinner_dropdown_item, tags);
+                    selectTags.setAdapter(adapterSelect);
+                    break;
                 }
                 case NOT_DONE: {
                     break;

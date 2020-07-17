@@ -24,21 +24,21 @@ import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.pmprogramms.todo.API.jsonhelper.JSONHelperLastEdit;
+import com.pmprogramms.todo.API.jsonhelper.JSONHelperTag;
 import com.pmprogramms.todo.MainActivity;
 import com.pmprogramms.todo.R;
 import com.pmprogramms.todo.helpers.text.TextFormat;
 import com.pmprogramms.todo.helpers.view.HideAppBarHelper;
 import com.pmprogramms.todo.API.jsonhelper.JSONHelperEditTodo;
 import com.pmprogramms.todo.API.APIClient;
-import com.pmprogramms.todo.API.jsonhelper.JSONHelperLoadDataTodo;
+import com.pmprogramms.todo.API.jsonhelper.JSONHelperDataTodo;
 import com.pmprogramms.todo.API.taskstate.TaskState;
 import com.pmprogramms.todo.utils.text.Messages;
 import com.pmprogramms.todo.utils.reminders.ReminderHelper;
 import com.pmprogramms.todo.view.dialogs.CreateReminderDialog;
 import com.pmprogramms.todo.view.dialogs.DeleteTodoAskDialog;
 import com.github.clans.fab.FloatingActionMenu;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -76,7 +76,7 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
     private View rootView;
 
     private SharedPreferences remindersTitlePreference;
-    private ArrayList<JSONHelperLoadDataTodo> arrayData;
+    private ArrayList<JSONHelperDataTodo> arrayData;
     private ArrayList<JSONHelperEditTodo> dataHelper;
     private int tmpPosition;
 
@@ -170,7 +170,7 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
 
         if (arrayData != null) {
             int index = 0;
-            for (JSONHelperLoadDataTodo data : arrayData) {
+            for (JSONHelperDataTodo data : arrayData) {
                 createElements(data, index);
                 index++;
             }
@@ -189,12 +189,12 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
     }
 
     private void sortData() {
-        ArrayList<JSONHelperLoadDataTodo> tmp = new ArrayList<>();
-        for (JSONHelperLoadDataTodo data : arrayData) {
+        ArrayList<JSONHelperDataTodo> tmp = new ArrayList<>();
+        for (JSONHelperDataTodo data : arrayData) {
             if (!data.done)
                 tmp.add(data);
         }
-        for (JSONHelperLoadDataTodo data : arrayData) {
+        for (JSONHelperDataTodo data : arrayData) {
             if (data.done)
                 tmp.add(data);
         }
@@ -202,7 +202,7 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
         arrayData = tmp;
     }
 
-    private void createElements(JSONHelperLoadDataTodo data, int index) {
+    private void createElements(JSONHelperDataTodo data, int index) {
         LinearLayout linearLayout = new LinearLayout(context);
         linearLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         linearLayout.setOrientation(LinearLayout.HORIZONTAL);
@@ -313,15 +313,13 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
         @Override
         protected TaskState doInBackground(String... strings) {
             APIClient APIClient = new APIClient();
-            Gson gson = new Gson();
             arrayData = new ArrayList<>();
-            arrayData = gson.fromJson(APIClient.loadTodos(userID, todoID), new TypeToken<ArrayList<JSONHelperLoadDataTodo>>() {
-            }.getType());
-            tag = APIClient.getTagTodo(userID, todoID);
+            arrayData = APIClient.loadTodos(userID, todoID);
+            JSONHelperTag tagObject = APIClient.getTagTodo(userID, todoID);
+            tag = tagObject.tag;
 
-            if (tag == null) tag = "";
-
-            dateUpdatedAt = APIClient.loadTodosLastEdit(userID, todoID);
+            JSONHelperLastEdit dateUpdatedAtObject = APIClient.loadTodosLastEdit(userID, todoID);
+            dateUpdatedAt = dateUpdatedAtObject.updatedAt;
 
             if (arrayData != null && arrayData.size() > 0) {
                 if (strings != null)
@@ -365,7 +363,8 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
         protected TaskState doInBackground(String... strings) {
             APIClient APIClient = new APIClient();
             int code = APIClient.editTodoTaskStatus(userID, todoID, dataHelper);
-            dateUpdatedAt = APIClient.loadTodosLastEdit(userID, todoID);
+            JSONHelperLastEdit dateUpdatedAtObject = APIClient.loadTodosLastEdit(userID, todoID);
+            dateUpdatedAt = dateUpdatedAtObject.updatedAt;
 
             if (code == 200 || code == 201) {
                 return TaskState.DONE;

@@ -20,13 +20,11 @@ import com.pmprogramms.todo.R;
 import com.pmprogramms.todo.helpers.user.UserData;
 import com.pmprogramms.todo.helpers.view.HideAppBarHelper;
 import com.pmprogramms.todo.API.APIClient;
-import com.pmprogramms.todo.API.jsonhelper.JSONHelperLoadTitles;
+import com.pmprogramms.todo.API.jsonhelper.JSONHelperTitles;
 import com.pmprogramms.todo.API.taskstate.TaskState;
 import com.pmprogramms.todo.utils.text.Messages;
 import com.pmprogramms.todo.utils.recyclerView.TodoRecyclerViewAdapter;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import java.util.ArrayList;
 
 public class TodoFragment extends Fragment implements View.OnClickListener {
@@ -42,7 +40,7 @@ public class TodoFragment extends Fragment implements View.OnClickListener {
 
     private MainActivity mainActivity;
     private static final String TAG = "TodoFragment";
-    private ArrayList<JSONHelperLoadTitles> arrayTodos;
+    private ArrayList<JSONHelperTitles> arrayTodos;
     private LoadDataThread loadDataThread;
     private View rootView;
     private String userID;
@@ -117,18 +115,16 @@ public class TodoFragment extends Fragment implements View.OnClickListener {
                 if (arrayTodos != null) {
                     arrayTodos.clear();
                 }
-                APIClient APIClient = new APIClient();
-                Gson gson = new Gson();
-                arrayTodos = gson.fromJson(APIClient.loadTitlesTodoUser(userID), new TypeToken<ArrayList<JSONHelperLoadTitles>>() {
-                }.getType());
+                APIClient apiClient = new APIClient();
+                arrayTodos = apiClient.loadTitlesTodoUser(userID);
                 return TaskState.DONE;
             }
             return TaskState.NOT_DONE;
         }
 
         private void removeArchiveTodos() {
-           ArrayList<JSONHelperLoadTitles> loadTitles = new ArrayList<>();
-               for (JSONHelperLoadTitles obj : arrayTodos) {
+           ArrayList<JSONHelperTitles> loadTitles = new ArrayList<>();
+               for (JSONHelperTitles obj : arrayTodos) {
                    if (!obj.archive)
                        loadTitles.add(obj);
                }
