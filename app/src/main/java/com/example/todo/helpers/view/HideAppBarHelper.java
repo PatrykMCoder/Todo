@@ -1,4 +1,4 @@
-package com.example.todo.helpers;
+package com.example.todo.helpers.view;
 
 import android.view.View;
 

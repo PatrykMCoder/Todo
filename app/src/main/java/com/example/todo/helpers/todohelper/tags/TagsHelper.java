@@ -1,4 +1,4 @@
-package com.example.todo.helpers;
+package com.example.todo.helpers.todohelper.tags;
 
 public class TagsHelper {
     private static String tag = "no tag";
