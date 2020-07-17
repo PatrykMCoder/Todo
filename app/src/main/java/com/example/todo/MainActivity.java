@@ -56,10 +56,12 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         getAllPermission();
         initView();
 
-        if (TitleSearchHandle.getTitle() != null)
-            initFragment(new TodoDetailsFragment(TitleSearchHandle.getTitle()), false);
-        else
-            initFragment(new TodoFragment(), false);
+//        if (TitleSearchHandle.getTitle() != null)
+//            initFragment(new TodoDetailsFragment(,TitleSearchHandle.getTitle()), false);
+//        else
+//            initFragment(new TodoFragment(), false);
+
+        initFragment(new TodoFragment(), false);
     }
 
     @SuppressLint("ResourceType")
