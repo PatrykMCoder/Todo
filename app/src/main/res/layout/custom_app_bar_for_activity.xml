@@ -34,7 +34,7 @@
                     android:background="@null"
                     android:contentDescription="@string/app_name"
                     android:src="@drawable/ic_baseline_arrow_back_24"
-                    android:focusable="true"/>
+                    android:focusable="true" />
 
                 <EditText
                     android:id="@+id/search_label"
@@ -46,9 +46,8 @@
                     android:background="@null"
                     android:hint="Search todo..."
                     android:inputType="text"
-                    android:imeOptions="actionSearch"/>
+                    android:imeOptions="actionSearch" />
             </LinearLayout>
-
         </Toolbar>
     </androidx.cardview.widget.CardView>
 </RelativeLayout>

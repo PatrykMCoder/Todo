@@ -6,17 +6,15 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 import androidx.annotation.Nullable;
 
-import com.example.todo.helpers.CreateTodoHelper;
-import com.example.todo.helpers.EditTodoHelper;
-import com.example.todo.helpers.GetDataHelper;
+import com.example.todo.helpers.todohelper.CreateTodoHelper;
+import com.example.todo.helpers.todohelper.EditTodoHelper;
+import com.example.todo.helpers.todohelper.GetDataHelper;
 import com.example.todo.utils.formats.StringFormater;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class TodoAdapter {
     private final static String TAG = "TodoAdapter";

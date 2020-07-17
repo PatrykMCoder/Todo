@@ -1,12 +1,12 @@
-package com.example.todo.helpers;
+package com.example.todo.helpers.todohelper;
 
-public class EditTodoHelper {
+public class GetDataHelper {
     private String task;
     private int done;
     private String tag;
     private String lastEdited;
 
-    public EditTodoHelper(String task, int done, String tag, String lastEdited) {
+    public GetDataHelper(String task, int done, String tag, String lastEdited) {
         this.task = task;
         this.done = done;
         this.tag = tag;

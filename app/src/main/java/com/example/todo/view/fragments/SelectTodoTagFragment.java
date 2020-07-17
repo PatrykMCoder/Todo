@@ -18,11 +18,10 @@ import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 
 import com.example.todo.R;
-import com.example.todo.helpers.LoadTagsHelper;
-import com.example.todo.helpers.TagsHelper;
+import com.example.todo.helpers.todohelper.tags.LoadTagsHelper;
+import com.example.todo.helpers.todohelper.tags.TagsHelper;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class SelectTodoTagFragment extends DialogFragment {
     private Context context;

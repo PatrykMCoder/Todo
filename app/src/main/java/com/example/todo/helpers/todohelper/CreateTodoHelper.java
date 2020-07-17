@@ -1,4 +1,4 @@
-package com.example.todo.helpers;
+package com.example.todo.helpers.todohelper;
 
 public class CreateTodoHelper {
     private String task;

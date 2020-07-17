@@ -2,11 +2,12 @@ package com.example.todo;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
@@ -17,15 +18,19 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import com.example.todo.helpers.TitleSearchHandle;
+import com.example.todo.helpers.search.TitleSearchHandle;
+import com.example.todo.helpers.user.UserData;
 import com.example.todo.utils.screen.NotificationBar;
 import com.example.todo.view.fragments.TodoDetailsFragment;
 import com.example.todo.view.fragments.TodoFragment;
+import com.example.todo.view.reminders.RemindersActivity;
+import com.example.todo.view.fragments.user.UserProfileFragment;
 import com.example.todo.view.search.SearchActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
@@ -48,17 +53,20 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
     private ArrayList<String> tags;
 
+    private static final String TAG = "Mainactivity";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         new NotificationBar(getWindow()).updateColorNotificationBar();
+        String userID = new UserData(this).getUserID();
         getAllPermission();
         initView();
 
-        if (TitleSearchHandle.getTitle() != null)
-            initFragment(new TodoDetailsFragment(TitleSearchHandle.getTitle()), false);
-        else
+        if (TitleSearchHandle.getTitle() != null) {
+            initFragment(new TodoDetailsFragment(userID, TitleSearchHandle.getId(), TitleSearchHandle.getTitle()), false);
+        } else
             initFragment(new TodoFragment(), false);
     }
 
@@ -123,32 +131,38 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
             case R.id.todo_item:
                 initFragment(new TodoFragment(), false);
                 return true;
-            case R.id.note_item:
-//                initFragment(new NoteFragment(), true);
-                Toast.makeText(getApplicationContext(), "Available in future :)", Toast.LENGTH_LONG).show();
-                return false;
-            case R.id.settings_item:
-                Toast.makeText(getApplicationContext(), "Available in future :)", Toast.LENGTH_LONG).show();
-                return false;
-
-            case R.id.archive_todo: {
-                Toast.makeText(this, "Available in future :)", Toast.LENGTH_SHORT).show();
+            case R.id.user_profile: {
+                initFragment(new UserProfileFragment(), true);
                 return true;
             }
+            case R.id.note_item:
+            case R.id.settings:
+            case R.id.archive_todo:
             case R.id.archive_note: {
                 Toast.makeText(this, "Available in future :)", Toast.LENGTH_SHORT).show();
                 return true;
             }
             case R.id.reminders: {
-                Toast.makeText(this, "Available in future :)", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(this, RemindersActivity.class);
+                startActivity(intent);
                 return true;
             }
             case R.id.send_feedback: {
-                Toast.makeText(this, "Available in future :)", Toast.LENGTH_SHORT).show();
+                Intent gmailIntent = new Intent(Intent.ACTION_SENDTO);
+                gmailIntent.setData(Uri.parse("mailto:pmarciszewski774@gmail.com"));
+                startActivity(gmailIntent);
                 return true;
             }
             case R.id.contact_with_me: {
-                Toast.makeText(this, "Available in future :)", Toast.LENGTH_SHORT).show();
+                Uri uri = Uri.parse("https://www.instagram.com/patryk_programmer/");
+                Intent instagramIntent = new Intent(Intent.ACTION_VIEW);
+                instagramIntent.setData(Uri.parse("com.instagram.android"));
+                try {
+                    startActivity(instagramIntent);
+                } catch (ActivityNotFoundException e) {
+                    startActivity(new Intent(Intent.ACTION_VIEW,
+                            Uri.parse("https://www.instagram.com/patryk_programmer/")));
+                }
                 return true;
             }
             default:
@@ -177,7 +191,10 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
+        if (drawerLayout.isDrawerOpen(GravityCompat.START))
+            drawerLayout.closeDrawers();
+        else
+            super.onBackPressed();
     }
 
     @Override
@@ -190,7 +207,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 break;
             }
             case R.id.open_slide_menu: {
-                drawerLayout.openDrawer(Gravity.START);
+                drawerLayout.openDrawer(GravityCompat.START);
                 break;
             }
         }

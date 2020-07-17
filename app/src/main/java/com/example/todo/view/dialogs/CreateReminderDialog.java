@@ -49,6 +49,7 @@ public class CreateReminderDialog extends DialogFragment {
     private ReminderDisplayType reminderDisplayType;
 
     private SharedPreferences remindersTitlePreference;
+    private SharedPreferences remindersIdsPreference;
 
     @Override
     public void onAttach(Context context) {
@@ -56,6 +57,7 @@ public class CreateReminderDialog extends DialogFragment {
         this.context = context;
 
         remindersTitlePreference = context.getSharedPreferences("reminders_title", Context.MODE_PRIVATE);
+        remindersIdsPreference = context.getSharedPreferences("reminders_id", Context.MODE_PRIVATE);
     }
 
     @NonNull
@@ -108,12 +110,13 @@ public class CreateReminderDialog extends DialogFragment {
                             c.add(Calendar.DATE, 1);
 
                         getSelectedItemFromSpinners();
+                        long time = c.getTimeInMillis();
 
-                        Reminder reminder = new Reminder(context, title, c.getTimeInMillis(), reminderRepeatType, reminderDisplayType);
+                        Reminder reminder = new Reminder(context, title, time, reminderRepeatType, reminderDisplayType);
                         reminder.createReminder();
 
-                        remindersTitlePreference.edit().putString(title.replace(" ", "_"), title.replace(" ", "_")).apply();
-
+                        remindersTitlePreference.edit().putString(title, title).apply();
+                        remindersIdsPreference.edit().putInt(title, (int) time).apply();
                     }
                 })
 
@@ -136,15 +139,13 @@ public class CreateReminderDialog extends DialogFragment {
 
     private void getSelectedItemFromSpinners() {
         switch (typeRepeatReminderSpinner.getSelectedItemPosition()) {
-            case 0:
-                reminderRepeatType = ReminderRepeatType.NONE;
-                break;
             case 1:
                 reminderRepeatType = ReminderRepeatType.FOUR_TIMES_PER_DAY;
                 break;
             case 2:
                 reminderRepeatType = ReminderRepeatType.ONE_TIME_PER_DAY;
                 break;
+            case 0:
             default:
                 reminderRepeatType = ReminderRepeatType.NONE;
                 break;
