@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -12,17 +13,31 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.todo.MainActivity;
 import com.example.todo.R;
-import com.example.todo.helpers.TitleSearchHandle;
-import com.example.todo.view.fragments.TodoDetailsFragment;
+import com.example.todo.helpers.search.TitleSearchHandle;
+import com.example.todo.API.jsonhelper.JSONHelperLoadTitles;
 
+import java.util.ArrayList;
 import java.util.Set;
 
 public class SearchRecyclerViewAdapter extends RecyclerView.Adapter<SearchRecyclerViewAdapter.SearchListViewHolder> {
 
-    private Set<String> data;
+    private Set<JSONHelperLoadTitles> data;
+    private ArrayList<String> ids;
+    private ArrayList<String> titles;
+    private ArrayList<Boolean> archives;
 
-    public SearchRecyclerViewAdapter(Set<String> data) {
+    public SearchRecyclerViewAdapter(Set<JSONHelperLoadTitles> data) {
         this.data = data;
+
+        ids = new ArrayList<>();
+        titles = new ArrayList<>();
+        archives = new ArrayList<>();
+
+        for (JSONHelperLoadTitles t : data) {
+            ids.add(t.id);
+            titles.add(t.title);
+            archives.add(t.archive);
+        }
     }
 
     @NonNull
@@ -36,13 +51,17 @@ public class SearchRecyclerViewAdapter extends RecyclerView.Adapter<SearchRecycl
 
     @Override
     public void onBindViewHolder(@NonNull SearchListViewHolder holder, int position) {
-        holder.resultTextView.setText(data.toArray()[position].toString());
+        holder.resultTextView.setText(titles.get(position));
+        if (archives.get(position))
+            holder.archiveStatusImage.setImageResource(R.drawable.ic_outline_archive_24);
 
         holder.searchCard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(view.getContext(), MainActivity.class);
-                TitleSearchHandle.setTitle(data.toArray()[position].toString());
+                TitleSearchHandle.setTitle(titles.get(position));
+                TitleSearchHandle.setId(ids.get(position));
+                TitleSearchHandle.setArchive(archives.get(position));
                 view.getContext().startActivity(intent);
             }
         });
@@ -56,11 +75,13 @@ public class SearchRecyclerViewAdapter extends RecyclerView.Adapter<SearchRecycl
     static class SearchListViewHolder extends RecyclerView.ViewHolder {
         private TextView resultTextView;
         private CardView searchCard;
+        private ImageView archiveStatusImage;
 
         public SearchListViewHolder(@NonNull View itemView) {
             super(itemView);
             resultTextView = itemView.findViewById(R.id.search_result_text);
             searchCard = itemView.findViewById(R.id.card_view);
+            archiveStatusImage = itemView.findViewById(R.id.archive_status);
         }
     }
 }

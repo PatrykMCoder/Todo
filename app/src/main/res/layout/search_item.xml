@@ -12,29 +12,39 @@
         android:layout_gravity="center"
         app:cardElevation="8dp">
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
             tools:ignore="UseCompoundDrawables">
 
             <ImageView
                 android:id="@+id/search_icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_baseline_search_24"
                 android:contentDescription="search"
+                android:paddingStart="5dp"
+                android:paddingTop="10dp"
                 android:paddingEnd="10dp"
-                android:paddingStart="5dp"/>
+                android:src="@drawable/ic_baseline_search_24" />
+
+            <ImageView
+                android:id="@+id/archive_status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="10dp"
+                android:paddingStart="0dp"
+                android:paddingEnd="10dp"
+                android:layout_alignParentEnd="true"/>
 
             <TextView
                 android:id="@+id/search_result_text"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_toEndOf="@id/search_icon"
+                android:paddingTop="10dp"
                 android:textColor="#000000"
                 android:textSize="16sp" />
-
-        </LinearLayout>
+        </RelativeLayout>
 
     </androidx.cardview.widget.CardView>
 
