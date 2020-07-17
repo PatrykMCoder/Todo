@@ -1,21 +1,12 @@
 package com.example.todo;
 
-import android.Manifest;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.os.Build;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
 import com.example.todo.utils.notifications.Notification;
-
-import java.security.Permission;
-import java.util.ArrayList;
-import java.util.List;
 
 public class SplashScreenActivity extends AppCompatActivity {
 
@@ -26,14 +17,24 @@ public class SplashScreenActivity extends AppCompatActivity {
 
         Notification notification = new Notification(getApplicationContext());
         notification.createNotificationsChanel();
-
-        lunchMainActivity();
+        lunchActivity();
     }
 
-    private void lunchMainActivity() {
-        Intent intent = new Intent(this, MainActivity.class);
+    private String getUserID() {
+        SharedPreferences sharedPreferences = getSharedPreferences("user_data", MODE_PRIVATE);
+
+        return sharedPreferences.getString("user_id", null);
+    }
+
+    private void lunchActivity() {
+        Intent intent;
+
+        if (getUserID() != null)
+            intent = new Intent(this, MainActivity.class);
+        else
+            intent = new Intent(this, LoginActivity.class);
+
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
     }
-
 }
