@@ -1,24 +1,33 @@
 package com.example.todo.view.fragments;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.Html;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 
+import com.example.todo.LoginActivity;
 import com.example.todo.MainActivity;
 import com.example.todo.R;
 import com.example.todo.database.TodoAdapter;
 import com.example.todo.helpers.EditTodoHelper;
 import com.example.todo.helpers.GetDataHelper;
 import com.example.todo.helpers.TagsHelper;
+import com.example.todo.service.JSONHelperEditTodo;
+import com.example.todo.service.MongoDBClient;
+import com.example.todo.service.jsonhelper.JSONHelperLoadDataTodo;
 import com.example.todo.utils.formats.StringFormater;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -30,6 +39,7 @@ import java.util.Calendar;
 public class EditTodoFragment extends Fragment implements View.OnClickListener {
 
     private static final String TAG = "EditTODO";
+    private ArrayList<JSONHelperLoadDataTodo> arrayData;
     private int id;
     private EditText titleEditText;
     private EditText taskEditText;
@@ -39,11 +49,15 @@ public class EditTodoFragment extends Fragment implements View.OnClickListener {
     private Context context;
     private String title, task;
     private int done;
-    private ArrayList<GetDataHelper> dataHelper;
+    private ArrayList<JSONHelperEditTodo> dataHelper;
     private FloatingActionButton saveTodoButton;
+
+    private ProgressDialog progressDialog;
 
     private View rootView;
     private LinearLayout l;
+
+    private String userID, todoID;
 
     private int tmpPosition;
 
@@ -53,6 +67,13 @@ public class EditTodoFragment extends Fragment implements View.OnClickListener {
 
     EditTodoFragment(String title) {
         this.title = title;
+    }
+
+    public EditTodoFragment(String title, String userID, String todoID, ArrayList<JSONHelperLoadDataTodo> arrayData) {
+        this.title = title;
+        this.userID = userID;
+        this.todoID = todoID;
+        this.arrayData = arrayData;
     }
 
     @Override
@@ -93,13 +114,10 @@ public class EditTodoFragment extends Fragment implements View.OnClickListener {
     }
 
     private void loadData() {
-        TodoAdapter todoAdapter = new TodoAdapter(getContext(), title);
-        dataHelper = todoAdapter.loadAllData();
-
-        for (int i = 0; i < dataHelper.size(); i++)
+        for (int i = 0; i < arrayData.size(); i++)
             createElementsWithData(i);
 
-        tmpPosition = dataHelper.size();
+        tmpPosition = arrayData.size();
     }
 
     private void createElementsWithData(int position) {
@@ -113,8 +131,8 @@ public class EditTodoFragment extends Fragment implements View.OnClickListener {
         taskEditText.setTextSize(20);
         taskEditText.setTag("t_" + position);
         doneCheckBox.setTag("d_" + position);
-        taskEditText.setText(dataHelper.get(position).getTask().replace("'", ""));
-        doneCheckBox.setChecked(dataHelper.get(position).getDone() == 1);
+        taskEditText.setText(arrayData.get(position).task);
+        doneCheckBox.setChecked(arrayData.get(position).done);
 
         linearLayout.addView(doneCheckBox);
         linearLayout.addView(taskEditText);
@@ -146,30 +164,55 @@ public class EditTodoFragment extends Fragment implements View.OnClickListener {
     }
 
     private void updateTodo() {
+        progressDialog = ProgressDialog.show(context, "Update...", "Please wait...");
         EditText editText;
         CheckBox checkBox;
-
-        ArrayList<EditTodoHelper> dataHelper = new ArrayList<>();
-        EditTodoHelper editTodoHelper;
-
+        JSONHelperEditTodo jhet;
+        dataHelper = new ArrayList<>();
         for (int i = 0; i < tmpPosition; i++) {
             editText = rootView.findViewWithTag("t_" + i);
             checkBox = rootView.findViewWithTag("d_" + i);
+            jhet = new JSONHelperEditTodo(editText.getText().toString(), checkBox.isChecked());
 
-            editTodoHelper = new EditTodoHelper(editText.getText().toString(), checkBox.isChecked() ? 1 : 0, TagsHelper.getTag(), getCurrentDateString());
-
-            dataHelper.add(editTodoHelper);
+            dataHelper.add(jhet);
 
         }
 
-        TodoAdapter todoAdapter = new TodoAdapter(getContext());
-        todoAdapter.editTodo(new StringFormater(titleEditText.getText().toString()).formatTitle(), dataHelper);
-
-        mainActivity.closeFragment(this, new TodoFragment());
+        EditTodoAsync editTodoAsync = new EditTodoAsync();
+        editTodoAsync.execute();
     }
 
     private String getCurrentDateString() {
         Calendar calendar = Calendar.getInstance();
         return SimpleDateFormat.getDateTimeInstance().format(calendar.getTime());
+    }
+
+    class EditTodoAsync extends AsyncTask<String, String, String> {
+
+        @Override
+        protected String doInBackground(String... strings) {
+            MongoDBClient mongoDBClient = new MongoDBClient();
+            int code = mongoDBClient.editTodo(userID, todoID, dataHelper);
+            if(code == 200 || code == 201)
+                return "done";
+
+            return "notDone";
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            progressDialog.dismiss();
+            if (s.equals("done")) {
+                mainActivity.closeFragment(EditTodoFragment.this, new TodoDetailsFragment(userID, todoID, title));
+            } else {
+                new Handler().post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(context, "Todo not updated, try again", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        }
     }
 }
