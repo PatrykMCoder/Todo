@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <corners android:radius="15dp" />
+    <gradient
+        android:startColor="#A8D26D"
+        android:centerColor="#83C36E"
+        android:endColor="#5CB270"/>
+</shape>
+
+<!-- ["A8D26D","A5D16D","A3D06D","A0CF6D","9ECE6D","9BCC6E","98CB6E","96CA6E","93C96E","90C86E","8EC76E","8BC66E","89C56E","86C46E","83C36E","81C16F","7EC06F","7BBF6F","79BE6F","76BD6F","74BC6F","71BB6F","6EBA6F","6CB96F","69B86F","66B670","64B570","61B470","5FB370","5CB270"]-->
