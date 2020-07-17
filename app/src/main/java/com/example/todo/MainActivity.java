@@ -26,6 +26,7 @@ import com.example.todo.helpers.TitleSearchHandle;
 import com.example.todo.utils.screen.NotificationBar;
 import com.example.todo.view.fragments.TodoDetailsFragment;
 import com.example.todo.view.fragments.TodoFragment;
+import com.example.todo.view.fragments.user.UserProfileFragment;
 import com.example.todo.view.search.SearchActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
@@ -48,17 +49,20 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
     private ArrayList<String> tags;
 
+    private static final String TAG = "Mainactivity";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         new NotificationBar(getWindow()).updateColorNotificationBar();
+        String userID = getSharedPreferences("user_data", MODE_PRIVATE).getString("user_id", "");
         getAllPermission();
         initView();
 
-        if (TitleSearchHandle.getTitle() != null)
-            initFragment(new TodoDetailsFragment(TitleSearchHandle.getTitle()), false);
-        else
+        if (TitleSearchHandle.getTitle() != null) {
+            initFragment(new TodoDetailsFragment(userID, TitleSearchHandle.getId(), TitleSearchHandle.getTitle()), false);
+        }else
             initFragment(new TodoFragment(), false);
     }
 
@@ -127,10 +131,10 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 //                initFragment(new NoteFragment(), true);
                 Toast.makeText(getApplicationContext(), "Available in future :)", Toast.LENGTH_LONG).show();
                 return false;
-            case R.id.settings_item:
-                Toast.makeText(getApplicationContext(), "Available in future :)", Toast.LENGTH_LONG).show();
-                return false;
-
+            case R.id.user_profile:{
+                initFragment(new UserProfileFragment(), true);
+                return true;
+            }
             case R.id.archive_todo: {
                 Toast.makeText(this, "Available in future :)", Toast.LENGTH_SHORT).show();
                 return true;
