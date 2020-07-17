@@ -1,6 +1,7 @@
 package com.example.todo.utils.recyclerView;
 
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,16 +14,29 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.todo.MainActivity;
 import com.example.todo.R;
 import com.example.todo.helpers.TitleSearchHandle;
+import com.example.todo.service.jsonhelper.JSONHelperEditTodo;
+import com.example.todo.service.jsonhelper.JSONHelperLoadTitles;
 import com.example.todo.view.fragments.TodoDetailsFragment;
 
+import java.util.ArrayList;
 import java.util.Set;
 
 public class SearchRecyclerViewAdapter extends RecyclerView.Adapter<SearchRecyclerViewAdapter.SearchListViewHolder> {
 
-    private Set<String> data;
+    private Set<JSONHelperLoadTitles> data;
+    private ArrayList<String> ids;
+    private ArrayList<String> titles;
 
-    public SearchRecyclerViewAdapter(Set<String> data) {
+    public SearchRecyclerViewAdapter(Set<JSONHelperLoadTitles> data) {
         this.data = data;
+
+        ids = new ArrayList<>();
+        titles = new ArrayList<>();
+
+        for(JSONHelperLoadTitles t : data){
+            ids.add(t.id);
+            titles.add(t.title);
+        }
     }
 
     @NonNull
@@ -36,13 +50,14 @@ public class SearchRecyclerViewAdapter extends RecyclerView.Adapter<SearchRecycl
 
     @Override
     public void onBindViewHolder(@NonNull SearchListViewHolder holder, int position) {
-        holder.resultTextView.setText(data.toArray()[position].toString());
+        holder.resultTextView.setText(titles.get(position));
 
         holder.searchCard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(view.getContext(), MainActivity.class);
-                TitleSearchHandle.setTitle(data.toArray()[position].toString());
+                TitleSearchHandle.setTitle(titles.get(position));
+                TitleSearchHandle.setId(ids.get(position));
                 view.getContext().startActivity(intent);
             }
         });

@@ -1,6 +1,7 @@
 package com.example.todo.utils;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,11 +18,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.todo.MainActivity;
 import com.example.todo.R;
 import com.example.todo.database.TodoAdapter;
-import com.example.todo.utils.formats.StringFormater;
-import com.example.todo.utils.loader.LoaderDatabases;
+import com.example.todo.service.jsonhelper.JSONHelperLoadTitles;
+import com.example.todo.service.MongoDBClient;
 import com.example.todo.view.fragments.TodoDetailsFragment;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
-import java.io.File;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
@@ -31,21 +33,20 @@ public class TodoRecyclerViewAdapter extends RecyclerView.Adapter<TodoRecyclerVi
     private MainActivity mainActivity;
     private String description;
     private int done, id, counter;
+    private String userID;
 
     private float percentDone = 0;
 
-    private ArrayList<String> titles;
+//    private ArrayList<String> titles;
+
+    private ArrayList<JSONHelperLoadTitles> arrayTodos;
 
     private Context context;
 
-    public TodoRecyclerViewAdapter(Context context) {
+    public TodoRecyclerViewAdapter(Context context, ArrayList<JSONHelperLoadTitles> arrayTodos, String userID) {
+        this.arrayTodos = arrayTodos;
         this.context = context;
-        loadData();
-    }
-
-    private void loadData(){
-        LoaderDatabases loaderDatabases = new LoaderDatabases(context);
-        titles = loaderDatabases.loadTitles();
+        this.userID = userID;
     }
 
     @NonNull
@@ -62,43 +63,33 @@ public class TodoRecyclerViewAdapter extends RecyclerView.Adapter<TodoRecyclerVi
         mainActivity = (MainActivity) context;
         boolean checkNan;
         DecimalFormat decimalFormat = new DecimalFormat("#.##");
-        holder.titleTextView.setText(new StringFormater(titles.get(position)).deformatTitle());
-        holder.cardView.setOnClickListener(view -> {
-            mainActivity.initFragment(new TodoDetailsFragment( holder.titleTextView.getText().toString()), true);
-        });
-
-        todoAdapter = new TodoAdapter(context, titles.get(position));
-        percentDone = todoAdapter.getPercentDoneTask();
-
-        holder.allTaskDoneImageView.setVisibility(percentDone >= 100                                  ? View.VISIBLE : View.GONE);
-        holder.allTaskDoneImageView.setImageResource((Double.valueOf(percentDone).isNaN()) ? R.drawable.ic_error_red_24dp : R.drawable.ic_done_green_24dp);
-        holder.percentProgressBar.setVisibility(percentDone < 100                                     ? View.VISIBLE : View.GONE);
-
-        holder.percentTaskTextView.setText(String.format("Done in: %s %%", Math.floor(percentDone)));
-        holder.percentProgressBar.setProgress((int) percentDone);
+        if (arrayTodos != null && arrayTodos.size() > 0) {
+            holder.titleTextView.setText(arrayTodos.get(position).title);
+            holder.todoTagView.setText(String.format("Tag: %s", arrayTodos.get(position).tag));
+            holder.cardView.setOnClickListener(view -> {
+                mainActivity.initFragment(new TodoDetailsFragment(userID, arrayTodos.get(position).id, arrayTodos.get(position).title), true);
+            });
+        }
     }
 
     @Override
     public int getItemCount() {
-        return titles.size();
+        if (arrayTodos != null)
+            return arrayTodos.size();
+        return 0;
     }
 
     static class TodoListViewHolder extends RecyclerView.ViewHolder {
         private TextView titleTextView;
-        private TextView percentTaskTextView;
-        private ProgressBar percentProgressBar;
-        private CheckBox doneCheckBox;
+        private TextView todoTagView;
         private CardView cardView;
-        private ImageView allTaskDoneImageView;
 
         TodoListViewHolder(@NonNull View itemView) {
             super(itemView);
-
             titleTextView = itemView.findViewById(R.id.todoTitle);
             cardView = itemView.findViewById(R.id.cardView);
-            percentTaskTextView = itemView.findViewById(R.id.percentDoneTask);
-            percentProgressBar = itemView.findViewById(R.id.percentProgress);
-            allTaskDoneImageView = itemView.findViewById(R.id.all_task_done_image);
+            todoTagView = itemView.findViewById(R.id.todo_tag);
+
         }
     }
 }
