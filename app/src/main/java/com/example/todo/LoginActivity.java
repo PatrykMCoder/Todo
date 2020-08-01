@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -18,7 +19,10 @@ import com.example.todo.service.MongoDBClient;
 
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+
 public class LoginActivity extends AppCompatActivity {
+    private static String userId;
     private TextView registerText;
     private EditText emailEditText;
     private EditText passwordEditText;
@@ -30,8 +34,6 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
-        //todo add checking if userid is exist on device. if existing go to list with todos, else please login
 
         registerText = findViewById(R.id.open_register_text);
         emailEditText = findViewById(R.id.email_edit_text);
@@ -60,6 +62,7 @@ public class LoginActivity extends AppCompatActivity {
     class LoginThread extends AsyncTask<String, String, String> {
         private String email;
         private String password;
+        private String userId;
 
         public LoginThread(String email, String password) {
             this.email = email;
@@ -69,10 +72,14 @@ public class LoginActivity extends AppCompatActivity {
         @Override
         protected String doInBackground(String... str) {
             MongoDBClient mongoDBClient = new MongoDBClient(email, password);
-            int code = mongoDBClient.loginUser();
+            ArrayList<Object> data = mongoDBClient.loginUser();
 
-            if (code == 200)
+            if (data != null && (int) data.get(0) == 200) {
+                SharedPreferences userDataPreference = getSharedPreferences("user_data", MODE_PRIVATE);
+                userDataPreference = getSharedPreferences("user_data", MODE_PRIVATE);
+                userDataPreference.edit().putString("user_id", data.get(1).toString()).apply();
                 return "Done";
+            }
 
             return "NotDone";
         }
