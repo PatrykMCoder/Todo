@@ -61,10 +61,13 @@ public class TodoFragment extends Fragment implements View.OnClickListener {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_todo, container, false);
+        todoList = rootView.findViewById(R.id.todoListRecyclerView);
+        layoutManager = new LinearLayoutManager(context, RecyclerView.VERTICAL, false);
+        todoList.setLayoutManager(layoutManager);
+
         addNewTodo = rootView.findViewById(R.id.add_new_todo);
         userID = context.getSharedPreferences("user_data", Context.MODE_PRIVATE).getString("user_id", null);
         addNewTodo.setOnClickListener(this);
-        initRecyclerView(rootView);
         loadDataThread = new LoadDataThread();
         loadDataThread.execute();
         return rootView;
@@ -73,20 +76,12 @@ public class TodoFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onResume() {
         super.onResume();
-
         new HideAppBarHelper(mainActivity).showBar();
     }
 
-    private void initRecyclerView(View v) {
-        todoList = v.findViewById(R.id.todoListRecyclerView);
-        todoList.setNestedScrollingEnabled(false);
-        todoList.setHasFixedSize(false);
-        layoutManager = new LinearLayoutManager(context, RecyclerView.VERTICAL, false);
-        todoList.setLayoutManager(layoutManager);
+    private void initRecyclerView() {
         adapterTodoRecyclerView = new TodoRecyclerViewAdapter(context, arrayTodos, userID);
-        Log.d(TAG, "initRecyclerView: " + arrayTodos);
-        adapterTodoRecyclerView.getItemCount();
-        todoList.setAdapter(adapterTodoRecyclerView);
+        todoList.swapAdapter(adapterTodoRecyclerView, true);
     }
 
 
@@ -107,8 +102,9 @@ public class TodoFragment extends Fragment implements View.OnClickListener {
         protected String doInBackground(String... strings) {
             String userID = context.getSharedPreferences("user_data", Context.MODE_PRIVATE).getString("user_id", null);
             if (userID != null) {
-                if (arrayTodos != null)
+                if (arrayTodos != null) {
                     arrayTodos.clear();
+                }
                 MongoDBClient mongoDBClient = new MongoDBClient();
                 Gson gson = new Gson();
                 arrayTodos = gson.fromJson(mongoDBClient.loadTitlesTodoUser(userID), new TypeToken<ArrayList<JSONHelperLoadTitles>>() {
@@ -122,7 +118,7 @@ public class TodoFragment extends Fragment implements View.OnClickListener {
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
             if (s.equals("done")) {
-                initRecyclerView(rootView);
+                initRecyclerView();
             } else {
                 new Handler().post(new Runnable() {
                     @Override

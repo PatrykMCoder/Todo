@@ -63,7 +63,7 @@ public class TodoRecyclerViewAdapter extends RecyclerView.Adapter<TodoRecyclerVi
         mainActivity = (MainActivity) context;
         boolean checkNan;
         DecimalFormat decimalFormat = new DecimalFormat("#.##");
-        if (arrayTodos != null) {
+        if (arrayTodos != null && arrayTodos.size() > 0) {
             holder.titleTextView.setText(arrayTodos.get(position).title);
             holder.cardView.setOnClickListener(view -> {
                 mainActivity.initFragment(new TodoDetailsFragment(userID, arrayTodos.get(position).id, arrayTodos.get(position).title), true);
