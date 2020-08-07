@@ -6,8 +6,6 @@ import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.text.Html;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,17 +16,11 @@ import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 
-import com.example.todo.LoginActivity;
 import com.example.todo.MainActivity;
 import com.example.todo.R;
-import com.example.todo.database.TodoAdapter;
-import com.example.todo.helpers.EditTodoHelper;
-import com.example.todo.helpers.GetDataHelper;
-import com.example.todo.helpers.TagsHelper;
-import com.example.todo.service.JSONHelperEditTodo;
+import com.example.todo.service.jsonhelper.JSONHelperEditTodo;
 import com.example.todo.service.MongoDBClient;
 import com.example.todo.service.jsonhelper.JSONHelperLoadDataTodo;
-import com.example.todo.utils.formats.StringFormater;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.text.SimpleDateFormat;

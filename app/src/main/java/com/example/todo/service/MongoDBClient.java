@@ -1,11 +1,10 @@
 package com.example.todo.service;
 
-import android.util.JsonWriter;
 import android.util.Log;
 
+import com.example.todo.service.jsonhelper.JSONHelperEditTodo;
 import com.example.todo.service.jsonhelper.JSONHelperSaveTodo;
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
 import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONArray;
@@ -16,17 +15,11 @@ import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
 
 public class MongoDBClient {
     private static String TAG = "mongodbclient";
@@ -245,6 +238,8 @@ public class MongoDBClient {
                 dataJson.put("todos", new Gson().toJson(todos, new TypeToken<ArrayList<JSONHelperSaveTodo>>() {
                 }.getType()));
 
+                Log.d(TAG, "doInBackground: " + dataJson);
+
                 DataOutputStream dataOutputStream = new DataOutputStream(connection.getOutputStream());
                 dataOutputStream.writeBytes(dataJson.toString());
                 dataOutputStream.flush();
@@ -294,5 +289,39 @@ public class MongoDBClient {
         JSONArray dataTodoArray = dataTodoObject.getJSONArray("todos");
 
         return dataTodoArray.toString();
+    }
+
+    public int editTodoTaskStatus(String userID, String todoID, ArrayList<JSONHelperEditTodo> todos) {
+        try {
+            URL editTodoURL = makeUrl("https://todo-note-api.herokuapp.com/todos/status/" + userID + "/" + todoID);
+            HttpURLConnection connection;
+            if (editTodoURL != null) {
+                connection = (HttpURLConnection) editTodoURL.openConnection();
+                connection.setRequestMethod("PUT");
+                connection.setRequestProperty("Content-Type", "application/json;charset=UTF-8");
+                connection.setRequestProperty("Accept", "application/json");
+                connection.setDoOutput(true);
+                connection.setDoInput(true);
+
+                JSONObject dataJson = new JSONObject();
+                dataJson.put("todos", new Gson().toJson(todos, new TypeToken<ArrayList<JSONHelperSaveTodo>>() {
+                }.getType()));
+
+                Log.d(TAG, "doInBackground: " + dataJson);
+
+                DataOutputStream dataOutputStream = new DataOutputStream(connection.getOutputStream());
+                dataOutputStream.writeBytes(dataJson.toString());
+                dataOutputStream.flush();
+                dataOutputStream.close();
+
+                Log.d(TAG, "editTodo: " + connection.getResponseCode());
+                Log.d(TAG, "editTodo: " + connection.getResponseMessage());
+
+                return connection.getResponseCode();
+            }
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
+        }
+        return 0;
     }
 }

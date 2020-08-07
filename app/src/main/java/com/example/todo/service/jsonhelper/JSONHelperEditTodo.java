@@ -1,4 +1,4 @@
-package com.example.todo.service;
+package com.example.todo.service.jsonhelper;
 
 import com.google.gson.annotations.SerializedName;
 
