@@ -8,6 +8,7 @@ import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.os.Handler;
 import android.util.Log;
@@ -36,6 +37,7 @@ public class TodoFragment extends Fragment implements View.OnClickListener {
     private RecyclerView.LayoutManager layoutManager;
 
     private FloatingActionButton addNewTodo;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     private Context context;
 
@@ -65,11 +67,22 @@ public class TodoFragment extends Fragment implements View.OnClickListener {
         layoutManager = new LinearLayoutManager(context, RecyclerView.VERTICAL, false);
         todoList.setLayoutManager(layoutManager);
 
+        swipeRefreshLayout = rootView.findViewById(R.id.refresh_swipe);
         addNewTodo = rootView.findViewById(R.id.add_new_todo);
         userID = context.getSharedPreferences("user_data", Context.MODE_PRIVATE).getString("user_id", null);
         addNewTodo.setOnClickListener(this);
         loadDataThread = new LoadDataThread();
         loadDataThread.execute();
+
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                loadDataThread = new LoadDataThread();
+                loadDataThread.execute();
+
+            }
+        });
+
         return rootView;
     }
 
@@ -117,6 +130,7 @@ public class TodoFragment extends Fragment implements View.OnClickListener {
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
+            swipeRefreshLayout.setRefreshing(false);
             if (s.equals("done")) {
                 initRecyclerView();
             } else {

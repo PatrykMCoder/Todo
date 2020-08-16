@@ -24,6 +24,7 @@ import android.widget.Toast;
 
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.todo.MainActivity;
 import com.example.todo.R;
@@ -66,6 +67,7 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
     private TextView lastEditedView;
     private ImageView reminderStatusImageView;
     private ProgressDialog progressDialog;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     private FloatingActionMenu floatingActionMenu;
     private com.github.clans.fab.FloatingActionButton createReminderFAB;
@@ -120,6 +122,7 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
         reminderStatusImageView = rootView.findViewById(R.id.reminder_status);
 
         box = rootView.findViewById(R.id.box);
+        swipeRefreshLayout = rootView.findViewById(R.id.swipe_refresh);
 
         floatingActionMenu = rootView.findViewById(R.id.menu);
         createReminderFAB = rootView.findViewById(R.id.create_reminder);
@@ -136,6 +139,15 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
             public void onClick(View v) {
                 DialogFragment dialogFragment = new DeleteTodoAskDialog(context, mainActivity, TodoDetailsFragment.this, title, userID, todoID);
                 dialogFragment.show(mainActivity.getSupportFragmentManager(), "delete todo");
+            }
+        });
+
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                box.removeAllViews();
+                LoadTasksThread loadTasksThread = new LoadTasksThread();
+                loadTasksThread.execute();
             }
         });
 
@@ -276,7 +288,6 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
             if (arrayData != null) {
                 if (strings != null)
                     for (String s : strings) {
-                        Log.d(TAG, "doInBackground: " + s);
                         if (!s.equals("notToUI")) return "doneLoad";
                         else return "done";
                     }
@@ -289,6 +300,7 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
+            swipeRefreshLayout.setRefreshing(false);
             if (s.equals("doneLoad")) {
                 getDataToShow();
             } else if(s.equals("done")){

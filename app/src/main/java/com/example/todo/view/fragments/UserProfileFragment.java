@@ -21,6 +21,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.todo.MainActivity;
 import com.example.todo.R;
@@ -43,6 +44,7 @@ public class UserProfileFragment extends Fragment {
     private TextView welcomeUserTextView, usernameTextView, emailTextView;
     private FrameLayout frameLayout;
     private ImageView waveImage;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     private Context context;
     private String userID;
@@ -67,8 +69,17 @@ public class UserProfileFragment extends Fragment {
         welcomeUserTextView = rootView.findViewById(R.id.welcome_text);
         usernameTextView = rootView.findViewById(R.id.user_name);
         emailTextView = rootView.findViewById(R.id.user_email);
-
+        swipeRefreshLayout = rootView.findViewById(R.id.swipe_refresh);
         progressDialog = ProgressDialog.show(context, "Loading data", "Please wait...");
+
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                LoadUserDataAsync loadUserDataAsync = new LoadUserDataAsync();
+                loadUserDataAsync.execute();
+            }
+        });
+
         LoadUserDataAsync loadUserDataAsync = new LoadUserDataAsync();
         loadUserDataAsync.execute();
         return rootView;
@@ -102,7 +113,9 @@ public class UserProfileFragment extends Fragment {
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
-            progressDialog.dismiss();
+            swipeRefreshLayout.setRefreshing(false);
+            if(progressDialog != null)
+                progressDialog.dismiss();
             if (s.equals("done")) {
                 updateUI(userObject.username, userObject.email);
             } else {
