@@ -49,7 +49,7 @@ public class EditTodoFragment extends Fragment implements View.OnClickListener {
     private View rootView;
     private LinearLayout l;
 
-    private String userID, todoID;
+    private String userID, todoID, tag;
 
     private int tmpPosition;
 
@@ -57,15 +57,12 @@ public class EditTodoFragment extends Fragment implements View.OnClickListener {
 
     }
 
-    EditTodoFragment(String title) {
-        this.title = title;
-    }
-
-    public EditTodoFragment(String title, String userID, String todoID, ArrayList<JSONHelperLoadDataTodo> arrayData) {
+    public EditTodoFragment(String title, String userID, String todoID, ArrayList<JSONHelperLoadDataTodo> arrayData, String tag) {
         this.title = title;
         this.userID = userID;
         this.todoID = todoID;
         this.arrayData = arrayData;
+        this.tag = tag;
     }
 
     @Override
@@ -184,7 +181,7 @@ public class EditTodoFragment extends Fragment implements View.OnClickListener {
         @Override
         protected String doInBackground(String... strings) {
             MongoDBClient mongoDBClient = new MongoDBClient();
-            int code = mongoDBClient.editTodo(userID, todoID, dataHelper);
+            int code = mongoDBClient.editTodo(userID, todoID, dataHelper, tag);
             if(code == 200 || code == 201)
                 return "done";
 

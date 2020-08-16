@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.ProtocolException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -195,7 +196,7 @@ public class MongoDBClient {
         return dataObject.getString("user_id");
     }
 
-    public int createNewTodo(String userID, String title, ArrayList<JSONHelperSaveTodo> todos) {
+    public int createNewTodo(String userID, String title, ArrayList<JSONHelperSaveTodo> todos, String tag) {
         try {
             HttpURLConnection connection = (HttpURLConnection) createTODOURL.openConnection();
             connection.setRequestMethod("POST");
@@ -210,7 +211,7 @@ public class MongoDBClient {
             dataJson.put("user_id", userID);
             dataJson.put("todos", new Gson().toJson(todos, new TypeToken<ArrayList<JSONHelperSaveTodo>>() {
             }.getType()));
-
+            dataJson.put("tag", tag);
             DataOutputStream dataOutputStream = new DataOutputStream(connection.getOutputStream());
             dataOutputStream.writeBytes(dataJson.toString());
             dataOutputStream.flush();
@@ -241,7 +242,7 @@ public class MongoDBClient {
         return 0;
     }
 
-    public int editTodo(String userID, String todoID, ArrayList<JSONHelperEditTodo> todos) {
+    public int editTodo(String userID, String todoID, ArrayList<JSONHelperEditTodo> todos, String tag) {
         try {
             URL editTodoURL = makeUrl("https://todo-note-api.herokuapp.com/todos/" + userID + "/" + todoID);
             HttpURLConnection connection;
@@ -256,6 +257,7 @@ public class MongoDBClient {
                 JSONObject dataJson = new JSONObject();
                 dataJson.put("todos", new Gson().toJson(todos, new TypeToken<ArrayList<JSONHelperSaveTodo>>() {
                 }.getType()));
+                dataJson.put("tag", tag);
 
                 Log.d(TAG, "doInBackground: " + dataJson);
 
@@ -273,6 +275,24 @@ public class MongoDBClient {
             e.printStackTrace();
         }
         return 0;
+    }
+
+    public String getTagTodo(String userID, String todoID) {
+        try {
+            URL todosURL = makeUrl("https://todo-note-api.herokuapp.com/todos/" + userID + "/" + todoID);
+            if (todosURL != null) {
+                HttpURLConnection connection = (HttpURLConnection) todosURL.openConnection();
+                connection.setRequestMethod("GET");
+                connection.setRequestProperty("Content-Type", "application/json;charset=UTF-8");
+                connection.setRequestProperty("Accept", "application/json");
+
+                return readTag(connection);
+            }
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 
     private String readTitlesTodo(HttpURLConnection connection) throws IOException, JSONException {
@@ -325,6 +345,24 @@ public class MongoDBClient {
         JSONObject userObject = jsonObject.getJSONObject("data");
         Log.d(TAG, "readUserData: " + userObject);
         return userObject.toString();
+    }
+
+    private String readTag(HttpURLConnection connection) throws IOException, JSONException {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8));
+        StringBuilder builder = new StringBuilder();
+        String line;
+
+        while ((line = reader.readLine()) != null) {
+            builder.append(line);
+        }
+
+        line = builder.toString();
+
+        JSONObject jsonObject = new JSONObject(line);
+        JSONArray dataObject = jsonObject.getJSONArray("data");
+        JSONObject dataTodoObject = dataObject.getJSONObject(0);
+
+        return dataTodoObject.getString("tag");
     }
 
     public int editTodoTaskStatus(String userID, String todoID, ArrayList<JSONHelperEditTodo> todos) {
