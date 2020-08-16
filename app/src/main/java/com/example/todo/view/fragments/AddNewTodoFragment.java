@@ -157,6 +157,7 @@ public class AddNewTodoFragment extends Fragment implements View.OnClickListener
         progressDialog = ProgressDialog.show(context, "Save...", "Please wait..");
         saveTodoData = new ArrayList<>();
         title = newTitleEditText.getText().toString().trim();
+        tag = TagsHelper.getTag();
         if (!title.isEmpty()) {
             for (int i = 0; i < createdElement; i++) {
                 newTaskEditText = rootView.findViewWithTag("t_" + i);
@@ -179,7 +180,7 @@ public class AddNewTodoFragment extends Fragment implements View.OnClickListener
         @Override
         protected String doInBackground(String... strings) {
             MongoDBClient mongoDBClient = new MongoDBClient();
-            int code = mongoDBClient.createNewTodo(userID, title, saveTodoData);
+            int code = mongoDBClient.createNewTodo(userID, title, saveTodoData, tag);
 
             if (code == 200 || code == 201)
                 return "done";

@@ -30,6 +30,7 @@ import com.example.todo.MainActivity;
 import com.example.todo.R;
 import com.example.todo.database.TodoAdapter;
 import com.example.todo.helpers.HideAppBarHelper;
+import com.example.todo.helpers.TagsHelper;
 import com.example.todo.service.jsonhelper.JSONHelperEditTodo;
 import com.example.todo.service.MongoDBClient;
 import com.example.todo.service.jsonhelper.JSONHelperLoadDataTodo;
@@ -163,6 +164,7 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
 
     private void getDataToShow() {
         titleTextView.setText(title);
+        tagView.setText(tag);
         if (arrayData != null) {
             for (int i = 0; i < arrayData.size(); i++) {
                 createElements(i);
@@ -262,8 +264,8 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.editTODO: {
-                mainActivity.initFragment(new EditTodoFragment(title, userID, todoID, arrayData), true);
-//                TagsHelper.setTag(tag);
+                String tag = tagView.getText().toString();
+                mainActivity.initFragment(new EditTodoFragment(title, userID, todoID, arrayData, tag), true);
                 break;
             }
 
@@ -285,6 +287,7 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
             arrayData = new ArrayList<>();
             arrayData = gson.fromJson(mongoDBClient.loadTodos(userID, todoID), new TypeToken<ArrayList<JSONHelperLoadDataTodo>>() {
             }.getType());
+            tag = mongoDBClient.getTagTodo(userID, todoID);
             if (arrayData != null) {
                 if (strings != null)
                     for (String s : strings) {
