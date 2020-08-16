@@ -5,6 +5,8 @@ import android.util.Log;
 import com.example.todo.service.jsonhelper.JSONHelperEditTodo;
 import com.example.todo.service.jsonhelper.JSONHelperSaveTodo;
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONArray;
@@ -121,6 +123,23 @@ public class MongoDBClient {
         } catch (IOException | JSONException e) {
             e.printStackTrace();
             Log.d(TAG, "loginUser: " + e);
+        }
+        return null;
+    }
+
+    public String loadDataUser(String userID) {
+        URL userURL = makeUrl("https://todo-note-api.herokuapp.com/user/" + userID);
+        try {
+            HttpURLConnection connection = (HttpURLConnection) userURL.openConnection();
+            connection.setRequestMethod("GET");
+            connection.setRequestProperty("Content-Type", "application/json;charset=UTF-8");
+            connection.setRequestProperty("Accept", "application/json");
+
+            return readUserData(connection);
+
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
+            Log.d(TAG, "loadDataUser: " + e.getMessage());
         }
         return null;
     }
@@ -289,6 +308,23 @@ public class MongoDBClient {
         JSONArray dataTodoArray = dataTodoObject.getJSONArray("todos");
 
         return dataTodoArray.toString();
+    }
+
+    private String readUserData(HttpURLConnection connection) throws IOException, JSONException {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8));
+        StringBuilder builder = new StringBuilder();
+        String line;
+
+        while ((line = reader.readLine()) != null) {
+            builder.append(line);
+        }
+
+        line = builder.toString();
+
+        JSONObject jsonObject = new JSONObject(line);
+        JSONObject userObject = jsonObject.getJSONObject("data");
+        Log.d(TAG, "readUserData: " + userObject);
+        return userObject.toString();
     }
 
     public int editTodoTaskStatus(String userID, String todoID, ArrayList<JSONHelperEditTodo> todos) {
