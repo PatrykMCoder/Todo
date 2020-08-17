@@ -97,7 +97,6 @@ public class TodoFragment extends Fragment implements View.OnClickListener {
         todoList.swapAdapter(adapterTodoRecyclerView, true);
     }
 
-
     @Override
     public void onDestroy() {
         super.onDestroy();

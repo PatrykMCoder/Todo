@@ -65,19 +65,11 @@ public class TodoRecyclerViewAdapter extends RecyclerView.Adapter<TodoRecyclerVi
         DecimalFormat decimalFormat = new DecimalFormat("#.##");
         if (arrayTodos != null && arrayTodos.size() > 0) {
             holder.titleTextView.setText(arrayTodos.get(position).title);
+            holder.todoTagView.setText(String.format("Tag: %s", arrayTodos.get(position).tag));
             holder.cardView.setOnClickListener(view -> {
                 mainActivity.initFragment(new TodoDetailsFragment(userID, arrayTodos.get(position).id, arrayTodos.get(position).title), true);
             });
         }
-//        todoAdapter = new TodoAdapter(context, .get(position));
-//        percentDone = todoAdapter.getPercentDoneTask();
-
-//        holder.allTaskDoneImageView.setVisibility(percentDone >= 100                                  ? View.VISIBLE : View.GONE);
-//        holder.allTaskDoneImageView.setImageResource((Double.valueOf(percentDone).isNaN()) ? R.drawable.ic_error_red_24dp : R.drawable.ic_done_green_24dp);
-//        holder.percentProgressBar.setVisibility(percentDone < 100                                     ? View.VISIBLE : View.GONE);
-//
-//        holder.percentTaskTextView.setText(String.format("Done in: %s %%", Math.floor(percentDone)));
-//        holder.percentProgressBar.setProgress((int) percentDone);
     }
 
     @Override
@@ -89,20 +81,15 @@ public class TodoRecyclerViewAdapter extends RecyclerView.Adapter<TodoRecyclerVi
 
     static class TodoListViewHolder extends RecyclerView.ViewHolder {
         private TextView titleTextView;
-        private TextView percentTaskTextView;
-        private ProgressBar percentProgressBar;
-        private CheckBox doneCheckBox;
+        private TextView todoTagView;
         private CardView cardView;
-        private ImageView allTaskDoneImageView;
 
         TodoListViewHolder(@NonNull View itemView) {
             super(itemView);
-
             titleTextView = itemView.findViewById(R.id.todoTitle);
             cardView = itemView.findViewById(R.id.cardView);
-            percentTaskTextView = itemView.findViewById(R.id.percentDoneTask);
-            percentProgressBar = itemView.findViewById(R.id.percentProgress);
-            allTaskDoneImageView = itemView.findViewById(R.id.all_task_done_image);
+            todoTagView = itemView.findViewById(R.id.todo_tag);
+
         }
     }
 }

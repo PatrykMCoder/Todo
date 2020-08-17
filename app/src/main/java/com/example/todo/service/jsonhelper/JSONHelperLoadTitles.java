@@ -18,8 +18,12 @@ public class JSONHelperLoadTitles {
     @SerializedName("_id")
     public String id;
 
-    public JSONHelperLoadTitles(String title, String id){
+    @SerializedName("tag")
+    public String tag;
+
+    public JSONHelperLoadTitles(String title, String id, String tag){
         this.title = title;
         this.id = id;
+        this.tag = tag;
     }
 }
