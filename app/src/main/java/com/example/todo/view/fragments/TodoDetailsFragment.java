@@ -164,7 +164,7 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
 
     private void getDataToShow() {
         titleTextView.setText(title);
-        tagView.setText(tag);
+        tagView.setText(String.format("Tag: %s", tag));
         if (arrayData != null) {
             for (int i = 0; i < arrayData.size(); i++) {
                 createElements(i);
@@ -239,7 +239,7 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
             dataHelper.add(jhet);
         }
 
-        EditTodoAsync editTodoAsync = new EditTodoAsync();
+        EditStatusTodoAsync editTodoAsync = new EditStatusTodoAsync();
         editTodoAsync.execute();
 
         LoadTasksThread loadTasksThread = new LoadTasksThread();
@@ -264,7 +264,6 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.editTODO: {
-                String tag = tagView.getText().toString();
                 mainActivity.initFragment(new EditTodoFragment(title, userID, todoID, arrayData, tag), true);
                 break;
             }
@@ -320,7 +319,7 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
         }
     }
 
-    class EditTodoAsync extends AsyncTask<String, String, String> {
+    class EditStatusTodoAsync extends AsyncTask<String, String, String> {
 
         @Override
         protected String doInBackground(String... strings) {

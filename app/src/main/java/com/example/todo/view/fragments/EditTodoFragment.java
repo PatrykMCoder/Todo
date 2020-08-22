@@ -14,10 +14,12 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
 import com.example.todo.MainActivity;
 import com.example.todo.R;
+import com.example.todo.helpers.TagsHelper;
 import com.example.todo.service.jsonhelper.JSONHelperEditTodo;
 import com.example.todo.service.MongoDBClient;
 import com.example.todo.service.jsonhelper.JSONHelperLoadDataTodo;
@@ -43,6 +45,7 @@ public class EditTodoFragment extends Fragment implements View.OnClickListener {
     private int done;
     private ArrayList<JSONHelperEditTodo> dataHelper;
     private FloatingActionButton saveTodoButton;
+    private FloatingActionButton setTagButton;
 
     private ProgressDialog progressDialog;
 
@@ -76,10 +79,15 @@ public class EditTodoFragment extends Fragment implements View.OnClickListener {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_edit_todo, container, false);
+        TagsHelper.setTag(null); // FIXME: 22.08.2020  find better method for edit tags
         box = rootView.findViewById(R.id.box);
         titleEditText = rootView.findViewById(R.id.title_edit);
         saveTodoButton = rootView.findViewById(R.id.save_todo);
+        setTagButton = rootView.findViewById(R.id.set_tag);
+
         saveTodoButton.setOnClickListener(this);
+        setTagButton.setOnClickListener(this);
+
         titleEditText.setText(title.replace("_", " "));
         l = rootView.findViewById(R.id.box_new_item);
         l.setOnClickListener(this);
@@ -98,6 +106,10 @@ public class EditTodoFragment extends Fragment implements View.OnClickListener {
             case R.id.box_new_item: {
                 createElement();
                 break;
+            }
+            case R.id.set_tag: {
+                DialogFragment dialogFragment = new SelectTodoTagFragment();
+                dialogFragment.show(mainActivity.getSupportFragmentManager(), "set tag todo");
             }
         }
     }
@@ -181,6 +193,9 @@ public class EditTodoFragment extends Fragment implements View.OnClickListener {
         @Override
         protected String doInBackground(String... strings) {
             MongoDBClient mongoDBClient = new MongoDBClient();
+            if(TagsHelper.getTag() != null)
+                tag = TagsHelper.getTag();
+
             int code = mongoDBClient.editTodo(userID, todoID, dataHelper, tag);
             if(code == 200 || code == 201)
                 return "done";
@@ -194,6 +209,7 @@ public class EditTodoFragment extends Fragment implements View.OnClickListener {
             progressDialog.dismiss();
             if (s.equals("done")) {
                 mainActivity.closeFragment(EditTodoFragment.this, new TodoDetailsFragment(userID, todoID, title));
+                TagsHelper.setTag("");
             } else {
                 new Handler().post(new Runnable() {
                     @Override
