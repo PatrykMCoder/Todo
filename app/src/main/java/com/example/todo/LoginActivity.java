@@ -12,10 +12,12 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.todo.service.MongoDBClient;
+import com.google.android.material.snackbar.Snackbar;
 
 import org.json.JSONObject;
 
@@ -27,6 +29,7 @@ public class LoginActivity extends AppCompatActivity {
     private EditText emailEditText;
     private EditText passwordEditText;
     private Button loginButton;
+    private RelativeLayout rootView;
 
     public ProgressDialog progressDialog;
 
@@ -35,6 +38,7 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        rootView = findViewById(R.id.root_view);
         registerText = findViewById(R.id.open_register_text);
         emailEditText = findViewById(R.id.email_edit_text);
         passwordEditText = findViewById(R.id.password_edit_text);
@@ -97,7 +101,7 @@ public class LoginActivity extends AppCompatActivity {
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(LoginActivity.this, "Something wrong, try again", Toast.LENGTH_SHORT).show();
+                        Snackbar.make(rootView, "Something wrong, try again", Snackbar.LENGTH_SHORT).show();
                     }
                 });
                 progressDialog.dismiss();

@@ -39,6 +39,7 @@ import com.example.todo.utils.reminders.ReminderHelper;
 import com.example.todo.view.dialogs.CreateReminderDialog;
 import com.example.todo.view.dialogs.DeleteTodoAskDialog;
 import com.github.clans.fab.FloatingActionMenu;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -312,7 +313,7 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
                 new Handler().post(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(context, "Something wrong, open again", Toast.LENGTH_SHORT).show();
+                        Snackbar.make(rootView, "Something wrong, try again", Snackbar.LENGTH_SHORT).show();
                     }
                 });
             }
@@ -340,7 +341,7 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
                 new Handler().post(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(context, "Todo not updated, try again", Toast.LENGTH_SHORT).show();
+                        Snackbar.make(rootView, "Todo not updated, try again", Snackbar.LENGTH_SHORT).show();
                     }
                 });
             }

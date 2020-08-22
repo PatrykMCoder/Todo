@@ -25,6 +25,7 @@ import com.example.todo.service.jsonhelper.JSONHelperLoadDataTodo;
 import com.example.todo.service.jsonhelper.JSONHelperLoadTitles;
 import com.example.todo.utils.TodoRecyclerViewAdapter;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -136,7 +137,7 @@ public class TodoFragment extends Fragment implements View.OnClickListener {
                 new Handler().post(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(context, "Something wrong, try again", Toast.LENGTH_SHORT).show();
+                        Snackbar.make(rootView, "Something wrong, slide down to refresh data again", Snackbar.LENGTH_LONG).show();
                     }
                 });
             }

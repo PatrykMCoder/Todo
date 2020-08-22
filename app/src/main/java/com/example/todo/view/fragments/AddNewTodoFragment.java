@@ -30,6 +30,7 @@ import com.example.todo.service.jsonhelper.JSONHelperSaveTodo;
 import com.example.todo.utils.formats.StringFormater;
 import com.example.todo.utils.loader.LoaderDatabases;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 
 import java.text.SimpleDateFormat;
@@ -171,10 +172,11 @@ public class AddNewTodoFragment extends Fragment implements View.OnClickListener
 
             SaveTodoThread saveTodoThread = new SaveTodoThread();
             saveTodoThread.execute();
-        } else
-            Toast.makeText(context, "Title can not be empty.", Toast.LENGTH_SHORT).show();
+        } else {
+            progressDialog.dismiss();
+            Snackbar.make(rootView, "Title can not be empty", Snackbar.LENGTH_SHORT).show();
+        }
     }
-
     class SaveTodoThread extends AsyncTask<String, String, String> {
 
         @Override
@@ -198,7 +200,7 @@ public class AddNewTodoFragment extends Fragment implements View.OnClickListener
                 new Handler().post(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(context, "Cannot save todo, try again", Toast.LENGTH_SHORT).show();
+                        Snackbar.make(rootView, "Cannot save todo, try again", Snackbar.LENGTH_SHORT).show();
                     }
                 });
             }

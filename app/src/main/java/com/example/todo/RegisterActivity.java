@@ -10,11 +10,13 @@ import android.os.Handler;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.example.todo.service.MongoDBClient;
 import com.example.todo.service.MongodbHelper;
 import com.example.todo.service.Operation;
+import com.google.android.material.snackbar.Snackbar;
 
 import org.json.JSONObject;
 
@@ -22,6 +24,7 @@ public class RegisterActivity extends AppCompatActivity {
 
     private EditText emailEditText, passwordEditText, usernameEditText, confirmPasswordEditText;
     private Button createUserButton;
+    private RelativeLayout rootView;
 
     private ProgressDialog progressDialog;
 
@@ -45,7 +48,7 @@ public class RegisterActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
-
+        rootView = findViewById(R.id.root_view);
         usernameEditText = findViewById(R.id.username_edit_text);
         emailEditText = findViewById(R.id.email_edit_text);
         passwordEditText = findViewById(R.id.password_edit_text);
@@ -113,7 +116,7 @@ public class RegisterActivity extends AppCompatActivity {
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(RegisterActivity.this, "Something wrong, try again", Toast.LENGTH_SHORT).show();
+                        Snackbar.make(rootView, "Something wrong, try again", Snackbar.LENGTH_SHORT).show();
                     }
                 });
                 progressDialog.dismiss();

@@ -33,6 +33,7 @@ import com.example.todo.helpers.HideAppBarHelper;
 import com.example.todo.service.MongoDBClient;
 import com.example.todo.service.jsonhelper.JSONHelperUser;
 import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -144,7 +145,7 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
                 new Handler().post(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(context, "Something wrong, try again", Toast.LENGTH_SHORT).show();
+                        Snackbar.make(rootView, "Something wrong, try again. Slide down to refresh", Snackbar.LENGTH_LONG).show();
                     }
                 });
             }

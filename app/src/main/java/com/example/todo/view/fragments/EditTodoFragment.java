@@ -24,6 +24,7 @@ import com.example.todo.service.jsonhelper.JSONHelperEditTodo;
 import com.example.todo.service.MongoDBClient;
 import com.example.todo.service.jsonhelper.JSONHelperLoadDataTodo;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -214,7 +215,7 @@ public class EditTodoFragment extends Fragment implements View.OnClickListener {
                 new Handler().post(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(context, "Todo not updated, try again", Toast.LENGTH_SHORT).show();
+                        Snackbar.make(rootView, "Todo not updated, try again", Snackbar.LENGTH_SHORT).show();
                     }
                 });
             }
