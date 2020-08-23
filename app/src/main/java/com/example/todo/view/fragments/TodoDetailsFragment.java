@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.DisplayMetrics;
@@ -22,6 +23,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -43,8 +45,19 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import java.sql.Time;
+import java.text.FieldPosition;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 import java.util.Map;
+import java.util.TimeZone;
 
 public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCheckedChangeListener, View.OnClickListener {
 
@@ -89,6 +102,8 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
     private ArrayList<JSONHelperEditTodo> arrayDataEdit;
     private ArrayList<JSONHelperEditTodo> dataHelper;
     private int tmpPosition;
+
+    private String dateUpdatedAt;
 
     public TodoDetailsFragment() {
 
@@ -160,16 +175,25 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
         DisplayMetrics displayMetrics = new DisplayMetrics();
         mainActivity.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         int pixelsWidth = displayMetrics.widthPixels;
-        return pixelsWidth < 800 ? String.format("Edited:\n%s", data) : String.format("Edited: %s", data);
+        return pixelsWidth < 800 ? String.format("Edited:\n%s", data.split("T")[0]) : String.format("Edited: %s", data.split("T")[0]);
+    }
+
+    private String splitTextTag(String tag) {
+        if (tag.length() >= 7) {
+            tag = tag.substring(0, Math.min(tag.length(), 7)) + "...";
+        }
+        return tag;
     }
 
     private void getDataToShow() {
         titleTextView.setText(title);
-        tagView.setText(String.format("Tag: %s", tag));
+        tagView.setText(String.format("Tag: %s", splitTextTag(tag)));
+        lastEditedView.setText(formatForTextLastEdit(dateUpdatedAt));
         if (arrayData != null) {
             for (int i = 0; i < arrayData.size(); i++) {
                 createElements(i);
-            };
+            }
+            ;
             tmpPosition = arrayData.size();
         }
 
@@ -255,8 +279,8 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
     @Override
     public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
         if (compoundButton.isPressed()) {
-           updateTodo();
-           updateUI(b, compoundButton.getTag().toString().replace("d", "t"));
+            updateTodo();
+            updateUI(b, compoundButton.getTag().toString().replace("d", "t"));
         }
     }
 
@@ -288,6 +312,8 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
             arrayData = gson.fromJson(mongoDBClient.loadTodos(userID, todoID), new TypeToken<ArrayList<JSONHelperLoadDataTodo>>() {
             }.getType());
             tag = mongoDBClient.getTagTodo(userID, todoID);
+            dateUpdatedAt = mongoDBClient.loadTodosLastEdit(userID, todoID);
+
             if (arrayData != null) {
                 if (strings != null)
                     for (String s : strings) {
@@ -306,10 +332,9 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
             swipeRefreshLayout.setRefreshing(false);
             if (s.equals("doneLoad")) {
                 getDataToShow();
-            } else if(s.equals("done")){
+            } else if (s.equals("done")) {
                 //do nothing
-            }
-            else {
+            } else {
                 new Handler().post(new Runnable() {
                     @Override
                     public void run() {
@@ -326,8 +351,9 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
         protected String doInBackground(String... strings) {
             MongoDBClient mongoDBClient = new MongoDBClient();
             int code = mongoDBClient.editTodoTaskStatus(userID, todoID, dataHelper);
+            dateUpdatedAt = mongoDBClient.loadTodosLastEdit(userID, todoID);
             Log.d(TAG, "doInBackground: " + code);
-            if (code == 200 || code == 201){
+            if (code == 200 || code == 201) {
                 return "done";
             }
             return "notDone";
@@ -337,6 +363,7 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
             if (s.equals("done")) {
+                lastEditedView.setText(formatForTextLastEdit(dateUpdatedAt));
             } else {
                 new Handler().post(new Runnable() {
                     @Override

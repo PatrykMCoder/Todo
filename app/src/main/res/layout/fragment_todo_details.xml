@@ -65,7 +65,7 @@
                         android:layout_centerVertical="true"
                         android:layout_marginStart="10dp"
                         android:gravity="start"
-                        android:text="Tag: important" />
+                        android:text="Tag" />
 
                     <TextView
                         android:id="@+id/last_edited"

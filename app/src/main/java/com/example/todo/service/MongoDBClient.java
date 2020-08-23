@@ -179,6 +179,24 @@ public class MongoDBClient {
         return null;
     }
 
+    public String loadTodosLastEdit(String userID, String todoID) {
+        try {
+            URL todosURL = makeUrl("https://todo-note-api.herokuapp.com/todos/" + userID + "/" + todoID);
+            if (todosURL != null) {
+                HttpURLConnection connection = (HttpURLConnection) todosURL.openConnection();
+                connection.setRequestMethod("GET");
+                connection.setRequestProperty("Content-Type", "application/json;charset=UTF-8");
+                connection.setRequestProperty("Accept", "application/json");
+
+                return readTodosLastEdit(connection);
+            }
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
     private String getUserObjectID(HttpURLConnection connection) throws IOException, JSONException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8));
         StringBuilder builder = new StringBuilder();
@@ -363,6 +381,24 @@ public class MongoDBClient {
         JSONObject dataTodoObject = dataObject.getJSONObject(0);
 
         return dataTodoObject.getString("tag");
+    }
+
+    private String readTodosLastEdit(HttpURLConnection connection) throws IOException, JSONException {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8));
+        StringBuilder builder = new StringBuilder();
+        String line;
+
+        while ((line = reader.readLine()) != null) {
+            builder.append(line);
+        }
+
+        line = builder.toString();
+
+        JSONObject jsonObject = new JSONObject(line);
+        JSONArray dataObject = jsonObject.getJSONArray("data");
+        JSONObject dataObject2 = dataObject.getJSONObject(0);
+
+        return dataObject2.getString("updatedAt");
     }
 
     public int editTodoTaskStatus(String userID, String todoID, ArrayList<JSONHelperEditTodo> todos) {
