@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
@@ -49,20 +50,21 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
     private ArrayList<String> tags;
 
+    private static final String TAG = "Mainactivity";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         new NotificationBar(getWindow()).updateColorNotificationBar();
+        String userID = getSharedPreferences("user_data", MODE_PRIVATE).getString("user_id", "");
         getAllPermission();
         initView();
 
-//        if (TitleSearchHandle.getTitle() != null)
-//            initFragment(new TodoDetailsFragment(,TitleSearchHandle.getTitle()), false);
-//        else
-//            initFragment(new TodoFragment(), false);
-
-        initFragment(new TodoFragment(), false);
+        if (TitleSearchHandle.getTitle() != null) {
+            initFragment(new TodoDetailsFragment(userID, TitleSearchHandle.getId(), TitleSearchHandle.getTitle()), false);
+        }else
+            initFragment(new TodoFragment(), false);
     }
 
     @SuppressLint("ResourceType")
