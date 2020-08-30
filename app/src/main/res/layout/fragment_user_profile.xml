@@ -110,20 +110,22 @@
                             android:text="Settings"
                             android:textSize="24sp" />
 
-                        <ImageView
+                        <ImageButton
                             android:id="@+id/edit_email"
                             android:layout_width="25dp"
                             android:layout_height="25dp"
+                            android:background="@null"
                             android:layout_alignTop="@+id/user_email"
                             android:layout_alignEnd="@+id/user_email"
                             android:layout_alignBottom="@+id/user_email"
                             android:layout_marginEnd="20dp"
                             android:src="@drawable/ic_baseline_edit_24" />
 
-                        <ImageView
+                        <ImageButton
                             android:id="@+id/edit_password"
                             android:layout_width="25dp"
                             android:layout_height="25dp"
+                            android:background="@null"
                             android:layout_alignTop="@+id/user_password"
                             android:layout_alignEnd="@+id/user_password"
                             android:layout_alignBottom="@+id/user_password"
@@ -131,10 +133,11 @@
                             android:src="@drawable/ic_baseline_edit_24" />
 
 
-                        <ImageView
+                        <ImageButton
                             android:id="@+id/edit_username"
                             android:layout_width="25dp"
                             android:layout_height="25dp"
+                            android:background="@null"
                             android:layout_alignTop="@+id/user_name"
                             android:layout_alignEnd="@+id/user_name"
                             android:layout_alignBottom="@+id/user_name"

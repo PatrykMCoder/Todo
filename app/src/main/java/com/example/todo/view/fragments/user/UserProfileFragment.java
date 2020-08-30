@@ -1,4 +1,4 @@
-package com.example.todo.view.fragments;
+package com.example.todo.view.fragments.user;
 
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
@@ -51,6 +52,7 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
     private ImageView waveImage;
     private SwipeRefreshLayout swipeRefreshLayout;
     private Button logoutButton;
+    private ImageButton editButtonPassword, editButtonEmail, editButtonUserName;
 
     private Context context;
     private String userID;
@@ -58,6 +60,9 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
     private JSONHelperUser userObject;
     private ProgressDialog progressDialog;
     private SharedPreferences sharedPreferencesUserData;
+
+    private String username;
+    private String email;
 
     @Override
     public void onAttach(Context context) {
@@ -78,8 +83,17 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
         usernameTextView = rootView.findViewById(R.id.user_name);
         emailTextView = rootView.findViewById(R.id.user_email);
         swipeRefreshLayout = rootView.findViewById(R.id.swipe_refresh);
+
         logoutButton = rootView.findViewById(R.id.button_logout);
+        editButtonEmail = rootView.findViewById(R.id.edit_email);
+        editButtonPassword = rootView.findViewById(R.id.edit_password);
+        editButtonUserName = rootView.findViewById(R.id.edit_username);
+
         logoutButton.setOnClickListener(this);
+        editButtonUserName.setOnClickListener(this);
+        editButtonPassword.setOnClickListener(this);
+        editButtonEmail.setOnClickListener(this);
+
         progressDialog = ProgressDialog.show(context, "Loading data", "Please wait...");
 
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -95,10 +109,10 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
         return rootView;
     }
 
-    private void updateUI(String username, String email){
+    private void updateUI(String username, String email) {
         if (username.length() > 15)
             username = username.substring(0, Math.min(username.length(), 15)) + "...";
-        if(email.length() >= 15)
+        if (email.length() >= 15)
             email = email.substring(0, Math.min(email.length(), 15)) + "...";
 
         welcomeUserTextView.setText(String.format("Welcome\n%s", username));
@@ -108,12 +122,24 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.button_logout: {
                 sharedPreferencesUserData.edit().putStringSet("user_id", null).apply();
                 Intent intent = new Intent(mainActivity, LoginActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
+                break;
+            }
+            case R.id.edit_email: {
+                mainActivity.initFragment(new UserProfileEditFragment(userID, username, email), true);
+                break;
+            }
+            case R.id.edit_password: {
+                mainActivity.initFragment(new UserProfileEditFragment(userID, username, email), true);
+                break;
+            }
+            case R.id.edit_username: {
+                mainActivity.initFragment(new UserProfileEditFragment(userID, username, email), true);
                 break;
             }
         }
@@ -125,7 +151,7 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
         protected String doInBackground(String... strings) {
             MongoDBClient mongoDBClient = new MongoDBClient();
             String data = mongoDBClient.loadDataUser(userID);
-            if(data != null){
+            if (data != null) {
                 Gson gson = new Gson();
                 userObject = gson.fromJson(data, JSONHelperUser.class);
                 return userObject != null ? "done" : "notDone";
@@ -137,10 +163,12 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
             swipeRefreshLayout.setRefreshing(false);
-            if(progressDialog != null)
+            if (progressDialog != null)
                 progressDialog.dismiss();
             if (s.equals("done")) {
-                updateUI(userObject.username, userObject.email);
+                email = userObject.email;
+                username = userObject.username;
+                updateUI(username, email);
             } else {
                 new Handler().post(new Runnable() {
                     @Override
