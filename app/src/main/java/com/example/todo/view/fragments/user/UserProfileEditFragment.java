@@ -1,36 +1,51 @@
 package com.example.todo.view.fragments.user;
 
+import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.example.todo.MainActivity;
 import com.example.todo.R;
+import com.example.todo.service.MongoDBClient;
+import com.example.todo.view.dialogs.LoginDialog;
+import com.example.todo.view.fragments.TodoFragment;
+import com.google.android.material.snackbar.Snackbar;
 
 public class UserProfileEditFragment extends Fragment {
     private View rootView;
+
     private String userID;
     private String username;
-    private String email;
+    private String emailNew;
+    private String emailOld;
+    private String password = "";
 
     private TextView infoText;
     private EditText emailEdit;
     private EditText usernameEdit;
     private EditText passwordEdit;
+    private Button editButton;
 
-    /* TODO ( x -> done )
-        - create view fields: email, username and password ( x )
-        - load data to view - only email and username. Password is not readable
-        - create checking method:
-            if password field is not empty: update all data of user. First step is asking about password. If is correct (method return code 200 or 201) update data
-            else if edit only email and username
-     */
+    private MainActivity mainActivity;
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        mainActivity = (MainActivity)context;
+    }
 
     public UserProfileEditFragment() {
 
@@ -39,7 +54,7 @@ public class UserProfileEditFragment extends Fragment {
     public UserProfileEditFragment(String userID, String username, String email) {
         this.userID = userID;
         this.username = username;
-        this.email = email;
+        emailOld = email;
     }
 
     @Nullable
@@ -50,6 +65,32 @@ public class UserProfileEditFragment extends Fragment {
         emailEdit = rootView.findViewById(R.id.user_email_edit);
         usernameEdit = rootView.findViewById(R.id.user_name_edit);
         passwordEdit = rootView.findViewById(R.id.user_password_edit);
+        editButton = rootView.findViewById(R.id.button_submit);
+
+        editButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!(emailEdit.getText().toString().trim().equals("") && usernameEdit.getText().toString().trim().equals(""))) {
+                    emailNew = emailEdit.getText().toString().trim();
+                    username = usernameEdit.getText().toString().trim();
+                    password = passwordEdit.getText().toString();
+
+                    if(emailOld.equals(emailNew)){
+                        emailNew = null;
+                    }
+                    LoginDialog loginDialog;
+                    if(password.equals(""))
+                        loginDialog = new LoginDialog(userID, username, emailNew, emailOld, null);
+                    else
+                        loginDialog = new LoginDialog(userID, username, emailNew, emailOld, password);
+
+                    loginDialog.show(getFragmentManager(), "login requirde");
+                } else {
+                    Snackbar.make(rootView, "Email and username can't be empty!", Snackbar.LENGTH_SHORT).show();
+                }
+
+            }
+        });
 
         fillInputs();
 
@@ -59,6 +100,6 @@ public class UserProfileEditFragment extends Fragment {
     private void fillInputs() {
         infoText.setText(String.format("Edit\n%s", username));
         usernameEdit.setText(username);
-        emailEdit.setText(email);
+        emailEdit.setText(emailOld);
     }
 }

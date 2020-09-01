@@ -2,6 +2,8 @@ package com.example.todo.service;
 
 import android.util.Log;
 
+import androidx.annotation.Nullable;
+
 import com.example.todo.service.jsonhelper.JSONHelperEditTodo;
 import com.example.todo.service.jsonhelper.JSONHelperSaveTodo;
 import com.google.gson.Gson;
@@ -23,6 +25,7 @@ import java.net.ProtocolException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class MongoDBClient {
     private static String TAG = "mongodbclient";
@@ -195,6 +198,36 @@ public class MongoDBClient {
         }
 
         return null;
+    }
+
+    public int editUserProfile(String userID, String username, String emailOld, @Nullable String emailNew, @Nullable String password) {
+        try {
+            URL userEditURL = makeUrl("https://todo-note-api.herokuapp.com/user/edit/" + userID);
+            if (userEditURL != null) {
+                HttpURLConnection connection = (HttpURLConnection) userEditURL.openConnection();
+                connection.setRequestMethod("PUT");
+                connection.setRequestProperty("Content-Type", "application/json;charset=UTF-8");
+                connection.setRequestProperty("Accept", "application/json");
+                connection.setDoOutput(true);
+                connection.setDoInput(true);
+
+                JSONObject dataToUpdate = new JSONObject();
+                if(emailNew != null) dataToUpdate.put("email_new", emailNew);
+                dataToUpdate.put("email_old", emailOld);
+                dataToUpdate.put("username", username);
+                if (password != null) dataToUpdate.put("password", password);
+                Log.d(TAG, "editUserProfile: " + dataToUpdate);
+                DataOutputStream dataOutputStream = new DataOutputStream(connection.getOutputStream());
+                dataOutputStream.writeBytes(dataToUpdate.toString());
+                dataOutputStream.flush();
+                dataOutputStream.close();
+                Log.d(TAG, "editUserProfile: " + connection.getResponseMessage());
+                return connection.getResponseCode();
+            }
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
+        }
+        return 0;
     }
 
     private String getUserObjectID(HttpURLConnection connection) throws IOException, JSONException {
