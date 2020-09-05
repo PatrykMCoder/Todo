@@ -22,10 +22,10 @@
         android:layout_centerHorizontal="true"
         android:drawableEnd="@drawable/ic_baseline_account_circle_24"
         android:hint="Username"
+        android:inputType="text"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
-        android:paddingBottom="20dp"
-        android:inputType="text"/>
+        android:paddingBottom="20dp" />
 
 
     <EditText
@@ -36,10 +36,10 @@
         android:layout_centerHorizontal="true"
         android:drawableEnd="@drawable/ic_baseline_alternate_email_24"
         android:hint="Email"
+        android:inputType="textEmailAddress"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
-        android:paddingBottom="20dp"
-        android:inputType="textEmailAddress"/>
+        android:paddingBottom="20dp" />
 
     <EditText
         android:id="@+id/password_edit_text"
@@ -49,10 +49,10 @@
         android:layout_centerHorizontal="true"
         android:drawableEnd="@drawable/ic_baseline_lock_24"
         android:hint="Password"
+        android:inputType="textPassword"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
-        android:paddingBottom="20dp"
-        android:inputType="textPassword"/>
+        android:paddingBottom="20dp" />
 
     <EditText
         android:id="@+id/confirm_password_edit_text"
@@ -62,16 +62,36 @@
         android:layout_centerHorizontal="true"
         android:drawableEnd="@drawable/ic_baseline_lock_24"
         android:hint="Confirm password"
+        android:inputType="textPassword"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
-        android:paddingBottom="20dp"
-        android:inputType="textPassword"/>
+        android:paddingBottom="20dp" />
+
+    <LinearLayout
+        android:id="@+id/container_privacy"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/confirm_password_edit_text"
+        android:orientation="horizontal"
+        android:layout_centerHorizontal="true">
+
+        <CheckBox
+            android:id="@+id/accept_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/info_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Accept privacy policy"/>
+    </LinearLayout>
 
     <Button
         android:id="@+id/button_login"
         android:layout_width="400dp"
         android:layout_height="wrap_content"
-        android:layout_below="@id/confirm_password_edit_text"
+        android:layout_below="@id/container_privacy"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="10dp"
         android:background="@drawable/button_login_background"

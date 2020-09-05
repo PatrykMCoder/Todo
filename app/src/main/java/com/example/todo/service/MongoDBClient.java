@@ -72,7 +72,7 @@ public class MongoDBClient {
         return new JSONObject(response.toString());
     }
 
-    public int createUser() {
+    public int createUser(boolean accept) {
         try {
             HttpURLConnection connection = (HttpURLConnection) registerUrl.openConnection();
             connection.setRequestMethod("POST");
@@ -85,11 +85,13 @@ public class MongoDBClient {
             dataJson.put("username", username);
             dataJson.put("email", email);
             dataJson.put("password", password);
+            dataJson.put("accept_privacy", accept);
 
             DataOutputStream dataOutputStream = new DataOutputStream(connection.getOutputStream());
             dataOutputStream.writeBytes(dataJson.toString());
             dataOutputStream.flush();
             dataOutputStream.close();
+            Log.d(TAG, "createUser: " + dataJson);
             return connection.getResponseCode();
         } catch (IOException | JSONException e) {
             e.printStackTrace();
