@@ -122,4 +122,20 @@ public class ReaderFromJSON {
         JSONObject dataObject = jsonObject.getJSONObject("data");
         return dataObject.getString("user_id");
     }
+
+    public String getUserCustomTags(HttpURLConnection connection) throws IOException, JSONException {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8));
+        StringBuilder builder = new StringBuilder();
+        String line;
+
+        while ((line = reader.readLine()) != null) {
+            builder.append(line);
+        }
+
+        line = builder.toString();
+
+        JSONObject jsonObject = null;
+        jsonObject = new JSONObject(line);
+        return jsonObject.getJSONArray("data").toString();
+    }
 }

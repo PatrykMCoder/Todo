@@ -24,6 +24,7 @@ import com.example.todo.API.jsonhelper.JSONHelperEditTodo;
 import com.example.todo.API.MongoDBClient;
 import com.example.todo.API.jsonhelper.JSONHelperLoadDataTodo;
 import com.example.todo.API.taskstate.TaskState;
+import com.example.todo.view.dialogs.SelectTodoTagDialog;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -110,7 +111,7 @@ public class EditTodoFragment extends Fragment implements View.OnClickListener {
                 break;
             }
             case R.id.set_tag: {
-                DialogFragment dialogFragment = new SelectTodoTagFragment();
+                DialogFragment dialogFragment = new SelectTodoTagDialog();
                 dialogFragment.show(mainActivity.getSupportFragmentManager(), "set tag todo");
             }
         }

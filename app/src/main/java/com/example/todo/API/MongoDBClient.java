@@ -78,11 +78,9 @@ public class MongoDBClient {
             dataOutputStream.writeBytes(dataJson.toString());
             dataOutputStream.flush();
             dataOutputStream.close();
-            Log.d(TAG, "createUser: " + dataJson);
             return connection.getResponseCode();
         } catch (IOException | JSONException e) {
             e.printStackTrace();
-            Log.d(TAG, "createUser: " + e);
         }
         return 0;
     }
@@ -115,7 +113,6 @@ public class MongoDBClient {
             return data;
         } catch (IOException | JSONException e) {
             e.printStackTrace();
-            Log.d(TAG, "loginUser: " + e);
         }
         return null;
     }
@@ -201,7 +198,7 @@ public class MongoDBClient {
 
                 JSONObject dataToUpdate = new JSONObject();
 
-                if(emailNew != null) dataToUpdate.put("email_new", emailNew);
+                if (emailNew != null) dataToUpdate.put("email_new", emailNew);
                 dataToUpdate.put("email_old", emailOld);
                 dataToUpdate.put("username", username);
                 if (password != null) dataToUpdate.put("password", password);
@@ -253,9 +250,6 @@ public class MongoDBClient {
             if (deleteURL != null) {
                 connection = (HttpURLConnection) deleteURL.openConnection();
                 connection.setRequestMethod("DELETE");
-                Log.d(TAG, "deleteTodo: " + userID);
-                Log.d(TAG, "deleteTodo: " + todoID);
-                Log.d(TAG, "deleteTodo: " + connection.getResponseCode());
                 return connection.getResponseCode();
             }
         } catch (IOException e) {
@@ -328,19 +322,75 @@ public class MongoDBClient {
                 dataJson.put("todos", new Gson().toJson(todos, new TypeToken<ArrayList<JSONHelperSaveTodo>>() {
                 }.getType()));
 
-                Log.d(TAG, "doInBackground: " + dataJson);
-
                 DataOutputStream dataOutputStream = new DataOutputStream(connection.getOutputStream());
                 dataOutputStream.writeBytes(dataJson.toString());
                 dataOutputStream.flush();
                 dataOutputStream.close();
 
-                Log.d(TAG, "editTodo: " + connection.getResponseCode());
-                Log.d(TAG, "editTodo: " + connection.getResponseMessage());
-
                 return connection.getResponseCode();
             }
         } catch (IOException | JSONException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public String loadUserTags(String userId) {
+        try {
+            URL loadCustomTagsUrl = makeUrl("https://todo-note-api.herokuapp.com/tags/" + userId);
+            if (loadCustomTagsUrl != null) {
+                HttpURLConnection connection = (HttpURLConnection) loadCustomTagsUrl.openConnection();
+                connection.setRequestMethod("GET");
+                connection.setRequestProperty("Content-Type", "application/json;charset=UTF-8");
+                connection.setRequestProperty("Accept", "application/json");
+
+                return new ReaderFromJSON(connection).getUserCustomTags(connection);
+            }
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
+    public int createUserCustomTag(String userID, String nameTag) {
+        try {
+            URL createCustomTagURL = makeUrl("https://todo-note-api.herokuapp.com/create_tag");
+            HttpURLConnection connection = null;
+            if (createCustomTagURL != null) {
+                connection = (HttpURLConnection) createCustomTagURL.openConnection();
+                connection.setRequestMethod("POST");
+                connection.setRequestProperty("Content-Type", "application/json;charset=UTF-8");
+                connection.setRequestProperty("Accept", "application/json");
+                connection.setDoOutput(true);
+                connection.setDoInput(true);
+
+
+                JSONObject dataJson = new JSONObject();
+                dataJson.put("tag_name", nameTag);
+                dataJson.put("user_id", userID);
+                DataOutputStream dataOutputStream = new DataOutputStream(connection.getOutputStream());
+                dataOutputStream.writeBytes(dataJson.toString());
+                dataOutputStream.flush();
+                dataOutputStream.close();
+
+                return connection.getResponseCode();
+            }
+            return 0;
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public int deleteCustomTag(String userID, String tagID) {
+        try {
+            URL deleteTagURL = makeUrl("https://todo-note-api.herokuapp.com/tags/" + userID + "/" + tagID);
+            if (deleteTagURL != null) {
+                HttpURLConnection connection = (HttpURLConnection) deleteTagURL.openConnection();
+                connection.setRequestMethod("DELETE");
+                return connection.getResponseCode();
+            }
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return 0;

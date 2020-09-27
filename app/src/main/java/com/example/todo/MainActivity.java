@@ -2,6 +2,7 @@ package com.example.todo;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.PendingIntent;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -27,6 +28,7 @@ import androidx.fragment.app.FragmentTransaction;
 import com.example.todo.helpers.search.TitleSearchHandle;
 import com.example.todo.helpers.user.UserData;
 import com.example.todo.utils.screen.NotificationBar;
+import com.example.todo.view.fragments.TagsFragment;
 import com.example.todo.view.fragments.TodoDetailsFragment;
 import com.example.todo.view.fragments.TodoFragment;
 import com.example.todo.view.reminders.RemindersActivity;
@@ -133,6 +135,11 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 return true;
             case R.id.user_profile: {
                 initFragment(new UserProfileFragment(), true);
+                return true;
+            }
+            case R.id.tags: {
+                initFragment(new TagsFragment(), true);
+                drawerLayout.closeDrawers();
                 return true;
             }
             case R.id.note_item:
