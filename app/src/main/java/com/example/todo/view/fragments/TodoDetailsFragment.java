@@ -65,6 +65,7 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
     private String title;
     private String userID;
     private String taskID;
+    private boolean archive;
 
     private LinearLayout box;
     private TextView titleTextView;
@@ -104,11 +105,11 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
 
     }
 
-    public TodoDetailsFragment(String userID, String todoID, String title) {
+    public TodoDetailsFragment(String userID, String todoID, String title, boolean archive) {
         this.todoID = todoID;
         this.title = title;
         this.userID = userID;
-
+        this.archive = archive;
         LoadTasksThread loadTasksThread = new LoadTasksThread();
         loadTasksThread.execute();
     }
@@ -146,16 +147,9 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
         deleteFAB = rootView.findViewById(R.id.deleteTODO);
 
         editFAB.setOnClickListener(this);
+        archiveFAB.setOnClickListener(this);
         createReminderFAB.setOnClickListener(this);
         tagView.setOnClickListener(this);
-
-        deleteFAB.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                DialogFragment dialogFragment = new DeleteTodoAskDialog(context, mainActivity, TodoDetailsFragment.this, title, userID, todoID);
-                dialogFragment.show(mainActivity.getSupportFragmentManager(), "delete todo");
-            }
-        });
 
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -306,15 +300,23 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.editTODO: {
-                mainActivity.initFragment(new EditTodoFragment(title, userID, todoID, arrayData, tag), true);
+                mainActivity.initFragment(new EditTodoFragment(title, userID, todoID, arrayData, tag, archive), true);
                 break;
             }
-
             case R.id.create_reminder: {
                 DialogFragment dialogFragment = new CreateReminderDialog();
                 ReminderHelper.setTitle(titleTextView.getText().toString());
                 dialogFragment.show(((MainActivity) context).getSupportFragmentManager(), "create reminder");
                 break;
+            }
+            case R.id.archiveTODO: {
+                ArchiveActionAsync archiveActionAsync = new ArchiveActionAsync();
+                archiveActionAsync.execute();
+                break;
+            }
+            case R.id.deleteTODO: {
+                DialogFragment dialogFragment = new DeleteTodoAskDialog(context, mainActivity, TodoDetailsFragment.this, title, userID, todoID);
+                dialogFragment.show(mainActivity.getSupportFragmentManager(), "delete todo");
             }
         }
     }
@@ -399,6 +401,37 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
                         public void run() {
                             Snackbar.make(rootView, "Todo not updated, try again", Snackbar.LENGTH_SHORT).show();
                         }
+                    });
+                    break;
+                }
+            }
+        }
+    }
+
+    class ArchiveActionAsync extends AsyncTask<String, String, TaskState> {
+
+        @Override
+        protected TaskState doInBackground(String... strings) {
+            MongoDBClient mongoDBClient = new MongoDBClient();
+            int code = mongoDBClient.archiveTodoAction(userID, todoID, !archive);
+            if (code == 200 || code == 201)
+                return TaskState.DONE;
+            return TaskState.NOT_DONE;
+        }
+
+        @Override
+        protected void onPostExecute(TaskState taskState) {
+            super.onPostExecute(taskState);
+            switch (taskState) {
+                case DONE: {
+                    new Handler().post(() -> {
+                       Toast.makeText(context, "Action done", Toast.LENGTH_SHORT).show();
+                    });
+                    break;
+                }
+                case NOT_DONE: {
+                    new Handler().post(() -> {
+                        Toast.makeText(context, "Action error", Toast.LENGTH_SHORT).show();
                     });
                     break;
                 }

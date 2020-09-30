@@ -14,9 +14,13 @@ public class JSONHelperLoadTitles {
     @SerializedName("tag")
     public String tag;
 
-    public JSONHelperLoadTitles(String title, String id, String tag){
+    @SerializedName("archive")
+    public boolean archive;
+
+    public JSONHelperLoadTitles(String title, String id, String tag, boolean archive){
         this.title = title;
         this.id = id;
         this.tag = tag;
+        this.archive = archive;
     }
 }

@@ -23,16 +23,19 @@ public class SearchRecyclerViewAdapter extends RecyclerView.Adapter<SearchRecycl
     private Set<JSONHelperLoadTitles> data;
     private ArrayList<String> ids;
     private ArrayList<String> titles;
+    private ArrayList<Boolean> archives;
 
     public SearchRecyclerViewAdapter(Set<JSONHelperLoadTitles> data) {
         this.data = data;
 
         ids = new ArrayList<>();
         titles = new ArrayList<>();
+        archives = new ArrayList<>();
 
         for(JSONHelperLoadTitles t : data){
             ids.add(t.id);
             titles.add(t.title);
+            archives.add(t.archive);
         }
     }
 
@@ -55,6 +58,7 @@ public class SearchRecyclerViewAdapter extends RecyclerView.Adapter<SearchRecycl
                 Intent intent = new Intent(view.getContext(), MainActivity.class);
                 TitleSearchHandle.setTitle(titles.get(position));
                 TitleSearchHandle.setId(ids.get(position));
+                TitleSearchHandle.setArchive(archives.get(position));
                 view.getContext().startActivity(intent);
             }
         });

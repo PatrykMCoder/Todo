@@ -1,79 +1,69 @@
 package com.example.todo.view.fragments;
 
-
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
 import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
+import com.example.todo.API.MongoDBClient;
+import com.example.todo.API.jsonhelper.JSONHelperLoadTitles;
+import com.example.todo.API.taskstate.TaskState;
 import com.example.todo.MainActivity;
 import com.example.todo.R;
 import com.example.todo.helpers.user.UserData;
 import com.example.todo.helpers.view.HideAppBarHelper;
-import com.example.todo.API.MongoDBClient;
-import com.example.todo.API.jsonhelper.JSONHelperLoadTitles;
-import com.example.todo.API.taskstate.TaskState;
 import com.example.todo.utils.recyclerView.TodoRecyclerViewAdapter;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+
 import java.util.ArrayList;
 
-public class TodoFragment extends Fragment implements View.OnClickListener {
-
+public class TodoArchiveFragment extends Fragment {
+    private View rootView;
+    private SwipeRefreshLayout swipeRefreshLayout;
     private RecyclerView todoList;
     private RecyclerView.Adapter adapterTodoRecyclerView;
     private RecyclerView.LayoutManager layoutManager;
 
-    private FloatingActionButton addNewTodo;
-    private SwipeRefreshLayout swipeRefreshLayout;
-
-    private Context context;
-
-    private MainActivity mainActivity;
-    private static final String TAG = "TodoFragment";
     private ArrayList<JSONHelperLoadTitles> arrayTodos;
-    private LoadDataThread loadDataThread;
-    private View rootView;
     private String userID;
 
-    public TodoFragment() {
-        // Required empty public constructor
-    }
+    private Context context;
+    private MainActivity mainActivity;
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         this.context = context;
         mainActivity = (MainActivity) context;
+        userID = new UserData(context).getUserID();
     }
 
+    @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        rootView = inflater.inflate(R.layout.fragment_todo, container, false);
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        rootView = inflater.inflate(R.layout.fragment_archive_todo, null);
+
         todoList = rootView.findViewById(R.id.todoListRecyclerView);
         layoutManager = new LinearLayoutManager(context, RecyclerView.VERTICAL, false);
         todoList.setLayoutManager(layoutManager);
 
         swipeRefreshLayout = rootView.findViewById(R.id.refresh_swipe);
-
-        addNewTodo = rootView.findViewById(R.id.add_new_todo);
-        userID = new UserData(context).getUserID();
-        addNewTodo.setOnClickListener(this);
-        loadDataThread = new LoadDataThread();
-        loadDataThread.execute();
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            LoadDataThread loadDataThread = new LoadDataThread();
+            loadDataThread.execute();
+        });
 
         todoList.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -83,21 +73,10 @@ public class TodoFragment extends Fragment implements View.OnClickListener {
             }
         });
 
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                loadDataThread = new LoadDataThread();
-                loadDataThread.execute();
-            }
-        });
+        LoadDataThread loadDataThread = new LoadDataThread();
+        loadDataThread.execute();
 
         return rootView;
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        new HideAppBarHelper(mainActivity).showBar();
     }
 
     private void initRecyclerView() {
@@ -106,15 +85,15 @@ public class TodoFragment extends Fragment implements View.OnClickListener {
     }
 
     @Override
-    public void onClick(View view) {
-        if (view.getId() == R.id.add_new_todo) {
-            mainActivity.initFragment(new AddNewTodoFragment(userID), true);
-        }
+    public void onResume() {
+        super.onResume();
+        new HideAppBarHelper(mainActivity).showBar();
     }
 
     class LoadDataThread extends AsyncTask<String, String, TaskState> {
         @Override
         protected TaskState doInBackground(String... strings) {
+            String userID = context.getSharedPreferences("user_data", Context.MODE_PRIVATE).getString("user_id", null);
             if (userID != null) {
                 if (arrayTodos != null) {
                     arrayTodos.clear();
@@ -128,15 +107,15 @@ public class TodoFragment extends Fragment implements View.OnClickListener {
             return TaskState.NOT_DONE;
         }
 
-        private void removeArchiveTodos() {
-           ArrayList<JSONHelperLoadTitles> loadTitles = new ArrayList<>();
-           for (JSONHelperLoadTitles obj : arrayTodos) {
-               if (!obj.archive)
-                   loadTitles.add(obj);
-           }
+        private void removeNotArchiveTodos() {
+            ArrayList<JSONHelperLoadTitles> loadTitles = new ArrayList<>();
+            for (JSONHelperLoadTitles obj : arrayTodos) {
+                if (obj.archive)
+                    loadTitles.add(obj);
+            }
 
-           arrayTodos.clear();
-           arrayTodos = loadTitles;
+            arrayTodos.clear();
+            arrayTodos = loadTitles;
         }
 
         @Override
@@ -145,7 +124,7 @@ public class TodoFragment extends Fragment implements View.OnClickListener {
 
             switch (state) {
                 case DONE: {
-                    removeArchiveTodos();
+                    removeNotArchiveTodos();
                     initRecyclerView();
                     break;
                 }

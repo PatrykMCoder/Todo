@@ -29,6 +29,7 @@ import com.example.todo.helpers.search.TitleSearchHandle;
 import com.example.todo.helpers.user.UserData;
 import com.example.todo.utils.screen.NotificationBar;
 import com.example.todo.view.fragments.TagsFragment;
+import com.example.todo.view.fragments.TodoArchiveFragment;
 import com.example.todo.view.fragments.TodoDetailsFragment;
 import com.example.todo.view.fragments.TodoFragment;
 import com.example.todo.view.reminders.RemindersActivity;
@@ -67,7 +68,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         initView();
 
         if (TitleSearchHandle.getTitle() != null) {
-            initFragment(new TodoDetailsFragment(userID, TitleSearchHandle.getId(), TitleSearchHandle.getTitle()), false);
+            initFragment(new TodoDetailsFragment(userID, TitleSearchHandle.getId(), TitleSearchHandle.getTitle(), TitleSearchHandle.isArchive()), false);
         } else
             initFragment(new TodoFragment(), false);
     }
@@ -144,11 +145,17 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
             }
             case R.id.note_item:
             case R.id.settings:
-            case R.id.archive_todo:
             case R.id.archive_note: {
                 Toast.makeText(this, "Available in future :)", Toast.LENGTH_SHORT).show();
                 return true;
             }
+
+            case R.id.archive_todo: {
+                initFragment(new TodoArchiveFragment(), true);
+                drawerLayout.closeDrawers();
+                return true;
+            }
+
             case R.id.reminders: {
                 Intent intent = new Intent(this, RemindersActivity.class);
                 startActivity(intent);

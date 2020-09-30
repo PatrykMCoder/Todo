@@ -3,6 +3,7 @@ package com.example.todo.helpers.search;
 public class TitleSearchHandle {
     private static String title;
     private static String id;
+    private static boolean archive;
 
     public static String getTitle() {
         return title;
@@ -18,5 +19,12 @@ public class TitleSearchHandle {
 
     public static void setId(String id) {
         TitleSearchHandle.id = id;
+    }
+
+    public static void setArchive(boolean archive) {
+        TitleSearchHandle.archive = archive;
+    }
+    public static boolean isArchive() {
+        return archive;
     }
 }

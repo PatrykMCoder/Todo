@@ -55,7 +55,7 @@ public class TodoRecyclerViewAdapter extends RecyclerView.Adapter<TodoRecyclerVi
             holder.titleTextView.setText(arrayTodos.get(position).title);
             holder.todoTagView.setText(String.format("Tag: %s", arrayTodos.get(position).tag));
             holder.cardView.setOnClickListener(view -> {
-                mainActivity.initFragment(new TodoDetailsFragment(userID, arrayTodos.get(position).id, arrayTodos.get(position).title), true);
+                mainActivity.initFragment(new TodoDetailsFragment(userID, arrayTodos.get(position).id, arrayTodos.get(position).title, arrayTodos.get(position).archive), true);
             });
         }
     }

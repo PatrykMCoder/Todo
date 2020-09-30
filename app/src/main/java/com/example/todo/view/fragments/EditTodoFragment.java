@@ -46,6 +46,7 @@ public class EditTodoFragment extends Fragment implements View.OnClickListener {
     private Context context;
     private String title, task;
     private int done;
+    private boolean archive;
     private ArrayList<JSONHelperEditTodo> dataHelper;
     private FloatingActionButton saveTodoButton;
     private FloatingActionButton setTagButton;
@@ -63,12 +64,13 @@ public class EditTodoFragment extends Fragment implements View.OnClickListener {
 
     }
 
-    public EditTodoFragment(String title, String userID, String todoID, ArrayList<JSONHelperLoadDataTodo> arrayData, String tag) {
+    public EditTodoFragment(String title, String userID, String todoID, ArrayList<JSONHelperLoadDataTodo> arrayData, String tag, boolean archive) {
         this.title = title;
         this.userID = userID;
         this.todoID = todoID;
         this.arrayData = arrayData;
         this.tag = tag;
+        this.archive = archive;
     }
 
     @Override
@@ -215,7 +217,7 @@ public class EditTodoFragment extends Fragment implements View.OnClickListener {
 
             switch (state) {
                 case DONE: {
-                    mainActivity.closeFragment(EditTodoFragment.this, new TodoDetailsFragment(userID, todoID, title));
+                    mainActivity.closeFragment(EditTodoFragment.this, new TodoDetailsFragment(userID, todoID, title, archive));
                     TagsHelper.setTag("");
                     break;
                 }

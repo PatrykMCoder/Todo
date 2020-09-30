@@ -9,6 +9,7 @@ import com.example.todo.API.jsonhelper.JSONHelperEditTodo;
 import com.example.todo.API.jsonhelper.JSONHelperSaveTodo;
 import com.example.todo.API.reader.ReaderFromJSON;
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONArray;
@@ -391,6 +392,34 @@ public class MongoDBClient {
                 return connection.getResponseCode();
             }
         } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public int archiveTodoAction(String userID, String todoID, boolean archive) {
+        try {
+            URL archiveActionURL = makeUrl("https://todo-note-api.herokuapp.com/todos/archive/" + userID + "/" + todoID);
+            if (archiveActionURL != null) {
+                HttpURLConnection connection = (HttpURLConnection) archiveActionURL.openConnection();
+                connection.setRequestMethod("PUT");
+                connection.setRequestProperty("Content-Type", "application/json;charset=UTF-8");
+                connection.setRequestProperty("Accept", "application/json");
+                connection.setDoOutput(true);
+                connection.setDoInput(true);
+
+
+                JSONObject dataJson = new JSONObject();
+                dataJson.put("archive", archive);
+                
+                DataOutputStream dataOutputStream = new DataOutputStream(connection.getOutputStream());
+                dataOutputStream.writeBytes(dataJson.toString());
+                dataOutputStream.flush();
+                dataOutputStream.close();
+
+                return connection.getResponseCode();
+            }
+        } catch (IOException | JSONException e) {
             e.printStackTrace();
         }
         return 0;
