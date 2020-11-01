@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -32,7 +33,7 @@ public class SearchRecyclerViewAdapter extends RecyclerView.Adapter<SearchRecycl
         titles = new ArrayList<>();
         archives = new ArrayList<>();
 
-        for(JSONHelperLoadTitles t : data){
+        for (JSONHelperLoadTitles t : data) {
             ids.add(t.id);
             titles.add(t.title);
             archives.add(t.archive);
@@ -51,6 +52,8 @@ public class SearchRecyclerViewAdapter extends RecyclerView.Adapter<SearchRecycl
     @Override
     public void onBindViewHolder(@NonNull SearchListViewHolder holder, int position) {
         holder.resultTextView.setText(titles.get(position));
+        if (archives.get(position))
+            holder.archiveStatusImage.setImageResource(R.drawable.ic_outline_archive_24);
 
         holder.searchCard.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -72,11 +75,13 @@ public class SearchRecyclerViewAdapter extends RecyclerView.Adapter<SearchRecycl
     static class SearchListViewHolder extends RecyclerView.ViewHolder {
         private TextView resultTextView;
         private CardView searchCard;
+        private ImageView archiveStatusImage;
 
         public SearchListViewHolder(@NonNull View itemView) {
             super(itemView);
             resultTextView = itemView.findViewById(R.id.search_result_text);
             searchCard = itemView.findViewById(R.id.card_view);
+            archiveStatusImage = itemView.findViewById(R.id.archive_status);
         }
     }
 }

@@ -155,6 +155,8 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
         createReminderFAB.setOnClickListener(this);
         tagView.setOnClickListener(this);
 
+        archiveFAB.setImageResource(archive ? R.drawable.ic_baseline_unarchive_24 : R.drawable.ic_archive_white_24dp);
+
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -316,6 +318,7 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
             case R.id.archiveTODO: {
                 ArchiveActionAsync archiveActionAsync = new ArchiveActionAsync();
                 archiveActionAsync.execute();
+
                 break;
             }
             case R.id.deleteTODO: {
@@ -418,6 +421,9 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
             switch (taskState) {
                 case DONE: {
                     new Messages(context).showMessage(oldArchive ? "Unarchive" : "Archive");
+                    archiveFAB.setImageResource(archive ? R.drawable.ic_archive_white_24dp : R.drawable.ic_baseline_unarchive_24);
+                    archive = !oldArchive;
+                    oldArchive = archive;
                     break;
                 }
                 case NOT_DONE: {

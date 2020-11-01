@@ -27,6 +27,15 @@
                 android:paddingEnd="10dp"
                 android:src="@drawable/ic_baseline_search_24" />
 
+            <ImageView
+                android:id="@+id/archive_status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="10dp"
+                android:paddingStart="0dp"
+                android:paddingEnd="10dp"
+                android:layout_alignParentEnd="true"/>
+
             <TextView
                 android:id="@+id/search_result_text"
                 android:layout_width="match_parent"
