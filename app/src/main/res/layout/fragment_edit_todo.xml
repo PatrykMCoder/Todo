@@ -67,7 +67,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
-                            android:text="Tap to add new element"
+                            android:text="Tap to add item"
                             android:textColor="#B9B9B9" />
                     </LinearLayout>
 

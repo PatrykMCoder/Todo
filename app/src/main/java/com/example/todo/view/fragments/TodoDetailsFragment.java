@@ -193,6 +193,7 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
     }
 
     private void getDataToShow() {
+        sortData();
         titleTextView.setText(title);
         tagView.setText(String.format("Tag: %s", splitTextTag(tag)));
         lastEditedView.setText(formatForTextLastEdit(dateUpdatedAt));
@@ -212,6 +213,20 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
             if (new StringFormater(s.getValue().toString()).deformatTitle().equals(titleTextView.getText().toString()))
                 reminderStatusImageView.setImageResource(R.drawable.ic_notifications_green_24dp);
         }
+    }
+
+    private void sortData() {
+        ArrayList<JSONHelperLoadDataTodo> tmp = new ArrayList<>();
+        for (JSONHelperLoadDataTodo data : arrayData) {
+            if (!data.done)
+                tmp.add(data);
+        }
+        for (JSONHelperLoadDataTodo data : arrayData) {
+            if (data.done)
+                tmp.add(data);
+        }
+        arrayData.clear();
+        arrayData = tmp;
     }
 
     private void createElements(int position) {
@@ -238,6 +253,7 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
         taskTextView.setPaintFlags(doneCheckBox.isChecked() ?
                 taskTextView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG :
                 taskTextView.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
+        taskTextView.setTextColor(arrayData.get(position).done ? Color.GRAY : Color.BLACK);
 
         linearLayout.addView(doneCheckBox);
         linearLayout.addView(taskTextView);
@@ -251,6 +267,8 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
             textView = rootView.findViewWithTag(tag);
             textView.setPaintFlags(b ? textView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG :
                     textView.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
+            textView.setTextColor(b ? Color.GRAY : Color.BLACK);
+
         } else {
             mainActivity.closeFragment(this, new TodoFragment());
             new Messages(context).showMessage("Something wrong, try again.");
@@ -258,14 +276,12 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
     }
 
     private void updateTodo() {
-        EditText editText;
-        CheckBox checkBox;
         JSONHelperEditTodo jhet;
         dataHelper = new ArrayList<>();
         for (int i = 0; i < tmpPosition; i++) {
             taskTextView = rootView.findViewWithTag("t_" + i);
-            checkBox = rootView.findViewWithTag("d_" + i);
-            jhet = new JSONHelperEditTodo(taskTextView.getText().toString(), checkBox.isChecked());
+            doneCheckBox = rootView.findViewWithTag("d_" + i);
+            jhet = new JSONHelperEditTodo(taskTextView.getText().toString(), doneCheckBox.isChecked());
 
             dataHelper.add(jhet);
         }
