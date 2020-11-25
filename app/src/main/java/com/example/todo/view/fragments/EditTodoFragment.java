@@ -39,9 +39,8 @@ import java.util.Calendar;
 
 public class EditTodoFragment extends Fragment implements View.OnClickListener {
 
-    private static final String TAG = "EditTODO";
     private ArrayList<JSONHelperLoadDataTodo> arrayData;
-    private TextView titleEditText;
+    private EditText titleEditText;
     private EditText taskEditText;
     private CheckBox doneCheckBox;
     private LinearLayout box;
@@ -194,7 +193,7 @@ public class EditTodoFragment extends Fragment implements View.OnClickListener {
     private void updateTodo() {
         new HideKeyboard(rootView, mainActivity).hide();
         progressDialog = ProgressDialog.show(context, "Update...", "Please wait...");
-
+        title = titleEditText.getText().toString();
         EditText editText;
         CheckBox checkBox;
         JSONHelperEditTodo helper;
@@ -208,18 +207,19 @@ public class EditTodoFragment extends Fragment implements View.OnClickListener {
         }
 
         EditTodoAsync editTodoAsync = new EditTodoAsync();
-        editTodoAsync.execute();
+        editTodoAsync.execute(title);
     }
 
     class EditTodoAsync extends AsyncTask<String, String, TaskState> {
 
         @Override
         protected TaskState doInBackground(String... strings) {
+            title = strings[0];
             MongoDBClient mongoDBClient = new MongoDBClient();
             if (TagsHelper.getTag() != null)
                 tag = TagsHelper.getTag();
 
-            int code = mongoDBClient.editTodo(userID, todoID, dataHelper, tag);
+            int code = mongoDBClient.editTodo(userID, todoID, title, dataHelper, tag);
             if (code == 200 || code == 201)
                 return TaskState.DONE;
 

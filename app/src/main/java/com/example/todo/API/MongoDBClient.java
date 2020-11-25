@@ -258,7 +258,7 @@ public class MongoDBClient {
         return 0;
     }
 
-    public int editTodo(String userID, String todoID, ArrayList<JSONHelperEditTodo> todos, String tag) {
+    public int editTodo(String userID, String todoID, String title, ArrayList<JSONHelperEditTodo> todos, String tag) {
         try {
             URL editTodoURL = makeUrl("https://todo-note-api.herokuapp.com/todos/" + userID + "/" + todoID);
             HttpURLConnection connection;
@@ -271,6 +271,7 @@ public class MongoDBClient {
                 connection.setDoInput(true);
 
                 JSONObject dataJson = new JSONObject();
+                dataJson.put("title", title);
                 dataJson.put("todos", new Gson().toJson(todos, new TypeToken<ArrayList<JSONHelperSaveTodo>>() {
                 }.getType()));
                 dataJson.put("tag", tag);

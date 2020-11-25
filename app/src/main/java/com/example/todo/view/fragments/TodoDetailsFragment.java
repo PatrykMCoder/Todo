@@ -10,6 +10,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -346,11 +347,11 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
             }.getType());
             tag = mongoDBClient.getTagTodo(userID, todoID);
 
-            if(tag == null) tag = "";
+            if (tag == null) tag = "";
 
             dateUpdatedAt = mongoDBClient.loadTodosLastEdit(userID, todoID);
 
-            if (arrayData != null) {
+            if (arrayData != null && arrayData.size() > 0) {
                 if (strings != null)
                     for (String s : strings) {
                         if (s.equals("notToUI")) return TaskState.DONE_NOT_TO_UI;
@@ -369,6 +370,7 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
 
             switch (state) {
                 case DONE: {
+                    box.removeAllViews();
                     getDataToShow();
                     break;
                 }
