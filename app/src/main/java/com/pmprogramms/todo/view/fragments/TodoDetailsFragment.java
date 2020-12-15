@@ -284,27 +284,19 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.editTODO: {
-                mainActivity.initFragment(new EditTodoFragment(title, userID, todoID, arrayData, tag, archive), true);
-                break;
-            }
-            case R.id.create_reminder: {
-                DialogFragment dialogFragment = new CreateReminderDialog();
-                ReminderHelper.setTitle(titleTextView.getText().toString());
-                dialogFragment.show(((MainActivity) context).getSupportFragmentManager(), "create reminder");
-                break;
-            }
-            case R.id.archiveTODO: {
-                ArchiveActionAsync archiveActionAsync = new ArchiveActionAsync();
-                archiveActionAsync.execute();
-
-                break;
-            }
-            case R.id.deleteTODO: {
-                DialogFragment dialogFragment = new DeleteTodoAskDialog(context, mainActivity, TodoDetailsFragment.this, title, userID, todoID);
-                dialogFragment.show(mainActivity.getSupportFragmentManager(), "delete todo");
-            }
+        int id = v.getId();
+        if (id == R.id.editTODO) {
+            mainActivity.initFragment(new EditTodoFragment(title, userID, todoID, arrayData, tag, archive), true);
+        } else if (id == R.id.create_reminder) {
+            DialogFragment dialogFragment = new CreateReminderDialog();
+            ReminderHelper.setTitle(titleTextView.getText().toString());
+            dialogFragment.show(((MainActivity) context).getSupportFragmentManager(), "create reminder");
+        } else if (id == R.id.archiveTODO) {
+            ArchiveActionAsync archiveActionAsync = new ArchiveActionAsync();
+            archiveActionAsync.execute();
+        } else if (id == R.id.deleteTODO) {
+            DialogFragment dialogFragment = new DeleteTodoAskDialog(context, mainActivity, TodoDetailsFragment.this, title, userID, todoID);
+            dialogFragment.show(mainActivity.getSupportFragmentManager(), "delete todo");
         }
     }
 

@@ -111,30 +111,20 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.button_logout: {
-                new UserData(context).removeUserID();
-                Intent intent = new Intent(mainActivity, LoginActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
-                break;
-            }
-            case R.id.edit_userdata_button: {
-                mainActivity.initFragment(new UserProfileEditFragment(userID, username, email), true);
-                break;
-            }
-
-            case R.id.privacy: {
-                DialogFragment dialogFragment = new PolicyDialog();
-                dialogFragment.show(mainActivity.getSupportFragmentManager(), "Policy dialog");
-                break;
-            }
-
-            case R.id.open_source: {
-                DialogFragment dialogFragment = new SourceDialog();
-                dialogFragment.show(mainActivity.getSupportFragmentManager(), "OpenSource dialog");
-                break;
-            }
+        int id = v.getId();
+        if (id == R.id.button_logout) {
+            new UserData(context).removeUserID();
+            Intent intent = new Intent(mainActivity, LoginActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+        } else if (id == R.id.edit_userdata_button) {
+            mainActivity.initFragment(new UserProfileEditFragment(userID, username, email), true);
+        } else if (id == R.id.privacy) {
+            DialogFragment dialogFragment = new PolicyDialog();
+            dialogFragment.show(mainActivity.getSupportFragmentManager(), "Policy dialog");
+        } else if (id == R.id.open_source) {
+            DialogFragment dialogFragment = new SourceDialog();
+            dialogFragment.show(mainActivity.getSupportFragmentManager(), "OpenSource dialog");
         }
     }
 

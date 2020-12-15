@@ -93,21 +93,15 @@ public class AddNewTodoFragment extends Fragment implements View.OnClickListener
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.save_todo: {
-                new HideKeyboard(view, mainActivity).hide();
-                saveTodo();
-                break;
-            }
-            case R.id.set_tag: {
-                DialogFragment dialogFragment = new SelectTodoTagDialog();
-                dialogFragment.show(mainActivity.getSupportFragmentManager(), "set tag todo");
-                break;
-            }
-            case R.id.box_new_item: {
-                createElements();
-                break;
-            }
+        int id = view.getId();
+        if (id == R.id.save_todo) {
+            new HideKeyboard(view, mainActivity).hide();
+            saveTodo();
+        } else if (id == R.id.set_tag) {
+            DialogFragment dialogFragment = new SelectTodoTagDialog();
+            dialogFragment.show(mainActivity.getSupportFragmentManager(), "set tag todo");
+        } else if (id == R.id.box_new_item) {
+            createElements();
         }
     }
 

@@ -115,57 +115,44 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-        switch (menuItem.getItemId()) {
-            case R.id.todo_item:
-                initFragment(new TodoFragment(), false);
-                return true;
-            case R.id.user_profile: {
-                initFragment(new UserProfileFragment(), true);
-                return true;
+        int itemId = menuItem.getItemId();
+        if (itemId == R.id.todo_item) {
+            initFragment(new TodoFragment(), false);
+            return true;
+        } else if (itemId == R.id.user_profile) {
+            initFragment(new UserProfileFragment(), true);
+            return true;
+        } else if (itemId == R.id.tags) {
+            initFragment(new TagsFragment(), true);
+            drawerLayout.closeDrawers();
+            return true;
+        } else if (itemId == R.id.note_item || itemId == R.id.settings || itemId == R.id.archive_note) {
+            Toast.makeText(this, "Available in future :)", Toast.LENGTH_SHORT).show();
+            return true;
+        } else if (itemId == R.id.archive_todo) {
+            initFragment(new TodoArchiveFragment(), true);
+            drawerLayout.closeDrawers();
+            return true;
+        } else if (itemId == R.id.reminders) {
+            Intent intent = new Intent(this, RemindersActivity.class);
+            startActivity(intent);
+            return true;
+        } else if (itemId == R.id.send_feedback) {
+            Intent emailIntent = new Intent(Intent.ACTION_SENDTO);
+            emailIntent.setData(Uri.parse("mailto:pmarciszewski774@gmail.com"));
+            startActivity(emailIntent);
+            return true;
+        } else if (itemId == R.id.contact_with_me) {
+            Uri uri = Uri.parse("https://www.instagram.com/patryk_programmer/");
+            Intent instagramIntent = new Intent(Intent.ACTION_VIEW);
+            instagramIntent.setData(Uri.parse("com.instagram.android"));
+            try {
+                startActivity(instagramIntent);
+            } catch (ActivityNotFoundException e) {
+                startActivity(new Intent(Intent.ACTION_VIEW,
+                        Uri.parse("https://www.instagram.com/patryk_programmer/")));
             }
-            case R.id.tags: {
-                initFragment(new TagsFragment(), true);
-                drawerLayout.closeDrawers();
-                return true;
-            }
-            case R.id.note_item:
-            case R.id.settings:
-            case R.id.archive_note: {
-                Toast.makeText(this, "Available in future :)", Toast.LENGTH_SHORT).show();
-                return true;
-            }
-
-            case R.id.archive_todo: {
-                initFragment(new TodoArchiveFragment(), true);
-                drawerLayout.closeDrawers();
-                return true;
-            }
-
-            case R.id.reminders: {
-                Intent intent = new Intent(this, RemindersActivity.class);
-                startActivity(intent);
-                return true;
-            }
-            case R.id.send_feedback: {
-                Intent emailIntent = new Intent(Intent.ACTION_SENDTO);
-                emailIntent.setData(Uri.parse("mailto:pmarciszewski774@gmail.com"));
-                startActivity(emailIntent);
-                return true;
-            }
-            case R.id.contact_with_me: {
-                Uri uri = Uri.parse("https://www.instagram.com/patryk_programmer/");
-                Intent instagramIntent = new Intent(Intent.ACTION_VIEW);
-                instagramIntent.setData(Uri.parse("com.instagram.android"));
-                try {
-                    startActivity(instagramIntent);
-                } catch (ActivityNotFoundException e) {
-                    startActivity(new Intent(Intent.ACTION_VIEW,
-                            Uri.parse("https://www.instagram.com/patryk_programmer/")));
-                }
-                return true;
-            }
-            default:
-                break;
+            return true;
         }
         return false;
     }
@@ -180,17 +167,13 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.search_label: {
-                Intent searchActivity = new Intent(this, SearchActivity.class);
-                searchActivity.setAction(Intent.ACTION_SEARCH);
-                startActivity(searchActivity);
-                break;
-            }
-            case R.id.open_slide_menu: {
-                drawerLayout.openDrawer(GravityCompat.START);
-                break;
-            }
+        int id = view.getId();
+        if (id == R.id.search_label) {
+            Intent searchActivity = new Intent(this, SearchActivity.class);
+            searchActivity.setAction(Intent.ACTION_SEARCH);
+            startActivity(searchActivity);
+        } else if (id == R.id.open_slide_menu) {
+            drawerLayout.openDrawer(GravityCompat.START);
         }
     }
 }

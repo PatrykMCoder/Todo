@@ -17,15 +17,4 @@
             android:layout_height="wrap_content"
             android:paddingTop="80dp" />
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/add_new_todo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginEnd="20dp"
-        android:layout_marginBottom="20dp"
-        android:backgroundTint="@color/colorFAB"
-        android:src="@drawable/ic_add_white_24dp" />
 </RelativeLayout>
