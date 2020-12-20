@@ -20,7 +20,7 @@ import com.pmprogramms.todo.R;
 import com.pmprogramms.todo.helpers.user.UserData;
 import com.pmprogramms.todo.helpers.view.HideAppBarHelper;
 import com.pmprogramms.todo.API.APIClient;
-import com.pmprogramms.todo.API.jsonhelper.JSONHelperTitles;
+import com.pmprogramms.todo.API.jsonhelper.JSONHelperTodo;
 import com.pmprogramms.todo.API.taskstate.TaskState;
 import com.pmprogramms.todo.utils.text.Messages;
 import com.pmprogramms.todo.utils.recyclerView.TodoRecyclerViewAdapter;
@@ -40,7 +40,7 @@ public class TodoFragment extends Fragment implements View.OnClickListener {
 
     private MainActivity mainActivity;
     private static final String TAG = "TodoFragment";
-    private ArrayList<JSONHelperTitles> arrayTodos;
+    private ArrayList<JSONHelperTodo> arrayTodos;
     private LoadDataThread loadDataThread;
     private View rootView;
     private String userID;
@@ -123,8 +123,8 @@ public class TodoFragment extends Fragment implements View.OnClickListener {
         }
 
         private void removeArchiveTodos() {
-           ArrayList<JSONHelperTitles> loadTitles = new ArrayList<>();
-               for (JSONHelperTitles obj : arrayTodos) {
+           ArrayList<JSONHelperTodo> loadTitles = new ArrayList<>();
+               for (JSONHelperTodo obj : arrayTodos) {
                    if (!obj.archive)
                        loadTitles.add(obj);
                }

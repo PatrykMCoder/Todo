@@ -14,26 +14,26 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.pmprogramms.todo.MainActivity;
 import com.pmprogramms.todo.R;
 import com.pmprogramms.todo.helpers.search.TitleSearchHandle;
-import com.pmprogramms.todo.API.jsonhelper.JSONHelperTitles;
+import com.pmprogramms.todo.API.jsonhelper.JSONHelperTodo;
 
 import java.util.ArrayList;
 import java.util.Set;
 
 public class SearchRecyclerViewAdapter extends RecyclerView.Adapter<SearchRecyclerViewAdapter.SearchListViewHolder> {
 
-    private Set<JSONHelperTitles> data;
+    private Set<JSONHelperTodo> data;
     private ArrayList<String> ids;
     private ArrayList<String> titles;
     private ArrayList<Boolean> archives;
 
-    public SearchRecyclerViewAdapter(Set<JSONHelperTitles> data) {
+    public SearchRecyclerViewAdapter(Set<JSONHelperTodo> data) {
         this.data = data;
 
         ids = new ArrayList<>();
         titles = new ArrayList<>();
         archives = new ArrayList<>();
 
-        for (JSONHelperTitles t : data) {
+        for (JSONHelperTodo t : data) {
             ids.add(t.id);
             titles.add(t.title);
             archives.add(t.archive);

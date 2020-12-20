@@ -20,7 +20,7 @@ import com.pmprogramms.todo.MainActivity;
 import com.pmprogramms.todo.R;
 import com.pmprogramms.todo.helpers.user.UserData;
 import com.pmprogramms.todo.API.APIClient;
-import com.pmprogramms.todo.API.jsonhelper.JSONHelperTitles;
+import com.pmprogramms.todo.API.jsonhelper.JSONHelperTodo;
 import com.pmprogramms.todo.API.taskstate.TaskState;
 import com.pmprogramms.todo.utils.text.Messages;
 import com.pmprogramms.todo.utils.recyclerView.SearchRecyclerViewAdapter;
@@ -41,7 +41,7 @@ public class SearchActivity extends AppCompatActivity {
     private static final String TAG = "SearchActivity";
     private MainActivity mainActivity;
 
-    private ArrayList<JSONHelperTitles> arrayTodos;
+    private ArrayList<JSONHelperTodo> arrayTodos;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,10 +97,10 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     private void search(String querySearch) {
-        Set<JSONHelperTitles> result = new HashSet<>();
+        Set<JSONHelperTodo> result = new HashSet<>();
 
         if (!querySearch.isEmpty()) {
-            for (JSONHelperTitles t : arrayTodos) {
+            for (JSONHelperTodo t : arrayTodos) {
                 if (t.title.toLowerCase().contains(querySearch.toLowerCase())) {
                     result.add(t);
                 }
@@ -111,7 +111,7 @@ public class SearchActivity extends AppCompatActivity {
         displayResult(result);
     }
 
-    private void displayResult(Set<JSONHelperTitles> result) {
+    private void displayResult(Set<JSONHelperTodo> result) {
         adapterSearchRecyclerView = new SearchRecyclerViewAdapter(result);
         searchList.setAdapter(adapterSearchRecyclerView);
         adapterSearchRecyclerView.getItemCount();

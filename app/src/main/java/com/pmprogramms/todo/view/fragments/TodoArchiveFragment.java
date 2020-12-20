@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.pmprogramms.todo.API.APIClient;
-import com.pmprogramms.todo.API.jsonhelper.JSONHelperTitles;
+import com.pmprogramms.todo.API.jsonhelper.JSONHelperTodo;
 import com.pmprogramms.todo.API.taskstate.TaskState;
 import com.pmprogramms.todo.MainActivity;
 import com.pmprogramms.todo.R;
@@ -33,7 +33,7 @@ public class TodoArchiveFragment extends Fragment {
     private RecyclerView.Adapter adapterTodoRecyclerView;
     private RecyclerView.LayoutManager layoutManager;
 
-    private ArrayList<JSONHelperTitles> arrayTodos;
+    private ArrayList<JSONHelperTodo> arrayTodos;
     private String userID;
 
     private Context context;
@@ -103,8 +103,8 @@ public class TodoArchiveFragment extends Fragment {
         }
 
         private void removeNotArchiveTodos() {
-            ArrayList<JSONHelperTitles> loadTitles = new ArrayList<>();
-            for (JSONHelperTitles obj : arrayTodos) {
+            ArrayList<JSONHelperTodo> loadTitles = new ArrayList<>();
+            for (JSONHelperTodo obj : arrayTodos) {
                 if (obj.archive)
                     loadTitles.add(obj);
             }

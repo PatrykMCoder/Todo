@@ -6,7 +6,7 @@ import com.pmprogramms.todo.API.jsonhelper.JSONHelperLastEdit;
 import com.pmprogramms.todo.API.jsonhelper.JSONHelperCustomTags;
 import com.pmprogramms.todo.API.jsonhelper.JSONHelperDataTodo;
 import com.pmprogramms.todo.API.jsonhelper.JSONHelperTag;
-import com.pmprogramms.todo.API.jsonhelper.JSONHelperTitles;
+import com.pmprogramms.todo.API.jsonhelper.JSONHelperTodo;
 import com.pmprogramms.todo.API.jsonhelper.user.JSONHelperUser;
 import com.pmprogramms.todo.API.jsonhelper.user.JSONHelperUserID;
 
@@ -28,7 +28,7 @@ public class ReaderFromJSON {
         this.connection = connection;
     }
 
-    public ArrayList<JSONHelperTitles> readTitlesTodo() throws IOException, JSONException {
+    public ArrayList<JSONHelperTodo> readTitlesTodo() throws IOException, JSONException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8));
         StringBuilder builder = new StringBuilder();
         String line;
@@ -41,7 +41,7 @@ public class ReaderFromJSON {
 
         JSONObject jsonObject = new JSONObject(line);
         JSONArray dataObject = jsonObject.getJSONArray("data");
-        return new Gson().fromJson(dataObject.toString(), new TypeToken<ArrayList<JSONHelperTitles>>() {
+        return new Gson().fromJson(dataObject.toString(), new TypeToken<ArrayList<JSONHelperTodo>>() {
         }.getType());
     }
 

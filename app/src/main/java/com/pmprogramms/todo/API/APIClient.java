@@ -1,7 +1,5 @@
 package com.pmprogramms.todo.API;
 
-import android.util.Log;
-
 import androidx.annotation.Nullable;
 
 import com.pmprogramms.todo.API.jsonhelper.JSONHelperEditTodo;
@@ -9,7 +7,7 @@ import com.pmprogramms.todo.API.jsonhelper.JSONHelperLastEdit;
 import com.pmprogramms.todo.API.jsonhelper.JSONHelperCustomTags;
 import com.pmprogramms.todo.API.jsonhelper.JSONHelperDataTodo;
 import com.pmprogramms.todo.API.jsonhelper.JSONHelperTag;
-import com.pmprogramms.todo.API.jsonhelper.JSONHelperTitles;
+import com.pmprogramms.todo.API.jsonhelper.JSONHelperTodo;
 import com.pmprogramms.todo.API.jsonhelper.JSONHelperSaveTodo;
 import com.pmprogramms.todo.API.jsonhelper.user.JSONHelperUser;
 import com.pmprogramms.todo.API.jsonhelper.user.JSONHelperUserID;
@@ -135,7 +133,7 @@ public class APIClient {
         return new JSONHelperUser("", "");
     }
 
-    public ArrayList<JSONHelperTitles> loadTitlesTodoUser(String userID) {
+    public ArrayList<JSONHelperTodo> loadTitlesTodoUser(String userID) {
         try {
             URL todosURL = makeUrl("/todos/" + userID);
             if (todosURL != null) {
