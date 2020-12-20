@@ -18,4 +18,32 @@ public class TextFormat {
         }
         return tag;
     }
+
+    public String formatSelectedText(String text, TypeFormat typeFormat) {
+        StringBuilder stringBuilder = new StringBuilder(text);
+        switch (typeFormat) {
+            case BOLD: {
+                stringBuilder.insert(0, "<b>");
+                stringBuilder.append("</b>");
+                break;
+            }
+            case ITALIC: {
+                stringBuilder.insert(0, "<i>");
+                stringBuilder.append("</i>");
+                break;
+            }
+            case UNDER_LINE: {
+                stringBuilder.insert(0, "<u>");
+                stringBuilder.append("</u>");
+                break;
+            }
+            case STRIKETHROUGH: {
+                stringBuilder.insert(0, "<strike>");
+                stringBuilder.append("</strike>");
+                break;
+            }
+        }
+
+        return stringBuilder.toString();
+    }
 }

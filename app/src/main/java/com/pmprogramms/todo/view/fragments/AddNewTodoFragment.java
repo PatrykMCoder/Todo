@@ -79,9 +79,6 @@ public class AddNewTodoFragment extends Fragment implements View.OnClickListener
     public AddNewTodoFragment() {
     }
 
-    public AddNewTodoFragment(String userToken) {
-        this.userToken = userToken;
-    }
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -97,6 +94,7 @@ public class AddNewTodoFragment extends Fragment implements View.OnClickListener
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         setHasOptionsMenu(true);
         api = Client.getInstance().create(API.class);
+        userToken = new UserData(context).getUserToken();
 
         rootView = inflater.inflate(R.layout.fragment_add_new_todo, container, false);
         relativeLayout = rootView.findViewById(R.id.main);
