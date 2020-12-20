@@ -2,6 +2,7 @@ package com.pmprogramms.todo.API.retrofit;
 
 import com.pmprogramms.todo.API.retrofit.customTags.JsonHelperTag;
 import com.pmprogramms.todo.API.retrofit.login.JsonHelperLogin;
+import com.pmprogramms.todo.API.retrofit.note.JSONNoteHelper;
 import com.pmprogramms.todo.API.retrofit.todo.todo.Data;
 import com.pmprogramms.todo.API.retrofit.todo.todo.JSONHelperTodo;
 import com.pmprogramms.todo.API.retrofit.user.JsonHelperUser;
@@ -63,4 +64,25 @@ public interface API {
 
     @DELETE("/tags/{tagId}")
     Call<Void> deleteCustomTag(@Path("tagId") String tagId, @Header("x-access-token") String token);
+
+//    ========== NOTE =========
+
+    @GET("/notes")
+    Call<JSONNoteHelper> getUserNoteTitles( @Header("x-access-token") String token);
+
+    @GET("/notes/{noteId}")
+    Call<JSONNoteHelper> getUserNoteData(@Path("noteId") String noteId,  @Header("x-access-token") String token);
+
+    @POST("/create_note")
+    Call<Void> createNewNote(@Body HashMap<String, String> data,  @Header("x-access-token") String token);
+
+    @PUT("/notes/{noteId}")
+    Call<Void> editNote(@Path("noteId") String noteId, @Body HashMap<String, String> data,  @Header("x-access-token") String token);
+
+    @DELETE("/notes/{noteId}")
+    Call<Void> deleteNote(@Path("noteId") String noteId,  @Header("x-access-token") String token);
+
+    @PUT("/notes/archive/{noteId}")
+    Call<Void> archiveNoteAction(@Path("noteId") String noteId, @Body HashMap<String, Boolean> archiveStatus,  @Header("x-access-token") String token);
+
 }
