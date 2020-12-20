@@ -6,6 +6,7 @@ import com.pmprogramms.todo.API.jsonhelper.JSONHelperEditTodo;
 import com.pmprogramms.todo.API.jsonhelper.JSONHelperLastEdit;
 import com.pmprogramms.todo.API.jsonhelper.JSONHelperCustomTags;
 import com.pmprogramms.todo.API.jsonhelper.JSONHelperDataTodo;
+import com.pmprogramms.todo.API.jsonhelper.note.JSONHelperNote;
 import com.pmprogramms.todo.API.jsonhelper.JSONHelperTag;
 import com.pmprogramms.todo.API.jsonhelper.JSONHelperTodo;
 import com.pmprogramms.todo.API.jsonhelper.JSONHelperSaveTodo;
@@ -34,17 +35,19 @@ public class APIClient {
     private URL registerUrl = makeUrl("/user");
     private URL loginUrl = makeUrl("/login");
     private URL createTODOURL = makeUrl("/create_todo");
+    private URL createNoteURL = makeUrl("/create_note");
 
     private String email, password, username;
     private HttpURLConnection connection;
 
     private String buildMainURL() {
-       if (CheckTypeApplication.isDebugApp()) return "http://10.0.2.2:4000";
-       return "https://todo-note-api.herokuapp.com";
+        if (CheckTypeApplication.isDebugApp()) return "http://10.0.2.2:4000";
+        return "https://todo-note-api.herokuapp.com";
     }
 
     private URL makeUrl(String endpoint) {
-        try { return new URL(mainURL + endpoint);
+        try {
+            return new URL(mainURL + endpoint);
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
@@ -86,7 +89,7 @@ public class APIClient {
             dataOutputStream.flush();
             dataOutputStream.close();
             return connection.getResponseCode();
-        } catch (IOException | JSONException e) { 
+        } catch (IOException | JSONException e) {
             e.printStackTrace();
         }
         return 0;
@@ -347,6 +350,113 @@ public class APIClient {
     public int archiveTodoAction(String userID, String todoID, boolean archive) {
         try {
             URL archiveActionURL = makeUrl("/todos/archive/" + userID + "/" + todoID);
+            if (archiveActionURL != null) {
+                createConnection(archiveActionURL, "PUT");
+
+                JSONObject dataJson = new JSONObject();
+                dataJson.put("archive", archive);
+
+                DataOutputStream dataOutputStream = new DataOutputStream(connection.getOutputStream());
+                dataOutputStream.write(dataJson.toString().getBytes(StandardCharsets.UTF_8));
+                dataOutputStream.flush();
+                dataOutputStream.close();
+
+                return connection.getResponseCode();
+            }
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public ArrayList<JSONHelperNote> loadTitlesNoteUser(String userID) {
+        try {
+            URL notesURL = makeUrl("/notes/" + userID);
+
+            if (notesURL != null) {
+                createConnection(notesURL, "GET");
+                return new ReaderFromJSON(connection).readTitlesNote();
+            }
+
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
+        }
+        return new ArrayList<>();
+    }
+
+    public int saveNote(String userID, String title, String contents) {
+        try {
+            if (createNoteURL != null) {
+                createConnection(createNoteURL, "POST");
+
+                JSONObject dataJson = new JSONObject();
+                dataJson.put("title", title);
+                dataJson.put("user_id", userID);
+                dataJson.put("contents", contents);
+                DataOutputStream dataOutputStream = new DataOutputStream(connection.getOutputStream());
+                dataOutputStream.write(dataJson.toString().getBytes(StandardCharsets.UTF_8));
+                dataOutputStream.flush();
+                dataOutputStream.close();
+
+                return connection.getResponseCode();
+            }
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public ArrayList<JSONHelperNote> loadNotePreview(String userID, String noteID) {
+        try {
+            URL todosURL = makeUrl("/notes/" + userID + "/" + noteID);
+            if (todosURL != null) {
+                createConnection(todosURL, "GET");
+                return new ReaderFromJSON(connection).readNote();
+            }
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
+        }
+        return new ArrayList<>();
+    }
+
+    public int deleteNote(String userID, String noteID) {
+        try {
+            URL deleteURL = makeUrl("/notes/" + userID + "/" + noteID);
+            if (deleteURL != null) {
+                createConnection(deleteURL, "DELETE");
+                return connection.getResponseCode();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public int editNote(String userID, String noteID, String title, String contents) {
+        try {
+            URL editNoteURL = makeUrl("/notes/" + userID + "/" + noteID);
+            if (editNoteURL != null) {
+                createConnection(editNoteURL, "PUT");
+                JSONObject dataJson = new JSONObject();
+                dataJson.put("title", title);
+                dataJson.put("contents", contents);
+
+                DataOutputStream dataOutputStream = new DataOutputStream(connection.getOutputStream());
+                dataOutputStream.write(dataJson.toString().getBytes(StandardCharsets.UTF_8));
+                dataOutputStream.flush();
+                dataOutputStream.close();
+
+                return connection.getResponseCode();
+            }
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public int archiveNodeAction(String userID, String noteID, boolean archive) {
+        try {
+            URL archiveActionURL = makeUrl("/notes/archive/" + userID + "/" + noteID);
             if (archiveActionURL != null) {
                 createConnection(archiveActionURL, "PUT");
 

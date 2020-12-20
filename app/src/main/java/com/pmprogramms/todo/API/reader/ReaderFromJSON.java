@@ -1,10 +1,13 @@
 package com.pmprogramms.todo.API.reader;
 
+import android.util.Log;
+
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.pmprogramms.todo.API.jsonhelper.JSONHelperLastEdit;
 import com.pmprogramms.todo.API.jsonhelper.JSONHelperCustomTags;
 import com.pmprogramms.todo.API.jsonhelper.JSONHelperDataTodo;
+import com.pmprogramms.todo.API.jsonhelper.note.JSONHelperNote;
 import com.pmprogramms.todo.API.jsonhelper.JSONHelperTag;
 import com.pmprogramms.todo.API.jsonhelper.JSONHelperTodo;
 import com.pmprogramms.todo.API.jsonhelper.user.JSONHelperUser;
@@ -147,5 +150,41 @@ public class ReaderFromJSON {
 
         JSONObject jsonObject = new JSONObject(line);
         return new Gson().fromJson(jsonObject.get("data").toString(), new TypeToken<ArrayList<JSONHelperCustomTags>>(){}.getType());
+    }
+
+    public ArrayList<JSONHelperNote> readTitlesNote() throws JSONException, IOException {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8));
+        StringBuilder builder = new StringBuilder();
+        String line;
+
+        while ((line = reader.readLine()) != null) {
+            builder.append(line);
+        }
+
+        line = builder.toString();
+
+        JSONObject jsonObject = new JSONObject(line);
+        JSONArray dataObject = jsonObject.getJSONArray("data");
+        return new Gson().fromJson(dataObject.toString(), new TypeToken<ArrayList<JSONHelperNote>>() {
+        }.getType());
+    }
+
+    public ArrayList<JSONHelperNote> readNote() throws IOException, JSONException {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8));
+        StringBuilder builder = new StringBuilder();
+        String line;
+
+        while ((line = reader.readLine()) != null) {
+            builder.append(line);
+        }
+
+        line = builder.toString();
+
+        JSONObject jsonObject = new JSONObject(line);
+        JSONArray dataObject = jsonObject.getJSONArray("data");
+        Log.d("ABCDEFGH", "readNote: " + dataObject);
+        Log.d("ABCDEFGH", "readNote: " + jsonObject);
+        return new Gson().fromJson(dataObject.toString(), new TypeToken<ArrayList<JSONHelperNote>>() {
+        }.getType());
     }
 }
