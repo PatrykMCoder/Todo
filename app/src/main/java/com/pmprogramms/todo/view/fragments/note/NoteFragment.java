@@ -1,7 +1,6 @@
 package com.pmprogramms.todo.view.fragments.note;
 
 import android.content.Context;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,12 +13,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.pmprogramms.todo.API.jsonhelper.note.JSONHelperNote;
 import com.pmprogramms.todo.API.retrofit.API;
 import com.pmprogramms.todo.API.retrofit.Client;
 import com.pmprogramms.todo.API.retrofit.note.Data;
 import com.pmprogramms.todo.API.retrofit.note.JSONNoteHelper;
-import com.pmprogramms.todo.API.taskstate.TaskState;
 import com.pmprogramms.todo.MainActivity;
 import com.pmprogramms.todo.R;
 import com.pmprogramms.todo.helpers.user.UserData;
@@ -43,7 +40,6 @@ public class NoteFragment extends Fragment implements View.OnClickListener {
     private MainActivity mainActivity;
     private Context context;
     private String userToken;
-    private ArrayList<JSONHelperNote> arrayNotes;
 
     public NoteFragment() {
 

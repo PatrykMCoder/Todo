@@ -1,8 +1,8 @@
 package com.pmprogramms.todo.view.fragments.note;
 
 import android.content.Context;
-import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,11 +20,9 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
-import com.pmprogramms.todo.API.jsonhelper.note.JSONHelperNote;
 import com.pmprogramms.todo.API.retrofit.API;
 import com.pmprogramms.todo.API.retrofit.Client;
 import com.pmprogramms.todo.API.retrofit.note.JSONNoteHelper;
-import com.pmprogramms.todo.API.taskstate.TaskState;
 import com.pmprogramms.todo.MainActivity;
 import com.pmprogramms.todo.R;
 import com.pmprogramms.todo.helpers.text.TextFormat;
@@ -59,7 +57,6 @@ public class NotePreviewFragment extends Fragment implements View.OnClickListene
     private String noteID;
     private boolean archive;
     private boolean tmpArchive;
-    private ArrayList<JSONHelperNote> jsonHelperNote;
     private JSONNoteHelper jsonNoteHelper;
 
     private API api;
@@ -125,7 +122,7 @@ public class NotePreviewFragment extends Fragment implements View.OnClickListene
 
     private void getDataToShow() {
         titleTextView.setText(jsonNoteHelper.data.get(0).title);
-        contentsTextView.setText(jsonNoteHelper.data.get(0).contents);
+        contentsTextView.setText(Html.fromHtml(jsonNoteHelper.data.get(0).contents));
         lastEditedTextView.setText(new TextFormat().formatForTextLastEdit(mainActivity, jsonNoteHelper.data.get(0).updatedAt));
 
         tmpArchive = archive = jsonNoteHelper.data.get(0).archive;
@@ -160,7 +157,7 @@ public class NotePreviewFragment extends Fragment implements View.OnClickListene
             DialogFragment deleteNoteFragment = new DeleteNoteAskDialog(context, mainActivity, this, titleTextView.getText().toString().trim(), noteID);
             deleteNoteFragment.show(mainActivity.getSupportFragmentManager(), "Delete note");
         } else if (id == R.id.edit_note) {
-            mainActivity.initFragment(new EditNoteFragment(titleTextView.getText().toString().trim(), contentsTextView.getText().toString(), noteID), true);
+            mainActivity.initFragment(new EditNoteFragment(titleTextView.getText().toString().trim(), jsonNoteHelper.data.get(0).contents, noteID), true);
         } else if (id == R.id.archive_note) {
             archiveAction();
         }

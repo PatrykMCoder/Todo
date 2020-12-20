@@ -10,11 +10,9 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.pmprogramms.todo.API.jsonhelper.note.JSONHelperNote;
 import com.pmprogramms.todo.API.retrofit.note.Data;
 import com.pmprogramms.todo.MainActivity;
 import com.pmprogramms.todo.R;
-import com.pmprogramms.todo.view.fragments.note.NoteFragment;
 import com.pmprogramms.todo.view.fragments.note.NotePreviewFragment;
 
 import java.util.ArrayList;

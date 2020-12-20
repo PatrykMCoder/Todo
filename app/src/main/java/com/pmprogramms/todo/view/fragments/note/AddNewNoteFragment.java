@@ -2,13 +2,13 @@ package com.pmprogramms.todo.view.fragments.note;
 
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.ProgressBar;
+import android.widget.ImageButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -17,15 +17,15 @@ import androidx.fragment.app.Fragment;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.pmprogramms.todo.API.retrofit.API;
 import com.pmprogramms.todo.API.retrofit.Client;
-import com.pmprogramms.todo.API.taskstate.TaskState;
 import com.pmprogramms.todo.MainActivity;
 import com.pmprogramms.todo.R;
+import com.pmprogramms.todo.helpers.text.TextFormat;
+import com.pmprogramms.todo.helpers.text.TypeFormat;
 import com.pmprogramms.todo.helpers.user.UserData;
 import com.pmprogramms.todo.helpers.view.HideAppBarHelper;
 import com.pmprogramms.todo.utils.text.Messages;
 
 import java.util.HashMap;
-import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -34,6 +34,7 @@ import retrofit2.Response;
 public class AddNewNoteFragment extends Fragment {
 
     private EditText titleEditText, contentsEditText;
+    private ImageButton boldImageButton, italicImageButton, underLineImageButton, strikethroughImageButton;
 
     private View rootView;
     private ProgressDialog progressDialog;
@@ -62,13 +63,63 @@ public class AddNewNoteFragment extends Fragment {
 
         titleEditText = rootView.findViewById(R.id.new_title_note);
         contentsEditText = rootView.findViewById(R.id.new_contents_note);
+        boldImageButton = rootView.findViewById(R.id.bold_edit_button);
+        italicImageButton = rootView.findViewById(R.id.italic_edit_button);
+        underLineImageButton = rootView.findViewById(R.id.under_line_edit_button);
+        strikethroughImageButton = rootView.findViewById(R.id.strikethrough_edit_button);
+
         saveNoteButton = rootView.findViewById(R.id.save_note);
         userToken = new UserData(context).getUserToken();
+
+        boldImageButton.setOnClickListener(v -> {
+            TextFormat textFormat = new TextFormat();
+            int startSelected = contentsEditText.getSelectionStart();
+            int endSelected = contentsEditText.getSelectionEnd();
+
+            String allText = contentsEditText.getText().toString();
+            String selectedText = allText.substring(startSelected, endSelected);
+            String formattedText = textFormat.formatSelectedText(selectedText, TypeFormat.BOLD);
+            contentsEditText.getEditableText().replace(startSelected, endSelected, Html.fromHtml(formattedText));
+        });
+
+        italicImageButton.setOnClickListener(v -> {
+            TextFormat textFormat = new TextFormat();
+            int startSelected = contentsEditText.getSelectionStart();
+            int endSelected = contentsEditText.getSelectionEnd();
+
+            String allText = contentsEditText.getText().toString();
+            String selectedText = allText.substring(startSelected, endSelected);
+            String formattedText = textFormat.formatSelectedText(selectedText, TypeFormat.ITALIC);
+            contentsEditText.getEditableText().replace(startSelected, endSelected, Html.fromHtml(formattedText));
+        });
+
+        underLineImageButton.setOnClickListener(v -> {
+            TextFormat textFormat = new TextFormat();
+            int startSelected = contentsEditText.getSelectionStart();
+            int endSelected = contentsEditText.getSelectionEnd();
+
+            String allText = contentsEditText.getText().toString();
+            String selectedText = allText.substring(startSelected, endSelected);
+            String formattedText = textFormat.formatSelectedText(selectedText, TypeFormat.UNDER_LINE);
+            contentsEditText.getEditableText().replace(startSelected, endSelected, Html.fromHtml(formattedText));
+        });
+
+        strikethroughImageButton.setOnClickListener(v -> {
+            TextFormat textFormat = new TextFormat();
+            int startSelected = contentsEditText.getSelectionStart();
+            int endSelected = contentsEditText.getSelectionEnd();
+
+            String allText = contentsEditText.getText().toString();
+            String selectedText = allText.substring(startSelected, endSelected);
+            String formattedText = textFormat.formatSelectedText(selectedText, TypeFormat.STRIKETHROUGH);
+            contentsEditText.getEditableText().replace(startSelected, endSelected, Html.fromHtml(formattedText));
+        });
+
         saveNoteButton.setOnClickListener(v -> {
             progressDialog = ProgressDialog.show(context, "Save...", "Please wait..");
 
             String title = titleEditText.getText().toString().trim();
-            String contents = contentsEditText.getText().toString();
+            String contents = Html.toHtml(contentsEditText.getText());
 
             HashMap<String, String> map = new HashMap<>();
             map.put("title", title);
