@@ -73,7 +73,7 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
     private TextView lastEditedView;
     private ImageView reminderStatusImageView;
     private SwipeRefreshLayout swipeRefreshLayout;
-    private CardView menuCardView;
+    private CardView detailsCardView;
     private ScrollView scrollView;
     private RelativeLayout relativeLayout;
 
@@ -101,10 +101,9 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
 
     }
 
-    public TodoDetailsFragment(String userToken, String todoID, String title, boolean archive, int color) {
+    public TodoDetailsFragment(String todoID, String title, boolean archive, int color) {
         this.todoID = todoID;
         this.title = title;
-        this.userToken = userToken;
         this.archive = archive;
         this.color = color;
         tmpArchive = archive;
@@ -123,6 +122,7 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         api = Client.getInstance().create(API.class);
+        userToken = new UserData(context).getUserToken();
 
         rootView = inflater.inflate(R.layout.fragment_todo_details, container, false);
         relativeLayout = rootView.findViewById(R.id.container2);
@@ -134,7 +134,7 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
         lastEditedView = rootView.findViewById(R.id.last_edited);
         reminderStatusImageView = rootView.findViewById(R.id.reminder_status);
 
-        menuCardView = rootView.findViewById(R.id.menu_card);
+        detailsCardView = rootView.findViewById(R.id.details);
         scrollView = rootView.findViewById(R.id.scroll_view);
 
         box = rootView.findViewById(R.id.box);
@@ -167,16 +167,16 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
         scrollView.setOnScrollChangeListener((v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
             swipeRefreshLayout.setEnabled(scrollY == 0);
             if (scrollY > oldScrollY) {
-                if (menuCardView.getVisibility() != View.INVISIBLE) {
+                if (detailsCardView.getVisibility() != View.INVISIBLE) {
                     Animation animation = AnimationUtils.loadAnimation(context, R.anim.menu_card_slide_down);
-                    menuCardView.setVisibility(View.INVISIBLE);
-                    menuCardView.startAnimation(animation);
+                    detailsCardView.setVisibility(View.INVISIBLE);
+                    detailsCardView.startAnimation(animation);
                 }
             } else if (scrollY < oldScrollY) {
-                if (menuCardView.getVisibility() != View.VISIBLE) {
+                if (detailsCardView.getVisibility() != View.VISIBLE) {
                     Animation animation = AnimationUtils.loadAnimation(context, R.anim.menu_card_slide_up);
-                    menuCardView.setVisibility(View.VISIBLE);
-                    menuCardView.startAnimation(animation);
+                    detailsCardView.setVisibility(View.VISIBLE);
+                    detailsCardView.startAnimation(animation);
                 }
             }
         });
@@ -352,7 +352,7 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
     public void onClick(View v) {
         int id = v.getId();
         if (id == R.id.editTODO) {
-            mainActivity.initFragment(new EditTodoFragment(title, userToken, todoID, todosArrayList, tag, archive, color), true);
+            mainActivity.initFragment(new EditTodoFragment(title, todoID, todosArrayList, tag, archive, color), true);
         } else if (id == R.id.create_reminder) {
             DialogFragment dialogFragment = new CreateReminderDialog();
             ReminderHelper.setTitle(titleTextView.getText().toString());

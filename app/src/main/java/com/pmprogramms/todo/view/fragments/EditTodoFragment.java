@@ -82,9 +82,8 @@ public class EditTodoFragment extends Fragment implements View.OnClickListener {
 
     }
 
-    public EditTodoFragment(String title, String userToken, String todoID, ArrayList<Todos> arrayData, String tag, boolean archive, int color) {
+    public EditTodoFragment(String title, String todoID, ArrayList<Todos> arrayData, String tag, boolean archive, int color) {
         this.title = title;
-        this.userToken = userToken;
         this.todoID = todoID;
         this.arrayData = arrayData;
         this.tag = tag;
@@ -108,6 +107,7 @@ public class EditTodoFragment extends Fragment implements View.OnClickListener {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         api = Client.getInstance().create(API.class);
+        userToken = new UserData(context).getUserToken();
 
         rootView = inflater.inflate(R.layout.fragment_edit_todo, container, false);
         relativeLayout = rootView.findViewById(R.id.container);
@@ -295,7 +295,7 @@ public class EditTodoFragment extends Fragment implements View.OnClickListener {
                     return;
                 }
                 new Messages(context).showMessage("Updated todo");
-                mainActivity.closeFragment(EditTodoFragment.this, new TodoDetailsFragment(userToken, todoID, title, archive, Color.parseColor(newColor)));
+                mainActivity.closeFragment(EditTodoFragment.this, new TodoDetailsFragment(todoID, title, archive, Color.parseColor(newColor)));
                 TagsHelper.setTag("");
             }
 

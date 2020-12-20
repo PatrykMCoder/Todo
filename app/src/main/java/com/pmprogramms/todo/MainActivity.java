@@ -28,6 +28,8 @@ import com.pmprogramms.todo.view.fragments.TagsFragment;
 import com.pmprogramms.todo.view.fragments.TodoArchiveFragment;
 import com.pmprogramms.todo.view.fragments.TodoDetailsFragment;
 import com.pmprogramms.todo.view.fragments.TodoFragment;
+import com.pmprogramms.todo.view.fragments.note.NoteArchiveFragment;
+import com.pmprogramms.todo.view.fragments.note.NoteFragment;
 import com.pmprogramms.todo.view.reminders.RemindersActivity;
 import com.pmprogramms.todo.view.fragments.user.UserProfileFragment;
 import com.pmprogramms.todo.view.search.SearchActivity;
@@ -55,7 +57,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         initView();
 
         if (TitleSearchHandle.getTitle() != null) {
-            initFragment(new TodoDetailsFragment(userToken, TitleSearchHandle.getId(), TitleSearchHandle.getTitle(), TitleSearchHandle.isArchive(), Color.parseColor(TitleSearchHandle.getColor())), false);
+            initFragment(new TodoDetailsFragment(TitleSearchHandle.getId(), TitleSearchHandle.getTitle(), TitleSearchHandle.isArchive(), Color.parseColor(TitleSearchHandle.getColor())), false);
         } else
             initFragment(new TodoFragment(), false);
     }
@@ -128,8 +130,12 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
             initFragment(new TagsFragment(), true);
             drawerLayout.closeDrawers();
             return true;
-        } else if (itemId == R.id.note_item || itemId == R.id.settings || itemId == R.id.archive_note) {
-            Toast.makeText(this, "Available in future :)", Toast.LENGTH_SHORT).show();
+        } else if (itemId == R.id.note_item) {
+            initFragment(new NoteFragment(), false);
+            return true;
+        } else if (itemId == R.id.settings || itemId == R.id.archive_note) {
+            initFragment(new NoteArchiveFragment(), true);
+            drawerLayout.closeDrawers();
             return true;
         } else if (itemId == R.id.archive_todo) {
             initFragment(new TodoArchiveFragment(), true);

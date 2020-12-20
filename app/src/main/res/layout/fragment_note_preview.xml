@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:id="@+id/container">
+    android:layout_height="match_parent">
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipe_refresh"
@@ -13,12 +11,10 @@
         android:layout_marginEnd="-20dp">
 
         <RelativeLayout
-            android:id="@+id/container2"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="#ffffff"
-            android:padding="10dp"
-            tools:context=".view.fragments.TodoDetailsFragment">
+            android:padding="10dp">
 
             <TextView
                 android:id="@+id/title_preview"
@@ -31,19 +27,22 @@
                 android:textSize="20sp" />
 
             <ScrollView
-                android:id="@+id/scroll_view"
-                android:layout_width="match_parent"
+                android:id="@+id/note_scroll"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/title_preview">
+                android:layout_below="@id/title_preview"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentBottom="true"
+                android:layout_marginTop="50dp">
 
-                <LinearLayout
-                    android:id="@+id/box"
+                <TextView
+                    android:id="@+id/contents_preview"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="#ffffff"
-                    android:orientation="vertical">
-
-                </LinearLayout>
+                    android:layout_height="match_parent"
+                    android:textColor="#000000"
+                    android:textSize="20sp" />
 
             </ScrollView>
 
@@ -63,15 +62,6 @@
                     android:layout_height="match_parent">
 
                     <TextView
-                        android:id="@+id/tag"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:layout_marginStart="10dp"
-                        android:gravity="start"
-                        android:text="Tag" />
-
-                    <TextView
                         android:id="@+id/last_edited"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -80,14 +70,6 @@
                         android:freezesText="false"
                         android:gravity="center"
                         android:text="Edited\n23.07 12:00" />
-
-                    <ImageView
-                        android:id="@+id/reminder_status"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"
-                        android:layout_marginEnd="10dp" />
 
                 </RelativeLayout>
 
@@ -139,16 +121,17 @@
         app:menu_shadowYOffset="3dp"
         app:menu_showShadow="true">
 
+
         <com.github.clans.fab.FloatingActionButton
-            android:id="@+id/create_reminder"
+            android:id="@+id/generate_pdf_note"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_notifications_none_white_24dp"
+            android:src="@drawable/ic_baseline_picture_as_pdf_24"
             app:fab_colorNormal="@color/colorFAB"
             app:fab_size="mini" />
 
         <com.github.clans.fab.FloatingActionButton
-            android:id="@+id/archiveTODO"
+            android:id="@+id/archive_note"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_archive_white_24dp"
@@ -156,7 +139,7 @@
             app:fab_size="mini" />
 
         <com.github.clans.fab.FloatingActionButton
-            android:id="@+id/editTODO"
+            android:id="@+id/edit_note"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_edit_white_24dp"
@@ -165,7 +148,7 @@
 
 
         <com.github.clans.fab.FloatingActionButton
-            android:id="@+id/deleteTODO"
+            android:id="@+id/delete_note"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_delete_white_24dp"

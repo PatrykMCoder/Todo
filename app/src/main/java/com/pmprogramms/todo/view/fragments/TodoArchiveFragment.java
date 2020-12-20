@@ -54,7 +54,6 @@ public class TodoArchiveFragment extends Fragment {
         super.onAttach(context);
         this.context = context;
         mainActivity = (MainActivity) context;
-        userToken = new UserData(context).getUserToken();
     }
 
     @Nullable

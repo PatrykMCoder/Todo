@@ -58,9 +58,9 @@ public class TodoRecyclerViewAdapter extends RecyclerView.Adapter<TodoRecyclerVi
 
             holder.cardView.setOnClickListener(view -> {
                 if (arrayTodos.get(position).color != null  && !arrayTodos.get(position).color.equals("")) {
-                    mainActivity.initFragment(new TodoDetailsFragment(userToken, arrayTodos.get(position)._id, arrayTodos.get(position).title, arrayTodos.get(position).archive, Color.parseColor(arrayTodos.get(position).color)), true);
+                    mainActivity.initFragment(new TodoDetailsFragment(arrayTodos.get(position)._id, arrayTodos.get(position).title, arrayTodos.get(position).archive, Color.parseColor(arrayTodos.get(position).color)), true);
                 }else
-                    mainActivity.initFragment(new TodoDetailsFragment(userToken, arrayTodos.get(position)._id, arrayTodos.get(position).title, arrayTodos.get(position).archive, Color.parseColor("#ffffff")), true);
+                    mainActivity.initFragment(new TodoDetailsFragment(arrayTodos.get(position)._id, arrayTodos.get(position).title, arrayTodos.get(position).archive, Color.parseColor("#ffffff")), true);
             });
         }
     }

@@ -1,11 +1,6 @@
 package com.pmprogramms.todo;
 
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AlertDialog;
@@ -13,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.pmprogramms.todo.helpers.tools.Network;
 import com.pmprogramms.todo.helpers.user.UserData;
+import com.pmprogramms.todo.utils.note.pdf.PDFGenerator;
 import com.pmprogramms.todo.utils.notifications.Notification;
 
 public class SplashScreenActivity extends AppCompatActivity {
@@ -24,6 +20,9 @@ public class SplashScreenActivity extends AppCompatActivity {
 
         Notification notification = new Notification(getApplicationContext());
         notification.createNotificationsChanel();
+
+        PDFGenerator pdfGenerator = new PDFGenerator();
+        pdfGenerator.generateSpaceForPDF(this);
 
         launchActivity();
     }
