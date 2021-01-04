@@ -101,7 +101,7 @@ public class LoginDialog extends DialogFragment {
             super.onPostExecute(state);
             progressDialog.dismiss();
 
-            if (data != null && ((int) data.get(0) == 200 || (int) data.get(0) == 201)) {
+            if (data != null && data.size() >= 2 &&  ((int) data.get(0) == 200 || (int) data.get(0) == 201)) {
                 EditUserProfileAsync editUserProfileAsync = new EditUserProfileAsync();
                 editUserProfileAsync.execute();
             } else {

@@ -79,7 +79,7 @@ public class LoginActivity extends AppCompatActivity {
             APIClient APIClient = new APIClient(email, password);
             ArrayList<Object> data = APIClient.loginUser();
 
-            if (data != null && (int) data.get(0) == 200) {
+            if (data != null && data.size() >= 2 && (int) data.get(0) == 200) {
                 new UserData(LoginActivity.this).setUserID(data.get(1).toString());
                 return TaskState.DONE;
             }
