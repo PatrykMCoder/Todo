@@ -3,6 +3,7 @@ package com.pmprogramms.todo;
 import android.annotation.SuppressLint;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -53,7 +54,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         initView();
 
         if (TitleSearchHandle.getTitle() != null) {
-            initFragment(new TodoDetailsFragment(userID, TitleSearchHandle.getId(), TitleSearchHandle.getTitle(), TitleSearchHandle.isArchive()), false);
+            initFragment(new TodoDetailsFragment(userID, TitleSearchHandle.getId(), TitleSearchHandle.getTitle(), TitleSearchHandle.isArchive(), Color.parseColor(TitleSearchHandle.getColor())), false);
         } else
             initFragment(new TodoFragment(), false);
     }

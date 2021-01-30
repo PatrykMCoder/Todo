@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageButton
+        android:id="@+id/default_color"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:background="#ffffff"
+        android:contentDescription="@string/app_name"
+        android:src="@drawable/border"
+        android:layout_marginEnd="10dp" />
+
+
+    <ImageButton
+        android:id="@+id/pastel1"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:background="@color/pastel1"
+        android:contentDescription="@string/app_name"
+        android:src="@drawable/border"
+        android:layout_toEndOf="@id/default_color"
+        android:layout_marginEnd="10dp"/>
+
+    <ImageButton
+        android:id="@+id/pastel2"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_toEndOf="@id/pastel1"
+        android:background="@color/pastel2"
+        android:contentDescription="@string/app_name"
+        android:src="@drawable/border"
+        android:layout_marginEnd="10dp"/>
+
+    <ImageButton
+        android:id="@+id/pastel3"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_toEndOf="@id/pastel2"
+        android:background="@color/pastel3"
+        android:contentDescription="@string/app_name"
+        android:src="@drawable/border"
+        android:layout_marginEnd="10dp"/>
+
+    <ImageButton
+        android:id="@+id/pastel4"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_toEndOf="@id/pastel3"
+        android:background="@color/pastel4"
+        android:contentDescription="@string/app_name"
+        android:src="@drawable/border"
+        android:layout_marginEnd="10dp"/>
+
+    <ImageButton
+        android:id="@+id/pastel5"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_toEndOf="@id/pastel4"
+        android:background="@color/pastel5"
+        android:contentDescription="@string/app_name"
+        android:src="@drawable/border"
+        android:layout_marginEnd="10dp"/>
+
+</RelativeLayout>

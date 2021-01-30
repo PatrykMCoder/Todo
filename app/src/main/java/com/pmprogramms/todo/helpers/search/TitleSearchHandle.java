@@ -3,6 +3,7 @@ package com.pmprogramms.todo.helpers.search;
 public class TitleSearchHandle {
     private static String title;
     private static String id;
+    private static String color;
     private static boolean archive;
 
     public static String getTitle() {
@@ -27,4 +28,8 @@ public class TitleSearchHandle {
     public static boolean isArchive() {
         return archive;
     }
+
+    public static String getColor() { return color; }
+
+    public static void setColor(String color) { TitleSearchHandle.color = color; }
 }

@@ -13,8 +13,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
@@ -47,14 +50,20 @@ public class AddNewTodoFragment extends Fragment implements View.OnClickListener
     private String title;
     private String task;
     private String tag;
+    private String stringColor = "#ffffff";
     private boolean done;
     private int createdElement = 0;
     private View rootView;
+    private RelativeLayout relativeLayout;
 
     private ProgressDialog progressDialog;
 
     private LinearLayout linearLayout;
     private ArrayList<JSONHelperSaveTodo> saveTodoData;
+
+    //buttons color
+    private View colorsViewLayout;
+    private ImageButton defaultColorButton, color1Button, color2Button, color3Button, color4Button, color5Button;
 
     public AddNewTodoFragment() {
     }
@@ -64,7 +73,7 @@ public class AddNewTodoFragment extends Fragment implements View.OnClickListener
     }
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         super.onAttach(context);
 
         this.context = context;
@@ -77,6 +86,14 @@ public class AddNewTodoFragment extends Fragment implements View.OnClickListener
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         setHasOptionsMenu(true);
         rootView = inflater.inflate(R.layout.fragment_add_new_todo, container, false);
+        relativeLayout = rootView.findViewById(R.id.main);
+        colorsViewLayout = rootView.findViewById(R.id.colors_layout);
+        defaultColorButton = colorsViewLayout.findViewById(R.id.default_color);
+        color1Button = colorsViewLayout.findViewById(R.id.pastel1);
+        color2Button = colorsViewLayout.findViewById(R.id.pastel2);
+        color3Button = colorsViewLayout.findViewById(R.id.pastel3);
+        color4Button = colorsViewLayout.findViewById(R.id.pastel4);
+        color5Button = colorsViewLayout.findViewById(R.id.pastel5);
 
         newTitleEditText = rootView.findViewById(R.id.new_title_todo);
         saveTodoButton = rootView.findViewById(R.id.save_todo);
@@ -87,6 +104,14 @@ public class AddNewTodoFragment extends Fragment implements View.OnClickListener
         saveTodoButton.setOnClickListener(this);
         setTagButton.setOnClickListener(this);
         linearLayout.setOnClickListener(this);
+
+        defaultColorButton.setOnClickListener(this);
+        color1Button.setOnClickListener(this);
+        color2Button.setOnClickListener(this);
+        color3Button.setOnClickListener(this);
+        color4Button.setOnClickListener(this);
+        color5Button.setOnClickListener(this);
+
         createElements();
         return rootView;
     }
@@ -102,7 +127,21 @@ public class AddNewTodoFragment extends Fragment implements View.OnClickListener
             dialogFragment.show(mainActivity.getSupportFragmentManager(), "set tag todo");
         } else if (id == R.id.box_new_item) {
             createElements();
+        } else if (id == R.id.default_color) {
+            stringColor = "#ffffff";
+        } else if (id == R.id.pastel1) {
+            stringColor = "#FFFFBA";
+        } else if (id == R.id.pastel2) {
+            stringColor = "#FFDBF8";
+        } else if (id == R.id.pastel3) {
+            stringColor = "#FFE5E7";
+        } else if (id == R.id.pastel4) {
+            stringColor = "#DFEDFA";
+        } else if (id == R.id.pastel5) {
+            stringColor = "#D7D4D7";
         }
+
+        relativeLayout.setBackgroundColor(Color.parseColor(stringColor));
     }
 
     private void createElements() {
@@ -113,7 +152,7 @@ public class AddNewTodoFragment extends Fragment implements View.OnClickListener
         checkBoxDone = new CheckBox(context);
         newTaskEditText = new EditText(context);
         newTaskEditText.setHint("Enter task");
-        newTaskEditText.setBackgroundColor(Color.WHITE);
+        newTaskEditText.setBackgroundColor(Color.TRANSPARENT);
         newTaskEditText.setTextSize(20);
         newTaskEditText.setMaxLines(1);
         newTaskEditText.setInputType(InputType.TYPE_CLASS_TEXT);
@@ -153,7 +192,7 @@ public class AddNewTodoFragment extends Fragment implements View.OnClickListener
                 if (!task.isEmpty()) {
                     JSONHelperSaveTodo helper = new JSONHelperSaveTodo(task, done);
                     saveTodoData.add(helper);
-                }else
+                } else
                     tmp--;
             }
 
@@ -175,7 +214,7 @@ public class AddNewTodoFragment extends Fragment implements View.OnClickListener
         @Override
         protected TaskState doInBackground(String... strings) {
             APIClient APIClient = new APIClient();
-            int code = APIClient.createNewTodo(userID, title, saveTodoData, tag);
+            int code = APIClient.createNewTodo(userID, title, saveTodoData, tag, stringColor);
 
             if (code == 200 || code == 201)
                 return TaskState.DONE;

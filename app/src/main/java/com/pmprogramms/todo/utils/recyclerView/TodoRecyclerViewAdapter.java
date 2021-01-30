@@ -1,6 +1,7 @@
 package com.pmprogramms.todo.utils.recyclerView;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,11 +21,7 @@ import java.util.ArrayList;
 public class TodoRecyclerViewAdapter extends RecyclerView.Adapter<TodoRecyclerViewAdapter.TodoListViewHolder> {
     private final static String TAG = "TODORECYCLERVIEW";
     private MainActivity mainActivity;
-    private String description;
-    private int done, id, counter;
     private String userID;
-
-    private float percentDone = 0;
 
     private ArrayList<JSONHelperTodo> arrayTodos;
 
@@ -54,8 +51,16 @@ public class TodoRecyclerViewAdapter extends RecyclerView.Adapter<TodoRecyclerVi
             if (tag.equals("") || tag.toLowerCase().equals("no tag"))
                 holder.todoTagView.setVisibility(View.INVISIBLE);
             holder.todoTagView.setText(tag);
+
+            if (arrayTodos.get(position).color != null && !arrayTodos.get(position).color.equals("")) {
+                holder.cardView.setCardBackgroundColor(Color.parseColor(arrayTodos.get(position).color));
+            }
+
             holder.cardView.setOnClickListener(view -> {
-                mainActivity.initFragment(new TodoDetailsFragment(userID, arrayTodos.get(position).id, arrayTodos.get(position).title, arrayTodos.get(position).archive), true);
+                if (arrayTodos.get(position).color != null  && !arrayTodos.get(position).color.equals("")) {
+                    mainActivity.initFragment(new TodoDetailsFragment(userID, arrayTodos.get(position).id, arrayTodos.get(position).title, arrayTodos.get(position).archive, Color.parseColor(arrayTodos.get(position).color)), true);
+                }else
+                    mainActivity.initFragment(new TodoDetailsFragment(userID, arrayTodos.get(position).id, arrayTodos.get(position).title, arrayTodos.get(position).archive, Color.parseColor("#ffffff")), true);
             });
         }
     }

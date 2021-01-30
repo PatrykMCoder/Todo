@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -49,6 +51,7 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
     private String tag;
     private String title;
     private String userID;
+    private int color;
     private boolean archive;
     private boolean tmpArchive;
 
@@ -62,7 +65,7 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
     private SwipeRefreshLayout swipeRefreshLayout;
     private CardView menuCardView;
     private ScrollView scrollView;
-
+    private RelativeLayout relativeLayout;
 
     private FloatingActionMenu floatingActionMenu;
     private com.github.clans.fab.FloatingActionButton createReminderFAB;
@@ -86,11 +89,13 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
 
     }
 
-    public TodoDetailsFragment(String userID, String todoID, String title, boolean archive) {
+    public TodoDetailsFragment(String userID, String todoID, String title, boolean archive, int color) {
         this.todoID = todoID;
         this.title = title;
         this.userID = userID;
         this.archive = archive;
+        this.color = color;
+        Log.d("JSONHelperTodo: ", "JSONHelperTodo: " + color);
         tmpArchive = archive;
         LoadTasksThread loadTasksThread = new LoadTasksThread();
         loadTasksThread.execute();
@@ -109,8 +114,11 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_todo_details, container, false);
+        relativeLayout = rootView.findViewById(R.id.container2);
+        relativeLayout.setBackgroundColor(color);
 
         titleTextView = rootView.findViewById(R.id.title_preview);
+        titleTextView.setBackgroundColor(color);
         tagView = rootView.findViewById(R.id.tag);
         lastEditedView = rootView.findViewById(R.id.last_edited);
         reminderStatusImageView = rootView.findViewById(R.id.reminder_status);
@@ -119,7 +127,9 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
         scrollView = rootView.findViewById(R.id.scroll_view);
 
         box = rootView.findViewById(R.id.box);
+        box.setBackgroundColor(color);
         swipeRefreshLayout = rootView.findViewById(R.id.swipe_refresh);
+        swipeRefreshLayout.setBackgroundColor(color);
 
         floatingActionMenu = rootView.findViewById(R.id.menu);
         createReminderFAB = rootView.findViewById(R.id.create_reminder);
@@ -209,10 +219,11 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
         doneCheckBox = new CheckBox(context);
         taskTextView = new TextView(context);
         taskTextView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        taskTextView.setBackgroundColor(Color.WHITE);
+        taskTextView.setBackgroundColor(Color.TRANSPARENT);
         taskTextView.setTextSize(20);
         taskTextView.setTextColor(Color.BLACK);
         taskTextView.setPadding(0, 20, 0, 20);
+        taskTextView.setBackgroundColor(Color.TRANSPARENT);
 
         taskTextView.setText(data.task);
 
@@ -286,7 +297,7 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
     public void onClick(View v) {
         int id = v.getId();
         if (id == R.id.editTODO) {
-            mainActivity.initFragment(new EditTodoFragment(title, userID, todoID, arrayData, tag, archive), true);
+            mainActivity.initFragment(new EditTodoFragment(title, userID, todoID, arrayData, tag, archive, color), true);
         } else if (id == R.id.create_reminder) {
             DialogFragment dialogFragment = new CreateReminderDialog();
             ReminderHelper.setTitle(titleTextView.getText().toString());

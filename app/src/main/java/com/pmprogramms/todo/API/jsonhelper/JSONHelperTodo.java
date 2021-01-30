@@ -1,5 +1,7 @@
 package com.pmprogramms.todo.API.jsonhelper;
 
+import android.util.Log;
+
 import com.google.gson.annotations.SerializedName;
 
 public class JSONHelperTodo {
@@ -17,10 +19,14 @@ public class JSONHelperTodo {
     @SerializedName("archive")
     public boolean archive;
 
-    public JSONHelperTodo(String title, String id, String tag, boolean archive){
+    @SerializedName("color")
+    public String color;
+
+    public JSONHelperTodo(String title, String id, String tag, boolean archive, String color){
         this.title = title;
         this.id = id;
         this.tag = tag;
         this.archive = archive;
+        this.color = color;
     }
 }
