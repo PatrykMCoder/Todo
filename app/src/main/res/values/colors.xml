@@ -5,4 +5,12 @@
     <color name="colorAccent">#02FF91</color>
 
     <color name="colorFAB">#02FF91</color>
+
+    <!--    pastele -->
+    <color name='pastel1'>#FFFFBA</color>
+    <color name='pastel2'>#FFDBF8</color>
+    <color name='pastel3'>#FFE5E7</color>
+    <color name='pastel4'>#DFEDFA</color>
+    <color name='pastel5'>#D7D4D7</color>
+
 </resources>

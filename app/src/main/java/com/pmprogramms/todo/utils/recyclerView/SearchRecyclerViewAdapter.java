@@ -25,6 +25,7 @@ public class SearchRecyclerViewAdapter extends RecyclerView.Adapter<SearchRecycl
     private ArrayList<String> ids;
     private ArrayList<String> titles;
     private ArrayList<Boolean> archives;
+    private ArrayList<String> colors;
 
     public SearchRecyclerViewAdapter(Set<JSONHelperTodo> data) {
         this.data = data;
@@ -32,11 +33,13 @@ public class SearchRecyclerViewAdapter extends RecyclerView.Adapter<SearchRecycl
         ids = new ArrayList<>();
         titles = new ArrayList<>();
         archives = new ArrayList<>();
+        colors = new ArrayList<>();
 
         for (JSONHelperTodo t : data) {
             ids.add(t.id);
             titles.add(t.title);
             archives.add(t.archive);
+            colors.add(t.color);
         }
     }
 
@@ -62,6 +65,7 @@ public class SearchRecyclerViewAdapter extends RecyclerView.Adapter<SearchRecycl
                 TitleSearchHandle.setTitle(titles.get(position));
                 TitleSearchHandle.setId(ids.get(position));
                 TitleSearchHandle.setArchive(archives.get(position));
+                TitleSearchHandle.setColor(colors.get(position));
                 view.getContext().startActivity(intent);
             }
         });

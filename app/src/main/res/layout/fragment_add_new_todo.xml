@@ -3,10 +3,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#ffffff"
     tools:context=".view.fragments.AddNewTodoFragment"
-    android:background="#ffffff">
+    android:id="@+id/main">
 
     <RelativeLayout
+        android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:padding="10dp">
@@ -75,6 +77,15 @@
         </ScrollView>
 
     </RelativeLayout>
+
+    <include
+        android:id="@+id/colors_layout"
+        layout="@layout/colors_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="10dp" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/set_tag"

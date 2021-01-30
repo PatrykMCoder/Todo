@@ -197,7 +197,7 @@ public class APIClient {
         return 0;
     }
 
-    public int createNewTodo(String userID, String title, ArrayList<JSONHelperSaveTodo> todos, String tag) {
+    public int createNewTodo(String userID, String title, ArrayList<JSONHelperSaveTodo> todos, String tag, String color) {
         try {
             if (createTODOURL != null) {
                 createConnection(createTODOURL, "POST");
@@ -208,6 +208,7 @@ public class APIClient {
                 dataJson.put("todos", new Gson().toJson(todos, new TypeToken<ArrayList<JSONHelperSaveTodo>>() {
                 }.getType()));
                 dataJson.put("tag", tag);
+                dataJson.put("color", color);
                 DataOutputStream dataOutputStream = new DataOutputStream(connection.getOutputStream());
                 dataOutputStream.write(dataJson.toString().getBytes(StandardCharsets.UTF_8));
                 dataOutputStream.flush();
@@ -234,7 +235,7 @@ public class APIClient {
         return 0;
     }
 
-    public int editTodo(String userID, String todoID, String title, ArrayList<JSONHelperEditTodo> todos, String tag) {
+    public int editTodo(String userID, String todoID, String title, ArrayList<JSONHelperEditTodo> todos, String tag, String newColor) {
         try {
             URL editTodoURL = makeUrl("/todos/" + userID + "/" + todoID);
             if (editTodoURL != null) {
@@ -244,7 +245,7 @@ public class APIClient {
                 dataJson.put("todos", new Gson().toJson(todos, new TypeToken<ArrayList<JSONHelperSaveTodo>>() {
                 }.getType()));
                 dataJson.put("tag", tag);
-
+                dataJson.put("color", newColor);
                 DataOutputStream dataOutputStream = new DataOutputStream(connection.getOutputStream());
                 dataOutputStream.write(dataJson.toString().getBytes(StandardCharsets.UTF_8));
                 dataOutputStream.flush();
