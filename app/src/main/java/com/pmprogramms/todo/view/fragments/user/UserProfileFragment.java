@@ -3,7 +3,6 @@ package com.pmprogramms.todo.view.fragments.user;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -20,17 +19,22 @@ import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.pmprogramms.todo.API.retrofit.API;
+import com.pmprogramms.todo.API.retrofit.Client;
+import com.pmprogramms.todo.API.retrofit.user.JsonHelperUser;
 import com.pmprogramms.todo.LoginActivity;
 import com.pmprogramms.todo.MainActivity;
 import com.pmprogramms.todo.R;
 import com.pmprogramms.todo.helpers.user.UserData;
 import com.pmprogramms.todo.helpers.view.HideAppBarHelper;
-import com.pmprogramms.todo.API.APIClient;
 import com.pmprogramms.todo.API.jsonhelper.user.JSONHelperUser;
-import com.pmprogramms.todo.API.taskstate.TaskState;
 import com.pmprogramms.todo.utils.text.Messages;
 import com.pmprogramms.todo.view.dialogs.PolicyDialog;
 import com.pmprogramms.todo.view.dialogs.SourceDialog;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class UserProfileFragment extends Fragment implements View.OnClickListener {
     private View rootView;
@@ -43,7 +47,7 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
 
     private Context context;
     private String userID;
-    private JSONHelperUser userObject;
+    private JsonHelperUser userObject;
     private ProgressDialog progressDialog;
 
     private String username;
@@ -81,25 +85,41 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
         progressDialog = ProgressDialog.show(context, "Loading data", "Please wait...");
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            scrollView.setOnScrollChangeListener(new View.OnScrollChangeListener() {
-                @Override
-                public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-                    swipeRefreshLayout.setEnabled(scrollY == 0);
-                }
-            });
+            scrollView.setOnScrollChangeListener((v, scrollX, scrollY, oldScrollX, oldScrollY) -> swipeRefreshLayout.setEnabled(scrollY == 0));
         }
 
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+        getData();
+
+        swipeRefreshLayout.setOnRefreshListener(this::getData);
+        return rootView;
+    }
+
+    private void getData() {
+        swipeRefreshLayout.setRefreshing(false);
+        API api = Client.getInstance().create(API.class);
+        Call<JsonHelperUser> call = api.getUserData(userID);
+        call.enqueue(new Callback<JsonHelperUser>() {
             @Override
-            public void onRefresh() {
-                LoadUserDataAsync loadUserDataAsync = new LoadUserDataAsync();
-                loadUserDataAsync.execute();
+            public void onResponse(Call<JsonHelperUser> call, Response<JsonHelperUser> response) {
+                progressDialog.cancel();
+                if (!response.isSuccessful()) {
+                    new Messages(context).showMessage(response.message());
+                    return;
+                }
+                userObject = response.body();
+                if (userObject != null) {
+                    email = userObject.data.email;
+                    username = userObject.data.username;
+                }
+                updateUI(username);
+            }
+
+            @Override
+            public void onFailure(Call<JsonHelperUser> call, Throwable t) {
+                progressDialog.dismiss();
+                new Messages(context).showMessage(t.getMessage());
             }
         });
-
-        LoadUserDataAsync loadUserDataAsync = new LoadUserDataAsync();
-        loadUserDataAsync.execute();
-        return rootView;
     }
 
     private void updateUI(String username) {
@@ -125,38 +145,6 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
         } else if (id == R.id.open_source) {
             DialogFragment dialogFragment = new SourceDialog();
             dialogFragment.show(mainActivity.getSupportFragmentManager(), "OpenSource dialog");
-        }
-    }
-
-    class LoadUserDataAsync extends AsyncTask<String, String, TaskState> {
-
-        @Override
-        protected TaskState doInBackground(String... strings) {
-            APIClient APIClient = new APIClient();
-            userObject = APIClient.loadDataUser(userID);
-            return userObject != null || !(userObject.email.equals("") && userObject.username.equals("")) ?
-            TaskState.DONE : TaskState.NOT_DONE;
-        }
-
-        @Override
-        protected void onPostExecute(TaskState state) {
-            super.onPostExecute(state);
-            swipeRefreshLayout.setRefreshing(false);
-            if (progressDialog != null)
-                progressDialog.dismiss();
-
-            switch (state) {
-                case DONE: {
-                    email = userObject.email;
-                    username = userObject.username;
-                    updateUI(username);
-                    break;
-                }
-                case NOT_DONE: {
-                    new Messages(context).showMessage("Something wrong, try again. Slide down to refresh");
-                    break;
-                }
-            }
         }
     }
 }

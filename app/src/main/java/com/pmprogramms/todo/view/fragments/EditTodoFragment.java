@@ -3,7 +3,6 @@ package com.pmprogramms.todo.view.fragments;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Color;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
@@ -20,24 +19,32 @@ import android.widget.RelativeLayout;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.pmprogramms.todo.API.jsonhelper.JSONHelperSaveTodo;
+import com.pmprogramms.todo.API.retrofit.API;
+import com.pmprogramms.todo.API.retrofit.Client;
+import com.pmprogramms.todo.API.retrofit.todo.Todos;
 import com.pmprogramms.todo.MainActivity;
 import com.pmprogramms.todo.R;
 import com.pmprogramms.todo.helpers.view.TagsHelper;
 import com.pmprogramms.todo.helpers.input.HideKeyboard;
 import com.pmprogramms.todo.API.jsonhelper.JSONHelperEditTodo;
-import com.pmprogramms.todo.API.APIClient;
-import com.pmprogramms.todo.API.jsonhelper.JSONHelperDataTodo;
-import com.pmprogramms.todo.API.taskstate.TaskState;
 import com.pmprogramms.todo.utils.text.Messages;
 import com.pmprogramms.todo.view.dialogs.SelectTodoTagDialog;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 
 public class EditTodoFragment extends Fragment implements View.OnClickListener {
 
-    private ArrayList<JSONHelperDataTodo> arrayData;
+    private ArrayList<Todos> arrayData;
     private EditText titleEditText;
     private EditText taskEditText;
     private CheckBox doneCheckBox;
@@ -57,6 +64,7 @@ public class EditTodoFragment extends Fragment implements View.OnClickListener {
     private LinearLayout linearLayout;
 
     private String userID, todoID, tag;
+    private API api;
 
     private int tmpPosition;
     private int color;
@@ -70,7 +78,7 @@ public class EditTodoFragment extends Fragment implements View.OnClickListener {
 
     }
 
-    public EditTodoFragment(String title, String userID, String todoID, ArrayList<JSONHelperDataTodo> arrayData, String tag, boolean archive, int color) {
+    public EditTodoFragment(String title, String userID, String todoID, ArrayList<Todos> arrayData, String tag, boolean archive, int color) {
         this.title = title;
         this.userID = userID;
         this.todoID = todoID;
@@ -95,6 +103,8 @@ public class EditTodoFragment extends Fragment implements View.OnClickListener {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        api = Client.getInstance().create(API.class);
+
         rootView = inflater.inflate(R.layout.fragment_edit_todo, container, false);
         relativeLayout = rootView.findViewById(R.id.container);
         relativeLayout.setBackgroundColor(color);
@@ -162,14 +172,14 @@ public class EditTodoFragment extends Fragment implements View.OnClickListener {
 
     private void loadData() {
         int index = 0;
-        for (JSONHelperDataTodo data : arrayData) {
+        for (Todos data : arrayData) {
             createElementsWithData(data, index);
             index++;
         }
         tmpPosition = arrayData.size();
     }
 
-    private void createElementsWithData(JSONHelperDataTodo data, int position) {
+    private void createElementsWithData(Todos data, int position) {
         LinearLayout linearLayout = new LinearLayout(context);
         linearLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         linearLayout.setOrientation(LinearLayout.HORIZONTAL);
@@ -235,7 +245,6 @@ public class EditTodoFragment extends Fragment implements View.OnClickListener {
     }
 
     private void updateTodo() {
-        new HideKeyboard(rootView, mainActivity).hide();
         progressDialog = ProgressDialog.show(context, "Update...", "Please wait...");
         title = titleEditText.getText().toString();
         EditText editText;
@@ -252,42 +261,31 @@ public class EditTodoFragment extends Fragment implements View.OnClickListener {
             }
         }
 
-        EditTodoAsync editTodoAsync = new EditTodoAsync();
-        editTodoAsync.execute(title);
-    }
+        HashMap<String, String> map = new HashMap<>();
+        map.put("title", title);
+        map.put("tag", tag);
+        map.put("color", newColor);
+        map.put("todos", new Gson().toJson(dataHelper, new TypeToken<ArrayList<JSONHelperSaveTodo>>() {}.getType()));
 
-    class EditTodoAsync extends AsyncTask<String, String, TaskState> {
-
-        @Override
-        protected TaskState doInBackground(String... strings) {
-            title = strings[0];
-            APIClient APIClient = new APIClient();
-            if (TagsHelper.getTag() != null)
-                tag = TagsHelper.getTag();
-
-            int code = APIClient.editTodo(userID, todoID, title, dataHelper, tag, newColor);
-            if (code == 200 || code == 201)
-                return TaskState.DONE;
-
-            return TaskState.NOT_DONE;
-        }
-
-        @Override
-        protected void onPostExecute(TaskState state) {
-            super.onPostExecute(state);
-            progressDialog.dismiss();
-
-            switch (state) {
-                case DONE: {
-                    mainActivity.closeFragment(EditTodoFragment.this, new TodoDetailsFragment(userID, todoID, title, archive, Color.parseColor(newColor)));
-                    TagsHelper.setTag("");
-                    break;
+        Call<Void> call = api.editTodo(userID, todoID, map);
+        call.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                progressDialog.cancel();
+                if (!response.isSuccessful()) {
+                    new Messages(context).showMessage(response.message());
+                    return;
                 }
-                case NOT_DONE: {
-                    new Messages(context).showMessage("Cannot update todo, try again");
-                    break;
-                }
+                new Messages(context).showMessage("Updated todo");
+                mainActivity.closeFragment(EditTodoFragment.this, new TodoDetailsFragment(userID, todoID, title, archive, Color.parseColor(newColor)));
+                TagsHelper.setTag("");
             }
-        }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                progressDialog.cancel();
+                new Messages(context).showMessage(t.getMessage());
+            }
+        });
     }
 }

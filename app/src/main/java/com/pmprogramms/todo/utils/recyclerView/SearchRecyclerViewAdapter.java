@@ -11,23 +11,25 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.pmprogramms.todo.API.retrofit.todo.Data;
 import com.pmprogramms.todo.MainActivity;
 import com.pmprogramms.todo.R;
 import com.pmprogramms.todo.helpers.search.TitleSearchHandle;
 import com.pmprogramms.todo.API.jsonhelper.JSONHelperTodo;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Set;
 
 public class SearchRecyclerViewAdapter extends RecyclerView.Adapter<SearchRecyclerViewAdapter.SearchListViewHolder> {
 
-    private Set<JSONHelperTodo> data;
+    private Set<Data> data;
     private ArrayList<String> ids;
     private ArrayList<String> titles;
     private ArrayList<Boolean> archives;
     private ArrayList<String> colors;
 
-    public SearchRecyclerViewAdapter(Set<JSONHelperTodo> data) {
+    public SearchRecyclerViewAdapter(Set<Data> data) {
         this.data = data;
 
         ids = new ArrayList<>();
@@ -35,8 +37,8 @@ public class SearchRecyclerViewAdapter extends RecyclerView.Adapter<SearchRecycl
         archives = new ArrayList<>();
         colors = new ArrayList<>();
 
-        for (JSONHelperTodo t : data) {
-            ids.add(t.id);
+        for (Data t : data) {
+            ids.add(t._id);
             titles.add(t.title);
             archives.add(t.archive);
             colors.add(t.color);

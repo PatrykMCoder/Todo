@@ -4,7 +4,6 @@ package com.pmprogramms.todo.view.fragments;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Color;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.InputType;
 import android.view.KeyEvent;
@@ -21,19 +20,26 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.pmprogramms.todo.API.retrofit.API;
+import com.pmprogramms.todo.API.retrofit.Client;
 import com.pmprogramms.todo.MainActivity;
 import com.pmprogramms.todo.R;
 import com.pmprogramms.todo.helpers.input.HideKeyboard;
 import com.pmprogramms.todo.helpers.view.HideAppBarHelper;
 import com.pmprogramms.todo.helpers.view.TagsHelper;
-import com.pmprogramms.todo.API.APIClient;
 import com.pmprogramms.todo.API.jsonhelper.JSONHelperSaveTodo;
-import com.pmprogramms.todo.API.taskstate.TaskState;
 import com.pmprogramms.todo.utils.text.Messages;
 import com.pmprogramms.todo.view.dialogs.SelectTodoTagDialog;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class AddNewTodoFragment extends Fragment implements View.OnClickListener {
 
@@ -55,6 +61,7 @@ public class AddNewTodoFragment extends Fragment implements View.OnClickListener
     private int createdElement = 0;
     private View rootView;
     private RelativeLayout relativeLayout;
+    private API api;
 
     private ProgressDialog progressDialog;
 
@@ -85,6 +92,8 @@ public class AddNewTodoFragment extends Fragment implements View.OnClickListener
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         setHasOptionsMenu(true);
+        api = Client.getInstance().create(API.class);
+
         rootView = inflater.inflate(R.layout.fragment_add_new_todo, container, false);
         relativeLayout = rootView.findViewById(R.id.main);
         colorsViewLayout = rootView.findViewById(R.id.colors_layout);
@@ -197,8 +206,32 @@ public class AddNewTodoFragment extends Fragment implements View.OnClickListener
             }
 
             if (tmp > 0) {
-                SaveTodoAsync saveTodoAsync = new SaveTodoAsync();
-                saveTodoAsync.execute();
+                HashMap<String, String> map = new HashMap<>();
+                map.put("title", title);
+                map.put("color", stringColor);
+                map.put("user_id", userID);
+                map.put("todos", new Gson().toJson(saveTodoData, new TypeToken<ArrayList<JSONHelperSaveTodo>>() {
+                }.getType()));
+                map.put("tag", tag);
+
+                Call<Void> call = api.saveTodo(map);
+                call.enqueue(new Callback<Void>() {
+                    @Override
+                    public void onResponse(Call<Void> call, Response<Void> response) {
+                        progressDialog.cancel();
+                        if (!response.isSuccessful()) {
+                            new Messages(context).showMessage(response.message());
+                            return;
+                        }
+                        mainActivity.closeFragment(AddNewTodoFragment.this, new TodoFragment());
+                    }
+
+                    @Override
+                    public void onFailure(Call<Void> call, Throwable t) {
+                        progressDialog.cancel();
+                        new Messages(context).showMessage("Cannot save todo, try again");
+                    }
+                });
             } else {
                 progressDialog.dismiss();
                 new Messages(context).showMessage("Todo list cannot be empty");
@@ -206,37 +239,6 @@ public class AddNewTodoFragment extends Fragment implements View.OnClickListener
         } else {
             progressDialog.dismiss();
             new Messages(context).showMessage("Title cannot be empty");
-        }
-    }
-
-    class SaveTodoAsync extends AsyncTask<String, String, TaskState> {
-
-        @Override
-        protected TaskState doInBackground(String... strings) {
-            APIClient APIClient = new APIClient();
-            int code = APIClient.createNewTodo(userID, title, saveTodoData, tag, stringColor);
-
-            if (code == 200 || code == 201)
-                return TaskState.DONE;
-
-            return TaskState.NOT_DONE;
-        }
-
-        @Override
-        protected void onPostExecute(TaskState state) {
-            super.onPostExecute(state);
-            progressDialog.dismiss();
-
-            switch (state) {
-                case DONE: {
-                    mainActivity.closeFragment(AddNewTodoFragment.this, new TodoFragment());
-                    break;
-                }
-                case NOT_DONE: {
-                    new Messages(context).showMessage("Cannot save todo, try again");
-                    break;
-                }
-            }
         }
     }
 }

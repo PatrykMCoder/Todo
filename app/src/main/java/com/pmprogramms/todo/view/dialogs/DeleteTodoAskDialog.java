@@ -3,8 +3,6 @@ package com.pmprogramms.todo.view.dialogs;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.widget.Toast;
 
@@ -12,12 +10,16 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
+import com.pmprogramms.todo.API.retrofit.API;
+import com.pmprogramms.todo.API.retrofit.Client;
 import com.pmprogramms.todo.MainActivity;
-import com.pmprogramms.todo.API.APIClient;
-import com.pmprogramms.todo.API.taskstate.TaskState;
 import com.pmprogramms.todo.utils.text.Messages;
 import com.pmprogramms.todo.view.fragments.TodoDetailsFragment;
 import com.pmprogramms.todo.view.fragments.TodoFragment;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class DeleteTodoAskDialog extends DialogFragment {
     private final String userID;
@@ -43,50 +45,28 @@ public class DeleteTodoAskDialog extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle("Delete todo")
                 .setMessage(String.format("Do you want delete: %s?", title))
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        Toast.makeText(context, "Deleting", Toast.LENGTH_SHORT).show();
-                        DeleteTodoAsync deleteTodoAsync = new DeleteTodoAsync();
-                        deleteTodoAsync.execute();
-                    }
+                .setPositiveButton("Yes", (dialogInterface, i) -> {
+                    Toast.makeText(context, "Deleting", Toast.LENGTH_SHORT).show();
+                    API api = Client.getInstance().create(API.class);
+                    Call<Void> call = api.deleteTodo(userID, todoID);
+                    call.enqueue(new Callback<Void>() {
+                        @Override
+                        public void onResponse(Call<Void> call, Response<Void> response) {
+                            if(!response.isSuccessful()){
+                                new Messages(context).showMessage(response.message());
+                            }
+                            new Messages(context).showMessage("Todo deleted");
+                            mainActivity.closeFragment(todoDetailsFragment, new TodoFragment());
+                        }
+
+                        @Override
+                        public void onFailure(Call<Void> call, Throwable t) {
+                            new Messages(context).showMessage(t.getMessage());
+                        }
+                    });
                 })
-                .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        dialogInterface.dismiss();
-                    }
-                });
+                .setNegativeButton("No", (dialogInterface, i) -> dialogInterface.dismiss());
 
         return builder.create();
-    }
-    class DeleteTodoAsync extends AsyncTask<String, String, TaskState> {
-
-        @Override
-        protected TaskState doInBackground(String... strings) {
-            APIClient APIClient = new APIClient();
-            int code = APIClient.deleteTodo(userID, todoID);
-            if(code == 201 || code == 200)
-                return TaskState.DONE;
-            else
-                return TaskState.NOT_DONE;
-        }
-
-        @Override
-        protected void onPostExecute(TaskState state) {
-            super.onPostExecute(state);
-
-            switch (state) {
-                case DONE: {
-                    new Messages(context).showMessage("Todo deleted");
-                    mainActivity.closeFragment(todoDetailsFragment, new TodoFragment());
-                    break;
-                }
-                case NOT_DONE: {
-                    new Messages(context).showMessage("Cannot delete todo, try again");
-                    break;
-                }
-            }
-        }
     }
 }

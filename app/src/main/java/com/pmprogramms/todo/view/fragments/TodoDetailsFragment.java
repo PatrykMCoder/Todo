@@ -5,9 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,22 +18,25 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.pmprogramms.todo.API.jsonhelper.JSONHelperLastEdit;
-import com.pmprogramms.todo.API.jsonhelper.JSONHelperTag;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.pmprogramms.todo.API.retrofit.API;
+import com.pmprogramms.todo.API.retrofit.Client;
+import com.pmprogramms.todo.API.retrofit.todo.JSONHelperTodo;
+import com.pmprogramms.todo.API.retrofit.todo.Data;
+import com.pmprogramms.todo.API.retrofit.todo.Todos;
 import com.pmprogramms.todo.MainActivity;
 import com.pmprogramms.todo.R;
 import com.pmprogramms.todo.helpers.text.TextFormat;
 import com.pmprogramms.todo.helpers.view.HideAppBarHelper;
 import com.pmprogramms.todo.API.jsonhelper.JSONHelperEditTodo;
-import com.pmprogramms.todo.API.APIClient;
-import com.pmprogramms.todo.API.jsonhelper.JSONHelperDataTodo;
-import com.pmprogramms.todo.API.taskstate.TaskState;
 import com.pmprogramms.todo.utils.text.Messages;
 import com.pmprogramms.todo.utils.reminders.ReminderHelper;
 import com.pmprogramms.todo.view.dialogs.CreateReminderDialog;
@@ -43,7 +44,12 @@ import com.pmprogramms.todo.view.dialogs.DeleteTodoAskDialog;
 import com.github.clans.fab.FloatingActionMenu;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCheckedChangeListener, View.OnClickListener {
 
@@ -67,6 +73,8 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
     private ScrollView scrollView;
     private RelativeLayout relativeLayout;
 
+    private API api;
+
     private FloatingActionMenu floatingActionMenu;
     private com.github.clans.fab.FloatingActionButton createReminderFAB;
     private com.github.clans.fab.FloatingActionButton editFAB;
@@ -79,8 +87,8 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
     private View rootView;
 
     private SharedPreferences remindersTitlePreference;
-    private ArrayList<JSONHelperDataTodo> arrayData;
     private ArrayList<JSONHelperEditTodo> dataHelper;
+    private ArrayList<Todos> todosArrayList;
     private int tmpPosition;
 
     private String dateUpdatedAt;
@@ -95,10 +103,7 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
         this.userID = userID;
         this.archive = archive;
         this.color = color;
-        Log.d("JSONHelperTodo: ", "JSONHelperTodo: " + color);
         tmpArchive = archive;
-        LoadTasksThread loadTasksThread = new LoadTasksThread();
-        loadTasksThread.execute();
     }
 
     @Override
@@ -113,6 +118,8 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        api = Client.getInstance().create(API.class);
+
         rootView = inflater.inflate(R.layout.fragment_todo_details, container, false);
         relativeLayout = rootView.findViewById(R.id.container2);
         relativeLayout.setBackgroundColor(color);
@@ -145,10 +152,12 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
 
         archiveFAB.setImageResource(archive ? R.drawable.ic_baseline_unarchive_24 : R.drawable.ic_archive_white_24dp);
 
+        getTodoData();
+
         swipeRefreshLayout.setOnRefreshListener(() -> {
             box.removeAllViews();
-            LoadTasksThread loadTasksThread = new LoadTasksThread();
-            loadTasksThread.execute();
+            getTodoData();
+
         });
 
         scrollView.setOnScrollChangeListener((v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
@@ -171,6 +180,30 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
         return rootView;
     }
 
+    private void getTodoData() {
+        Call<JSONHelperTodo> call = api.getUserTodoData(userID, todoID);
+        call.enqueue(new Callback<JSONHelperTodo>() {
+            @Override
+            public void onResponse(Call<JSONHelperTodo> call, Response<JSONHelperTodo> response) {
+                if (!response.isSuccessful()) {
+                    Toast.makeText(context, response.message(), Toast.LENGTH_LONG).show();
+                    return;
+                }
+                JSONHelperTodo helperTodo = response.body();
+                ArrayList<Data> data = helperTodo.data;
+                todosArrayList = data.get(0).todos;
+                dateUpdatedAt = data.get(0).updatedAt;
+                tag = data.get(0).tag;
+                getDataToShow();
+            }
+
+            @Override
+            public void onFailure(Call<JSONHelperTodo> call, Throwable t) {
+                Toast.makeText(context, t.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
     private void getDataToShow() {
         TextFormat textFormat = new TextFormat();
         sortData();
@@ -178,13 +211,13 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
         tagView.setText(String.format("Tag: %s", textFormat.splitTextTag(tag)));
         lastEditedView.setText(textFormat.formatForTextLastEdit(mainActivity, dateUpdatedAt));
 
-        if (arrayData != null) {
+        if (todosArrayList != null) {
             int index = 0;
-            for (JSONHelperDataTodo data : arrayData) {
+            for (Todos data : todosArrayList) {
                 createElements(data, index);
                 index++;
             }
-            tmpPosition = arrayData.size();
+            tmpPosition = todosArrayList.size();
         }
 
         reminderStatusImageView.setImageResource(R.drawable.ic_outline_notifications_off_24);
@@ -199,20 +232,20 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
     }
 
     private void sortData() {
-        ArrayList<JSONHelperDataTodo> tmp = new ArrayList<>();
-        for (JSONHelperDataTodo data : arrayData) {
+        ArrayList<Todos> tmp = new ArrayList<>();
+        for (Todos data : todosArrayList) {
             if (!data.done)
                 tmp.add(data);
         }
-        for (JSONHelperDataTodo data : arrayData) {
+        for (Todos data : todosArrayList) {
             if (data.done)
                 tmp.add(data);
         }
-        arrayData.clear();
-        arrayData = tmp;
+        todosArrayList.clear();
+        todosArrayList = tmp;
     }
 
-    private void createElements(JSONHelperDataTodo data, int index) {
+    private void createElements(Todos data, int index) {
         LinearLayout linearLayout = new LinearLayout(context);
         linearLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         linearLayout.setOrientation(LinearLayout.HORIZONTAL);
@@ -266,22 +299,27 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
             taskTextView = rootView.findViewWithTag("t_" + i);
             doneCheckBox = rootView.findViewWithTag("d_" + i);
             jhet = new JSONHelperEditTodo(taskTextView.getText().toString(), doneCheckBox.isChecked());
-
             dataHelper.add(jhet);
         }
 
-        EditStatusTodoAsync editTodoAsync = new EditStatusTodoAsync();
-        editTodoAsync.execute();
+        HashMap<String, String> map = new HashMap<>();
+        map.put("todos", new Gson().toJson(dataHelper, new TypeToken<ArrayList<JSONHelperEditTodo>>() {
+        }.getType()));
 
-        LoadTasksThread loadTasksThread = new LoadTasksThread();
-        loadTasksThread.execute("notToUI");
-    }
+        Call<Data> call = api.updateTodoStatus(userID, todoID, map);
+        call.enqueue(new Callback<Data>() {
+            @Override
+            public void onResponse(Call<Data> call, Response<Data> response) {
+                if (!response.isSuccessful()) {
+                    new Messages(context).showMessage("Something wrong, try again");
+                }
+            }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        LoadTasksThread loadTasksThread = new LoadTasksThread();
-        loadTasksThread.execute();
+            @Override
+            public void onFailure(Call<Data> call, Throwable t) {
+                new Messages(context).showMessage(t.getMessage());
+            }
+        });
     }
 
     @Override
@@ -297,128 +335,41 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
     public void onClick(View v) {
         int id = v.getId();
         if (id == R.id.editTODO) {
-            mainActivity.initFragment(new EditTodoFragment(title, userID, todoID, arrayData, tag, archive, color), true);
+            mainActivity.initFragment(new EditTodoFragment(title, userID, todoID, todosArrayList, tag, archive, color), true);
         } else if (id == R.id.create_reminder) {
             DialogFragment dialogFragment = new CreateReminderDialog();
             ReminderHelper.setTitle(titleTextView.getText().toString());
             dialogFragment.show(((MainActivity) context).getSupportFragmentManager(), "create reminder");
         } else if (id == R.id.archiveTODO) {
-            ArchiveActionAsync archiveActionAsync = new ArchiveActionAsync();
-            archiveActionAsync.execute();
+            archiveAction();
         } else if (id == R.id.deleteTODO) {
             DialogFragment dialogFragment = new DeleteTodoAskDialog(context, mainActivity, TodoDetailsFragment.this, title, userID, todoID);
             dialogFragment.show(mainActivity.getSupportFragmentManager(), "delete todo");
         }
     }
 
-    class LoadTasksThread extends AsyncTask<String, String, TaskState> {
-
-        @Override
-        protected TaskState doInBackground(String... strings) {
-            APIClient APIClient = new APIClient();
-            arrayData = new ArrayList<>();
-            arrayData = APIClient.loadTodos(userID, todoID);
-            JSONHelperTag tagObject = APIClient.getTagTodo(userID, todoID);
-            tag = tagObject.tag;
-
-            JSONHelperLastEdit dateUpdatedAtObject = APIClient.loadTodosLastEdit(userID, todoID);
-            dateUpdatedAt = dateUpdatedAtObject.updatedAt;
-
-            if (arrayData != null && arrayData.size() > 0) {
-                if (strings != null)
-                    for (String s : strings) {
-                        if (s.equals("notToUI")) return TaskState.DONE_NOT_TO_UI;
-                        else return TaskState.DONE;
-                    }
-                return TaskState.DONE;
-            }
-
-            return TaskState.NOT_DONE;
-        }
-
-        @Override
-        protected void onPostExecute(TaskState state) {
-            super.onPostExecute(state);
-            swipeRefreshLayout.setRefreshing(false);
-
-            switch (state) {
-                case DONE: {
-                    if (arrayData != null) {
-                        box.removeAllViews();
-                        getDataToShow();
-                    }
-                    break;
-                }
-                case NOT_DONE: {
+    private void archiveAction() {
+        HashMap<String, Boolean> map = new HashMap<>();
+        map.put("archive", !tmpArchive);
+        Call<Void> call = api.archiveAction(userID, todoID, map);
+        call.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (!response.isSuccessful()) {
                     new Messages(context).showMessage("Something wrong, try again");
-                    break;
                 }
-                case DONE_NOT_TO_UI: {
-                    break;
-                }
+
+                new Messages(context).showMessage(tmpArchive ? "Unarchive" : "Archive");
+                archiveFAB.setImageResource(archive ? R.drawable.ic_archive_white_24dp : R.drawable.ic_baseline_unarchive_24);
+
+                archive = !tmpArchive;
+                tmpArchive = archive;
             }
-        }
-    }
 
-    class EditStatusTodoAsync extends AsyncTask<String, String, TaskState> {
-
-        @Override
-        protected TaskState doInBackground(String... strings) {
-            APIClient APIClient = new APIClient();
-            int code = APIClient.editTodoTaskStatus(userID, todoID, dataHelper);
-            JSONHelperLastEdit dateUpdatedAtObject = APIClient.loadTodosLastEdit(userID, todoID);
-            dateUpdatedAt = dateUpdatedAtObject.updatedAt;
-
-            if (code == 200 || code == 201) {
-                return TaskState.DONE;
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                new Messages(context).showMessage("Something wrong, try again");
             }
-            return TaskState.NOT_DONE;
-        }
-
-        @Override
-        protected void onPostExecute(TaskState state) {
-            super.onPostExecute(state);
-
-            switch (state) {
-                case DONE: {
-                    lastEditedView.setText(new TextFormat().formatForTextLastEdit(mainActivity, dateUpdatedAt));
-                    break;
-                }
-                case NOT_DONE: {
-                    new Messages(context).showMessage("Todo not updated, try again");
-                    break;
-                }
-            }
-        }
-    }
-
-    class ArchiveActionAsync extends AsyncTask<String, String, TaskState> {
-
-        @Override
-        protected TaskState doInBackground(String... strings) {
-            APIClient APIClient = new APIClient();
-            int code = APIClient.archiveTodoAction(userID, todoID, !archive);
-            if (code == 200 || code == 201)
-                return TaskState.DONE;
-            return TaskState.NOT_DONE;
-        }
-
-        @Override
-        protected void onPostExecute(TaskState taskState) {
-            super.onPostExecute(taskState);
-            switch (taskState) {
-                case DONE: {
-                    new Messages(context).showMessage(tmpArchive ? "Unarchive" : "Archive");
-                    archiveFAB.setImageResource(archive ? R.drawable.ic_archive_white_24dp : R.drawable.ic_baseline_unarchive_24);
-                    archive = !tmpArchive;
-                    tmpArchive = archive;
-                    break;
-                }
-                case NOT_DONE: {
-                    new Messages(context).showMessage("Something wrong, try again");
-                    break;
-                }
-            }
-        }
+        });
     }
 }
