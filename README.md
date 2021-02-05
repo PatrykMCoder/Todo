@@ -9,6 +9,8 @@ You can download this app from Google Store: https://play.google.com/store/apps/
 
 # Description
 
+Do you have a problems with planing your day? Don't worry TodoNote will help you! Tap plus button and create or plan whatever you want.
+
 ### Functions
 
 ### Todo
@@ -17,7 +19,9 @@ You can download this app from Google Store: https://play.google.com/store/apps/
 * Delete Todo
 * Archive todo
 
-### Note
+You can set colors for your todos and set tags. Can loggin on all devices and you won't loss your data
+
+### Note [2.1]
 * Create Note
 * Delete Note
 * Edit Note
@@ -26,5 +30,6 @@ You can download this app from Google Store: https://play.google.com/store/apps/
 Will be able to share todo/note for other users. Should type email and this will be displaying on other tab.
 
 ## Overview
+![bigbanner](https://user-images.githubusercontent.com/20040431/107070049-0f7cb400-67e3-11eb-8921-410855260245.png)
 
 
