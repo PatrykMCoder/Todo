@@ -21,7 +21,7 @@ Do you have a problems with planing your day? Don't worry TodoNote will help you
 
 You can set colors for your todos and set tags. Can loggin on all devices and you won't loss your data
 
-### Note [2.1]
+### Note [2.1 - will be available soon]
 * Create Note
 * Delete Note
 * Edit Note
