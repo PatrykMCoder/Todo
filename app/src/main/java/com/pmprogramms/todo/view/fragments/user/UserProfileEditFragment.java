@@ -18,7 +18,7 @@ import com.pmprogramms.todo.R;
 import com.pmprogramms.todo.helpers.input.HideKeyboard;
 import com.pmprogramms.todo.utils.text.Messages;
 import com.pmprogramms.todo.utils.text.TextHelper;
-import com.pmprogramms.todo.view.dialogs.LoginDialog;
+import com.pmprogramms.todo.view.dialogs.LoginEditProfileDialog;
 
 public class UserProfileEditFragment extends Fragment {
     private View rootView;
@@ -79,13 +79,13 @@ public class UserProfileEditFragment extends Fragment {
                         if (emailOld.equals(emailNew)) {
                             emailNew = null;
                         }
-                        LoginDialog loginDialog;
+                        LoginEditProfileDialog loginEditProfileDialog;
                         if (password.equals(""))
-                            loginDialog = new LoginDialog(userID, username, emailNew, emailOld, null);
+                            loginEditProfileDialog = new LoginEditProfileDialog(userID, username, emailNew, emailOld, null);
                         else
-                            loginDialog = new LoginDialog(userID, username, emailNew, emailOld, password);
+                            loginEditProfileDialog = new LoginEditProfileDialog(userID, username, emailNew, emailOld, password);
 
-                        loginDialog.show(getFragmentManager(), "login require");
+                        loginEditProfileDialog.show(getFragmentManager(), "login require");
                     } else {
                         new Messages(context).showMessage("Invalid email");
                     }

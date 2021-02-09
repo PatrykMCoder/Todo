@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.strictmode.CleartextNetworkViolation;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
@@ -15,12 +16,15 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.pmprogramms.todo.API.retrofit.API;
+import com.pmprogramms.todo.API.retrofit.Client;
+import com.pmprogramms.todo.API.retrofit.todo.Data;
+import com.pmprogramms.todo.API.retrofit.todo.JSONHelperTodo;
 import com.pmprogramms.todo.MainActivity;
 import com.pmprogramms.todo.R;
 import com.pmprogramms.todo.helpers.user.UserData;
-import com.pmprogramms.todo.API.APIClient;
-import com.pmprogramms.todo.API.jsonhelper.JSONHelperTodo;
 import com.pmprogramms.todo.API.taskstate.TaskState;
 import com.pmprogramms.todo.utils.text.Messages;
 import com.pmprogramms.todo.utils.recyclerView.SearchRecyclerViewAdapter;
@@ -28,6 +32,10 @@ import com.pmprogramms.todo.utils.recyclerView.SearchRecyclerViewAdapter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class SearchActivity extends AppCompatActivity {
     private View includeView;
@@ -41,7 +49,7 @@ public class SearchActivity extends AppCompatActivity {
     private static final String TAG = "SearchActivity";
     private MainActivity mainActivity;
 
-    private ArrayList<JSONHelperTodo> arrayTodos;
+    private ArrayList<Data> arrayTodos;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,15 +62,9 @@ public class SearchActivity extends AppCompatActivity {
 
         searchList = findViewById(R.id.search_container);
 
-        LoadTitlesAsync titlesAsync = new LoadTitlesAsync();
-        titlesAsync.execute();
+        getData();
 
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
+        backButton.setOnClickListener(v -> onBackPressed());
 
         Intent intent = getIntent();
 
@@ -96,11 +98,32 @@ public class SearchActivity extends AppCompatActivity {
         }
     }
 
+    private void getData() {
+        API api = Client.getInstance().create(API.class);
+
+        Call<com.pmprogramms.todo.API.retrofit.todo.JSONHelperTodo> call = api.getUserTodosTitle(new UserData(SearchActivity.this).getUserID());
+        call.enqueue(new Callback<JSONHelperTodo>() {
+            @Override
+            public void onResponse(Call<com.pmprogramms.todo.API.retrofit.todo.JSONHelperTodo> call, Response<com.pmprogramms.todo.API.retrofit.todo.JSONHelperTodo> response) {
+                if (!response.isSuccessful()) {
+                    Toast.makeText(SearchActivity.this, "Something wrong, try again", Toast.LENGTH_LONG).show();
+                }
+                com.pmprogramms.todo.API.retrofit.todo.JSONHelperTodo jsonHelperTodo = response.body();
+                arrayTodos = jsonHelperTodo.data;
+            }
+
+            @Override
+            public void onFailure(Call<com.pmprogramms.todo.API.retrofit.todo.JSONHelperTodo> call, Throwable t) {
+                Toast.makeText(SearchActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
     private void search(String querySearch) {
-        Set<JSONHelperTodo> result = new HashSet<>();
+        Set<Data> result = new HashSet<>();
 
         if (!querySearch.isEmpty()) {
-            for (JSONHelperTodo t : arrayTodos) {
+            for (Data t : arrayTodos) {
                 if (t.title.toLowerCase().contains(querySearch.toLowerCase())) {
                     result.add(t);
                 }
@@ -111,7 +134,7 @@ public class SearchActivity extends AppCompatActivity {
         displayResult(result);
     }
 
-    private void displayResult(Set<JSONHelperTodo> result) {
+    private void displayResult(Set<Data> result) {
         adapterSearchRecyclerView = new SearchRecyclerViewAdapter(result);
         searchList.setAdapter(adapterSearchRecyclerView);
         adapterSearchRecyclerView.getItemCount();
@@ -119,42 +142,5 @@ public class SearchActivity extends AppCompatActivity {
         searchList.setHasFixedSize(false);
         layoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
         searchList.setLayoutManager(layoutManager);
-    }
-
-
-    class LoadTitlesAsync extends AsyncTask<String, String, TaskState> {
-        String userID;
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            userID = new UserData(SearchActivity.this).getUserID();
-        }
-
-        @Override
-        protected TaskState doInBackground(String... strings) {
-            if (userID != null) {
-                if (arrayTodos != null) {
-                    arrayTodos.clear();
-                }
-                APIClient APIClient = new APIClient();
-                arrayTodos = APIClient.loadTitlesTodoUser(userID);
-                return TaskState.DONE;
-            }
-            return TaskState.NOT_DONE;
-        }
-
-        @Override
-        protected void onPostExecute(TaskState state) {
-            super.onPostExecute(state);
-
-            switch (state){
-                case DONE: break;
-                case NOT_DONE: {
-                    new Messages(getApplicationContext()).showMessage("Something wrong, try again");
-                    break;
-                }
-            }
-        }
     }
 }

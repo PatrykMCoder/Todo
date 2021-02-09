@@ -2,25 +2,27 @@ package com.pmprogramms.todo.utils.recyclerView;
 
 import android.app.Activity;
 import android.content.Context;
-import android.os.AsyncTask;
-import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.pmprogramms.todo.API.APIClient;
-import com.pmprogramms.todo.API.taskstate.TaskState;
+import com.pmprogramms.todo.API.retrofit.API;
+import com.pmprogramms.todo.API.retrofit.Client;
 import com.pmprogramms.todo.R;
 import com.pmprogramms.todo.helpers.user.UserData;
+import com.pmprogramms.todo.utils.text.Messages;
 
 import java.util.ArrayList;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class TagsRecyclerAdapter extends RecyclerView.Adapter<TagsRecyclerAdapter.TagRecyclerListHolder> {
 
@@ -50,8 +52,29 @@ public class TagsRecyclerAdapter extends RecyclerView.Adapter<TagsRecyclerAdapte
     public void onBindViewHolder(@NonNull TagRecyclerListHolder holder, int position) {
         holder.textView.setText(tags.get(position));
         holder.removeButton.setOnClickListener(v -> {
-            RemoveTagAsync removeTagAsync = new RemoveTagAsync();
-            removeTagAsync.execute(new UserData(context).getUserID(), tagsID.get(position), String.valueOf(position));
+            API api = Client.getInstance().create(API.class);
+            Call<Void> call = api.deleteCustomTag(new UserData(context).getUserID(), tagsID.get(position));
+            call.enqueue(new Callback<Void>() {
+                @Override
+                public void onResponse(Call<Void> call, Response<Void> response) {
+                    if(!response.isSuccessful()) {
+                        new Messages(context).showMessage(response.message());
+                    }
+
+                    if(response.code() == 200 || response.code() == 201) {
+                        notifyItemRemoved(position);
+                        tags.remove(position);
+                        tagsID.remove(position);
+                    } else {
+                        new Messages(context).showMessage("Something wrong, try again");
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<Void> call, Throwable t) {
+                    new Messages(context).showMessage(t.getMessage());
+                }
+            });
         });
     }
 
@@ -70,39 +93,6 @@ public class TagsRecyclerAdapter extends RecyclerView.Adapter<TagsRecyclerAdapte
             textView = itemView.findViewById(R.id.tag_text);
             removeButton = itemView.findViewById(R.id.remove_tag_button);
             tagDataHolderCard = itemView.findViewById(R.id.card_view);
-        }
-    }
-
-    class RemoveTagAsync extends AsyncTask<String, String, TaskState> {
-        private int position;
-        @Override
-        protected TaskState doInBackground(String... strings) {
-            APIClient APIClient = new APIClient();
-            position = Integer.parseInt(strings[2]);
-            int code = APIClient.deleteCustomTag(strings[0], strings[1]);
-            if (code == 200 || code == 201) {
-                return TaskState.DONE;
-            }
-            return TaskState.NOT_DONE;
-        }
-
-        @Override
-        protected void onPostExecute(TaskState taskState) {
-            super.onPostExecute(taskState);
-            switch (taskState) {
-                case DONE: {
-                    notifyItemRemoved(position);
-                    tags.remove(position);
-                    tagsID.remove(position);
-                    break;
-                }
-                case NOT_DONE: {
-                    new Handler().post(() -> {
-                       Toast.makeText(context, "Something wrong, try again", Toast.LENGTH_SHORT).show();
-                    });
-                    break;
-                }
-            }
         }
     }
 }

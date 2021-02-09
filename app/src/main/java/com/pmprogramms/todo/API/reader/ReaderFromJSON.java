@@ -27,7 +27,6 @@ public class ReaderFromJSON {
     public ReaderFromJSON(HttpURLConnection connection) {
         this.connection = connection;
     }
-
     public ArrayList<JSONHelperTodo> readTitlesTodo() throws IOException, JSONException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8));
         StringBuilder builder = new StringBuilder();

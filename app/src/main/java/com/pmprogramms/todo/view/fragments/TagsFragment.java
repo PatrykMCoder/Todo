@@ -1,7 +1,6 @@
 package com.pmprogramms.todo.view.fragments;
 
 import android.content.Context;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,9 +14,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.pmprogramms.todo.API.APIClient;
 import com.pmprogramms.todo.API.jsonhelper.JSONHelperCustomTags;
-import com.pmprogramms.todo.API.taskstate.TaskState;
+import com.pmprogramms.todo.API.jsonhelper.user.JSONHelperUser;
+import com.pmprogramms.todo.API.retrofit.API;
+import com.pmprogramms.todo.API.retrofit.Client;
+import com.pmprogramms.todo.API.retrofit.customTags.JsonHelperTag;
+import com.pmprogramms.todo.API.retrofit.customTags.TagsData;
 import com.pmprogramms.todo.MainActivity;
 import com.pmprogramms.todo.R;
 import com.pmprogramms.todo.helpers.user.UserData;
@@ -26,6 +28,10 @@ import com.pmprogramms.todo.utils.text.Messages;
 import com.pmprogramms.todo.utils.recyclerView.TagsRecyclerAdapter;
 
 import java.util.ArrayList;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class TagsFragment extends Fragment {
     private MainActivity mainActivity;
@@ -69,56 +75,43 @@ public class TagsFragment extends Fragment {
         toolbar = rootView.findViewById(R.id.custom_tool_bar);
 
         mainActivity.setSupportActionBar(toolbar);
-
-        LoadCustomTagsAsync loadCustomTagsAsync = new LoadCustomTagsAsync();
-        loadCustomTagsAsync.execute();
-
+        loadData();
         initRecyclerView();
 
-        swipeRefreshLayout.setOnRefreshListener(() -> {
-            LoadCustomTagsAsync loadCustomTagsAsync1 = new LoadCustomTagsAsync();
-            loadCustomTagsAsync1.execute();
-        });
+        swipeRefreshLayout.setOnRefreshListener(this::loadData);
 
         return rootView;
     }
 
-    class LoadCustomTagsAsync extends AsyncTask<String, String, TaskState> {
-
-        @Override
-        protected TaskState doInBackground(String... strings) {
-            if (helperLoadCustomTagsArrayList != null)
-                helperLoadCustomTagsArrayList.clear();
-
-            APIClient APIClient = new APIClient();
-            helperLoadCustomTagsArrayList = APIClient.loadUserTags(new UserData(context).getUserID());
-            if (helperLoadCustomTagsArrayList != null)
-                return TaskState.DONE;
-            else
-                return TaskState.NOT_DONE;
-        }
-
-        @Override
-        protected void onPostExecute(TaskState taskState) {
-            super.onPostExecute(taskState);
-            switch (taskState) {
-                case DONE: {
-                    tags = new ArrayList<>();
-                    tagsID = new ArrayList<>();
-                    for (JSONHelperCustomTags tag : helperLoadCustomTagsArrayList) {
+    private void loadData() {
+        swipeRefreshLayout.setRefreshing(false);
+        API api = Client.getInstance().create(API.class);
+        Call<JsonHelperTag> call = api.getUserTagData(new UserData(context).getUserID());
+        call.enqueue(new Callback<JsonHelperTag>() {
+            @Override
+            public void onResponse(Call<JsonHelperTag> call, Response<JsonHelperTag> response) {
+                if (!response.isSuccessful()) {
+                    new Messages(context).showMessage(response.message());
+                    return;
+                }
+                JsonHelperTag responseBody = response.body();
+                tags = new ArrayList<>();
+                tagsID = new ArrayList<>();
+                if(responseBody != null) {
+                    for (TagsData tag : responseBody.data) {
                         tags.add(tag.tag_name);
                         tagsID.add(tag._id);
                         initRecyclerView();
                     }
-                    break;
-
-                }
-                case NOT_DONE: {
+                }else {
                     new Messages(context).showMessage("Something wrong, try again");
-                    break;
                 }
             }
-            swipeRefreshLayout.setRefreshing(false);
-        }
+
+            @Override
+            public void onFailure(Call<JsonHelperTag> call, Throwable t) {
+                new Messages(context).showMessage(t.getMessage());
+            }
+        });
     }
 }

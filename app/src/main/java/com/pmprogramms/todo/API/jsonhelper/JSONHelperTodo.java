@@ -4,6 +4,8 @@ import android.util.Log;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.List;
+
 public class JSONHelperTodo {
     private String TAG = "jsonHelper";
 

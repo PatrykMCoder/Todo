@@ -1,11 +1,11 @@
 package com.pmprogramms.todo.view.fragments;
 
 import android.content.Context;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -14,17 +14,21 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.pmprogramms.todo.API.APIClient;
-import com.pmprogramms.todo.API.jsonhelper.JSONHelperTodo;
-import com.pmprogramms.todo.API.taskstate.TaskState;
+import com.pmprogramms.todo.API.retrofit.API;
+import com.pmprogramms.todo.API.retrofit.Client;
+import com.pmprogramms.todo.API.retrofit.todo.JSONHelperTodo;
+import com.pmprogramms.todo.API.retrofit.todo.Data;
 import com.pmprogramms.todo.MainActivity;
 import com.pmprogramms.todo.R;
 import com.pmprogramms.todo.helpers.user.UserData;
 import com.pmprogramms.todo.helpers.view.HideAppBarHelper;
-import com.pmprogramms.todo.utils.text.Messages;
 import com.pmprogramms.todo.utils.recyclerView.TodoRecyclerViewAdapter;
 
 import java.util.ArrayList;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class TodoArchiveFragment extends Fragment {
     private View rootView;
@@ -34,6 +38,7 @@ public class TodoArchiveFragment extends Fragment {
     private RecyclerView.LayoutManager layoutManager;
 
     private ArrayList<JSONHelperTodo> arrayTodos;
+    private API api;
     private String userID;
 
     private Context context;
@@ -50,6 +55,8 @@ public class TodoArchiveFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        api = Client.getInstance().create(API.class);
+        getData();
         rootView = inflater.inflate(R.layout.fragment_archive_todo, null);
 
         todoList = rootView.findViewById(R.id.todoListRecyclerView);
@@ -57,10 +64,7 @@ public class TodoArchiveFragment extends Fragment {
         todoList.setLayoutManager(layoutManager);
 
         swipeRefreshLayout = rootView.findViewById(R.id.refresh_swipe);
-        swipeRefreshLayout.setOnRefreshListener(() -> {
-            LoadDataThread loadDataThread = new LoadDataThread();
-            loadDataThread.execute();
-        });
+        swipeRefreshLayout.setOnRefreshListener(this::getData);
 
         todoList.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -70,14 +74,40 @@ public class TodoArchiveFragment extends Fragment {
             }
         });
 
-        LoadDataThread loadDataThread = new LoadDataThread();
-        loadDataThread.execute();
-
         return rootView;
     }
 
-    private void initRecyclerView() {
-        adapterTodoRecyclerView = new TodoRecyclerViewAdapter(context, arrayTodos, userID);
+    private void getData() {
+        Call<JSONHelperTodo> call = api.getUserTodosTitle(userID);
+        call.enqueue(new Callback<JSONHelperTodo>() {
+            @Override
+            public void onResponse(Call<JSONHelperTodo> call, Response<JSONHelperTodo> response) {
+                swipeRefreshLayout.setRefreshing(false);
+                if (!response.isSuccessful()) {
+                    Toast.makeText(context, "Something wrong, try again", Toast.LENGTH_LONG).show();
+                }
+                JSONHelperTodo jsonHelperTodo = response.body();
+                ArrayList<Data> todosData = jsonHelperTodo.data;
+                ArrayList<Data> archiveData = new ArrayList<>();
+
+                for (Data t : todosData) {
+                    if (t.archive)
+                        archiveData.add(t);
+                }
+
+                initRecyclerView(archiveData);
+            }
+
+            @Override
+            public void onFailure(Call<JSONHelperTodo> call, Throwable t) {
+                swipeRefreshLayout.setRefreshing(false);
+                Toast.makeText(context, t.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void initRecyclerView(ArrayList<Data> dataTodo) {
+        adapterTodoRecyclerView = new TodoRecyclerViewAdapter(context, dataTodo, userID);
         todoList.swapAdapter(adapterTodoRecyclerView, true);
     }
 
@@ -85,52 +115,5 @@ public class TodoArchiveFragment extends Fragment {
     public void onResume() {
         super.onResume();
         new HideAppBarHelper(mainActivity).showBar();
-    }
-
-    class LoadDataThread extends AsyncTask<String, String, TaskState> {
-        @Override
-        protected TaskState doInBackground(String... strings) {
-            String userID = context.getSharedPreferences("user_data", Context.MODE_PRIVATE).getString("user_id", null);
-            if (userID != null) {
-                if (arrayTodos != null) {
-                    arrayTodos.clear();
-                }
-                APIClient APIClient = new APIClient();
-                arrayTodos = APIClient.loadTitlesTodoUser(userID);
-                return TaskState.DONE;
-            }
-            return TaskState.NOT_DONE;
-        }
-
-        private void removeNotArchiveTodos() {
-            ArrayList<JSONHelperTodo> loadTitles = new ArrayList<>();
-            for (JSONHelperTodo obj : arrayTodos) {
-                if (obj.archive)
-                    loadTitles.add(obj);
-            }
-
-            arrayTodos.clear();
-            arrayTodos = loadTitles;
-        }
-
-        @Override
-        protected void onPostExecute(TaskState state) {
-            super.onPostExecute(state);
-
-            switch (state) {
-                case DONE: {
-                    if (arrayTodos != null) {
-                        removeNotArchiveTodos();
-                        initRecyclerView();
-                    }
-                    break;
-                }
-                case NOT_DONE: {
-                    new Messages(context).showMessage("Something wrong, try again");
-                    break;
-                }
-            }
-            swipeRefreshLayout.setRefreshing(false);
-        }
     }
 }
