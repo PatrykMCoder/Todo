@@ -22,19 +22,19 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class DeleteTodoAskDialog extends DialogFragment {
-    private final String userID;
+    private final String userToken;
     private final String todoID;
     private String title;
     private Context context;
     private MainActivity mainActivity;
     private TodoDetailsFragment todoDetailsFragment;
 
-    public DeleteTodoAskDialog(Context context, MainActivity mainActivity, TodoDetailsFragment todoDetailsFragment, String titleTodo, String userID, String todoID) {
+    public DeleteTodoAskDialog(Context context, MainActivity mainActivity, TodoDetailsFragment todoDetailsFragment, String titleTodo, String userToken, String todoID) {
         title = titleTodo;
         this.context = context;
         this.mainActivity = mainActivity;
         this.todoDetailsFragment = todoDetailsFragment;
-        this.userID = userID;
+        this.userToken = userToken;
         this.todoID = todoID;
     }
 
@@ -48,7 +48,7 @@ public class DeleteTodoAskDialog extends DialogFragment {
                 .setPositiveButton("Yes", (dialogInterface, i) -> {
                     Toast.makeText(context, "Deleting", Toast.LENGTH_SHORT).show();
                     API api = Client.getInstance().create(API.class);
-                    Call<Void> call = api.deleteTodo(userID, todoID);
+                    Call<Void> call = api.deleteTodo(todoID, userToken);
                     call.enqueue(new Callback<Void>() {
                         @Override
                         public void onResponse(Call<Void> call, Response<Void> response) {

@@ -10,8 +10,7 @@ public class Client {
 
     public static Retrofit getInstance() {
         String url = "";
-
-        if (CheckTypeApplication.isDebugApp()) url = "http://10.0.2.2:4000";
+        if (CheckTypeApplication.isDebugApp()) url = "";
         else url = "https://todo-note-api.herokuapp.com";
 
         if (retrofit == null) {

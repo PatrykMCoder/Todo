@@ -1,13 +1,12 @@
 package com.pmprogramms.todo.view.search;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.strictmode.CleartextNetworkViolation;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
@@ -20,15 +19,17 @@ import android.widget.Toast;
 
 import com.pmprogramms.todo.API.retrofit.API;
 import com.pmprogramms.todo.API.retrofit.Client;
-import com.pmprogramms.todo.API.retrofit.todo.Data;
-import com.pmprogramms.todo.API.retrofit.todo.JSONHelperTodo;
+import com.pmprogramms.todo.API.retrofit.todo.todo.Data;
+import com.pmprogramms.todo.API.retrofit.todo.todo.JSONHelperTodo;
 import com.pmprogramms.todo.MainActivity;
 import com.pmprogramms.todo.R;
+import com.pmprogramms.todo.helpers.api.SessionHelper;
 import com.pmprogramms.todo.helpers.user.UserData;
-import com.pmprogramms.todo.API.taskstate.TaskState;
 import com.pmprogramms.todo.utils.text.Messages;
 import com.pmprogramms.todo.utils.recyclerView.SearchRecyclerViewAdapter;
+import com.pmprogramms.todo.view.dialogs.SessionDialog;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
@@ -101,19 +102,35 @@ public class SearchActivity extends AppCompatActivity {
     private void getData() {
         API api = Client.getInstance().create(API.class);
 
-        Call<com.pmprogramms.todo.API.retrofit.todo.JSONHelperTodo> call = api.getUserTodosTitle(new UserData(SearchActivity.this).getUserID());
+        Call<JSONHelperTodo> call = api.getUserTodosTitle(
+                new UserData(getApplicationContext()).getUserToken()
+        );
         call.enqueue(new Callback<JSONHelperTodo>() {
             @Override
-            public void onResponse(Call<com.pmprogramms.todo.API.retrofit.todo.JSONHelperTodo> call, Response<com.pmprogramms.todo.API.retrofit.todo.JSONHelperTodo> response) {
+            public void onResponse(Call<JSONHelperTodo> call, Response<JSONHelperTodo> response) {
                 if (!response.isSuccessful()) {
-                    Toast.makeText(SearchActivity.this, "Something wrong, try again", Toast.LENGTH_LONG).show();
+                    SessionHelper sessionHelper = new SessionHelper();
+                    try {
+                        assert response.errorBody() != null;
+                        if (sessionHelper.checkSession(response.errorBody().string())) {
+                            new Messages(getApplicationContext()).showMessage("Something wrong, try again");
+                        } else {
+                            new UserData(getApplicationContext()).removeUserToken();
+                            DialogFragment dialogFragment = new SessionDialog();
+                            dialogFragment.show(getSupportFragmentManager(), "session fragment");
+                        }
+                    } catch (IOException e) {
+                        new Messages(getApplicationContext()).showMessage("Something wrong, try again");
+                        e.printStackTrace();
+                    }
+                    return;
                 }
-                com.pmprogramms.todo.API.retrofit.todo.JSONHelperTodo jsonHelperTodo = response.body();
+                JSONHelperTodo jsonHelperTodo = response.body();
                 arrayTodos = jsonHelperTodo.data;
             }
 
             @Override
-            public void onFailure(Call<com.pmprogramms.todo.API.retrofit.todo.JSONHelperTodo> call, Throwable t) {
+            public void onFailure(Call<JSONHelperTodo> call, Throwable t) {
                 Toast.makeText(SearchActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
             }
         });

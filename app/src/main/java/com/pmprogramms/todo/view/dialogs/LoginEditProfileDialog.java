@@ -16,7 +16,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
-import com.pmprogramms.todo.API.jsonhelper.user.JSONHelperUser;
 import com.pmprogramms.todo.API.retrofit.API;
 import com.pmprogramms.todo.API.retrofit.Client;
 import com.pmprogramms.todo.API.retrofit.login.JsonHelperLogin;
@@ -34,11 +33,11 @@ public class LoginEditProfileDialog extends DialogFragment {
     private ProgressDialog progressDialog;
     private MainActivity mainActivity;
 
-    private String userID;
     private String username;
     private String emailNew;
     private String emailOld;
-    private String password = "";
+    private String password;
+    private String userToken;
     private Context context;
 
     @Override
@@ -48,12 +47,12 @@ public class LoginEditProfileDialog extends DialogFragment {
         this.context = context;
     }
 
-    public LoginEditProfileDialog(String userID, String username, String emailNew, String emailOld, @Nullable String password) {
-        this.userID = userID;
+    public LoginEditProfileDialog(String username, String emailNew, String emailOld, String userToken, @Nullable String password) {
         this.username = username;
         this.emailNew = emailNew;
         this.emailOld = emailOld;
         this.password = password;
+        this.userToken = userToken;
     }
 
     @NonNull
@@ -126,10 +125,10 @@ public class LoginEditProfileDialog extends DialogFragment {
         }
 
         API api = Client.getInstance().create(API.class);
-        Call<JSONHelperUser> call = api.editProfile(userID, map);
-        call.enqueue(new Callback<JSONHelperUser>() {
+        Call<Void> call = api.editProfile(map, userToken);
+        call.enqueue(new Callback<Void>() {
             @Override
-            public void onResponse(Call<JSONHelperUser> call, Response<JSONHelperUser> response) {
+            public void onResponse(Call<Void> call, Response<Void> response) {
                 if (!response.isSuccessful()) {
                     new Messages(context).showMessage(response.message());
                 }
@@ -143,7 +142,7 @@ public class LoginEditProfileDialog extends DialogFragment {
             }
 
             @Override
-            public void onFailure(Call<JSONHelperUser> call, Throwable t) {
+            public void onFailure(Call<Void> call, Throwable t) {
                 new Messages(context).showMessage(t.getMessage());
             }
         });

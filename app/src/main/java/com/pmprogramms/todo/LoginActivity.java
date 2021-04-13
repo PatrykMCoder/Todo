@@ -1,15 +1,26 @@
 package com.pmprogramms.todo;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.google.android.gms.auth.api.credentials.Credential;
+import com.google.android.gms.auth.api.credentials.CredentialPickerConfig;
+import com.google.android.gms.auth.api.credentials.Credentials;
+import com.google.android.gms.auth.api.credentials.CredentialsClient;
+import com.google.android.gms.auth.api.credentials.HintRequest;
+import com.google.android.gms.common.api.ResolvableApiException;
 import com.pmprogramms.todo.API.retrofit.API;
 import com.pmprogramms.todo.API.retrofit.Client;
 import com.pmprogramms.todo.API.retrofit.login.JsonHelperLogin;
@@ -25,17 +36,20 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class LoginActivity extends AppCompatActivity {
+    private static final int RC_SAVE = 100000, RC_HINT = 100001;
     private TextView registerText;
     private EditText emailEditText;
     private EditText passwordEditText;
     private Button loginButton;
     private RelativeLayout rootView;
+    private CredentialsClient credentialsClient;
 
     public ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        credentialsClient = Credentials.getClient(this);
         setContentView(R.layout.activity_login);
 
         rootView = findViewById(R.id.root_view);
@@ -70,7 +84,8 @@ public class LoginActivity extends AppCompatActivity {
                         JsonHelperLogin loginHelper = response.body();
 
                         if (loginHelper != null && (response.code() == 200 || response.code() == 201)) {
-                            new UserData(LoginActivity.this).setUserID(loginHelper.data.user_id);
+                            new UserData(LoginActivity.this).setUserToken(loginHelper.data.token);
+                            saveUserCredential(email, password);
                             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                             startActivity(intent);
@@ -87,5 +102,43 @@ public class LoginActivity extends AppCompatActivity {
             } else
                 new Messages(getApplicationContext()).showMessage("Invalid email");
         });
+    }
+
+    public void saveUserCredential(String email, String password) {
+        Credential credential = new Credential.Builder(email)
+                .setPassword(password)
+                .build();
+
+
+        credentialsClient.save(credential).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                new Messages(this).showMessage("Credentials save");
+            }
+            Exception e = task.getException();
+            if (e instanceof ResolvableApiException) {
+                ResolvableApiException rae = (ResolvableApiException) e;
+                try {
+                    rae.startResolutionForResult(this, RC_SAVE);
+
+                } catch (IntentSender.SendIntentException exception) {
+                    Log.e(LoginActivity.class.toString(), "Failed to send resolution.", exception);
+                    new Messages(this).showMessage("Credentials save failed");
+                }
+            } else
+                new Messages(this).showMessage("Credentials save failed");
+        });
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == RC_SAVE) {
+            if (resultCode == RESULT_OK) {
+                new Messages(this).showMessage("Credentials save");
+            } else {
+                Log.e(LoginActivity.class.toString(), "SAVE: Canceled by user");
+            }
+        }
     }
 }

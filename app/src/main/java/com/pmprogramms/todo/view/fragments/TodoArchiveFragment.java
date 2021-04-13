@@ -9,6 +9,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -16,14 +17,18 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.pmprogramms.todo.API.retrofit.API;
 import com.pmprogramms.todo.API.retrofit.Client;
-import com.pmprogramms.todo.API.retrofit.todo.JSONHelperTodo;
-import com.pmprogramms.todo.API.retrofit.todo.Data;
+import com.pmprogramms.todo.API.retrofit.todo.todo.JSONHelperTodo;
+import com.pmprogramms.todo.API.retrofit.todo.todo.Data;
 import com.pmprogramms.todo.MainActivity;
 import com.pmprogramms.todo.R;
+import com.pmprogramms.todo.helpers.api.SessionHelper;
 import com.pmprogramms.todo.helpers.user.UserData;
 import com.pmprogramms.todo.helpers.view.HideAppBarHelper;
 import com.pmprogramms.todo.utils.recyclerView.TodoRecyclerViewAdapter;
+import com.pmprogramms.todo.utils.text.Messages;
+import com.pmprogramms.todo.view.dialogs.SessionDialog;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import retrofit2.Call;
@@ -39,7 +44,7 @@ public class TodoArchiveFragment extends Fragment {
 
     private ArrayList<JSONHelperTodo> arrayTodos;
     private API api;
-    private String userID;
+    private String userToken;
 
     private Context context;
     private MainActivity mainActivity;
@@ -49,7 +54,7 @@ public class TodoArchiveFragment extends Fragment {
         super.onAttach(context);
         this.context = context;
         mainActivity = (MainActivity) context;
-        userID = new UserData(context).getUserID();
+        userToken = new UserData(context).getUserToken();
     }
 
     @Nullable
@@ -78,13 +83,27 @@ public class TodoArchiveFragment extends Fragment {
     }
 
     private void getData() {
-        Call<JSONHelperTodo> call = api.getUserTodosTitle(userID);
+        Call<JSONHelperTodo> call = api.getUserTodosTitle(userToken);
         call.enqueue(new Callback<JSONHelperTodo>() {
             @Override
             public void onResponse(Call<JSONHelperTodo> call, Response<JSONHelperTodo> response) {
                 swipeRefreshLayout.setRefreshing(false);
                 if (!response.isSuccessful()) {
-                    Toast.makeText(context, "Something wrong, try again", Toast.LENGTH_LONG).show();
+                    SessionHelper sessionHelper = new SessionHelper();
+                    try {
+                        assert response.errorBody() != null;
+                        if (sessionHelper.checkSession(response.errorBody().string())) {
+                            new Messages(context).showMessage("Something wrong, try again");
+                        } else {
+                            new UserData(context).removeUserToken();
+                            DialogFragment dialogFragment = new SessionDialog();
+                            dialogFragment.show(getChildFragmentManager(), "session fragment");
+                        }
+                    } catch (IOException e) {
+                        new Messages(context).showMessage("Something wrong, try again");
+                        e.printStackTrace();
+                    }
+                    return;
                 }
                 JSONHelperTodo jsonHelperTodo = response.body();
                 ArrayList<Data> todosData = jsonHelperTodo.data;
@@ -107,7 +126,7 @@ public class TodoArchiveFragment extends Fragment {
     }
 
     private void initRecyclerView(ArrayList<Data> dataTodo) {
-        adapterTodoRecyclerView = new TodoRecyclerViewAdapter(context, dataTodo, userID);
+        adapterTodoRecyclerView = new TodoRecyclerViewAdapter(context, dataTodo, userToken);
         todoList.swapAdapter(adapterTodoRecyclerView, true);
     }
 

@@ -1,15 +1,15 @@
-package com.pmprogramms.todo.API.jsonhelper;
+package com.pmprogramms.todo.API.retrofit.todo.todo.save;
 
 import com.google.gson.annotations.SerializedName;
 
-public class JSONHelperEditTodo {
+public class JSONHelperSaveTodo {
     @SerializedName("task")
     public String task;
 
     @SerializedName("done")
     public boolean done;
 
-    public JSONHelperEditTodo(String task, boolean done) {
+    public JSONHelperSaveTodo(String task, boolean done) {
         this.task = task;
         this.done = done;
     }

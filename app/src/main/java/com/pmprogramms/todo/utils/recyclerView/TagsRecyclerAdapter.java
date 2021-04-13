@@ -53,7 +53,7 @@ public class TagsRecyclerAdapter extends RecyclerView.Adapter<TagsRecyclerAdapte
         holder.textView.setText(tags.get(position));
         holder.removeButton.setOnClickListener(v -> {
             API api = Client.getInstance().create(API.class);
-            Call<Void> call = api.deleteCustomTag(new UserData(context).getUserID(), tagsID.get(position));
+            Call<Void> call = api.deleteCustomTag(tagsID.get(position), new UserData(context).getUserToken());
             call.enqueue(new Callback<Void>() {
                 @Override
                 public void onResponse(Call<Void> call, Response<Void> response) {

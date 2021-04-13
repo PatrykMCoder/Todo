@@ -29,20 +29,24 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.pmprogramms.todo.API.retrofit.API;
 import com.pmprogramms.todo.API.retrofit.Client;
-import com.pmprogramms.todo.API.retrofit.todo.JSONHelperTodo;
-import com.pmprogramms.todo.API.retrofit.todo.Data;
-import com.pmprogramms.todo.API.retrofit.todo.Todos;
+import com.pmprogramms.todo.API.retrofit.todo.todo.JSONHelperTodo;
+import com.pmprogramms.todo.API.retrofit.todo.todo.Data;
+import com.pmprogramms.todo.API.retrofit.todo.todo.Todos;
 import com.pmprogramms.todo.MainActivity;
 import com.pmprogramms.todo.R;
+import com.pmprogramms.todo.helpers.api.SessionHelper;
 import com.pmprogramms.todo.helpers.text.TextFormat;
+import com.pmprogramms.todo.helpers.user.UserData;
 import com.pmprogramms.todo.helpers.view.HideAppBarHelper;
-import com.pmprogramms.todo.API.jsonhelper.JSONHelperEditTodo;
+import com.pmprogramms.todo.API.retrofit.todo.todo.edit.JSONHelperEditTodo;
 import com.pmprogramms.todo.utils.text.Messages;
 import com.pmprogramms.todo.utils.reminders.ReminderHelper;
 import com.pmprogramms.todo.view.dialogs.CreateReminderDialog;
 import com.pmprogramms.todo.view.dialogs.DeleteTodoAskDialog;
 import com.github.clans.fab.FloatingActionMenu;
+import com.pmprogramms.todo.view.dialogs.SessionDialog;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -56,7 +60,7 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
     private String todoID;
     private String tag;
     private String title;
-    private String userID;
+    private String userToken;
     private int color;
     private boolean archive;
     private boolean tmpArchive;
@@ -97,10 +101,10 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
 
     }
 
-    public TodoDetailsFragment(String userID, String todoID, String title, boolean archive, int color) {
+    public TodoDetailsFragment(String userToken, String todoID, String title, boolean archive, int color) {
         this.todoID = todoID;
         this.title = title;
-        this.userID = userID;
+        this.userToken = userToken;
         this.archive = archive;
         this.color = color;
         tmpArchive = archive;
@@ -181,12 +185,25 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
     }
 
     private void getTodoData() {
-        Call<JSONHelperTodo> call = api.getUserTodoData(userID, todoID);
+        Call<JSONHelperTodo> call = api.getUserTodoData(todoID, userToken);
         call.enqueue(new Callback<JSONHelperTodo>() {
             @Override
             public void onResponse(Call<JSONHelperTodo> call, Response<JSONHelperTodo> response) {
                 if (!response.isSuccessful()) {
-                    Toast.makeText(context, response.message(), Toast.LENGTH_LONG).show();
+                    SessionHelper sessionHelper = new SessionHelper();
+                    try {
+                        assert response.errorBody() != null;
+                        if (sessionHelper.checkSession(response.errorBody().string())) {
+                            new Messages(context).showMessage("Something wrong, try again");
+                        } else {
+                            new UserData(context).removeUserToken();
+                            DialogFragment dialogFragment = new SessionDialog();
+                            dialogFragment.show(getChildFragmentManager(), "session fragment");
+                        }
+                    } catch (IOException e) {
+                        new Messages(context).showMessage("Something wrong, try again");
+                        e.printStackTrace();
+                    }
                     return;
                 }
                 JSONHelperTodo helperTodo = response.body();
@@ -306,7 +323,7 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
         map.put("todos", new Gson().toJson(dataHelper, new TypeToken<ArrayList<JSONHelperEditTodo>>() {
         }.getType()));
 
-        Call<Data> call = api.updateTodoStatus(userID, todoID, map);
+        Call<Data> call = api.updateTodoStatus(todoID, map, userToken);
         call.enqueue(new Callback<Data>() {
             @Override
             public void onResponse(Call<Data> call, Response<Data> response) {
@@ -335,7 +352,7 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
     public void onClick(View v) {
         int id = v.getId();
         if (id == R.id.editTODO) {
-            mainActivity.initFragment(new EditTodoFragment(title, userID, todoID, todosArrayList, tag, archive, color), true);
+            mainActivity.initFragment(new EditTodoFragment(title, userToken, todoID, todosArrayList, tag, archive, color), true);
         } else if (id == R.id.create_reminder) {
             DialogFragment dialogFragment = new CreateReminderDialog();
             ReminderHelper.setTitle(titleTextView.getText().toString());
@@ -343,7 +360,7 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
         } else if (id == R.id.archiveTODO) {
             archiveAction();
         } else if (id == R.id.deleteTODO) {
-            DialogFragment dialogFragment = new DeleteTodoAskDialog(context, mainActivity, TodoDetailsFragment.this, title, userID, todoID);
+            DialogFragment dialogFragment = new DeleteTodoAskDialog(context, mainActivity, TodoDetailsFragment.this, title, userToken, todoID);
             dialogFragment.show(mainActivity.getSupportFragmentManager(), "delete todo");
         }
     }
@@ -351,7 +368,7 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
     private void archiveAction() {
         HashMap<String, Boolean> map = new HashMap<>();
         map.put("archive", !tmpArchive);
-        Call<Void> call = api.archiveAction(userID, todoID, map);
+        Call<Void> call = api.archiveAction(todoID, map, userToken);
         call.enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
