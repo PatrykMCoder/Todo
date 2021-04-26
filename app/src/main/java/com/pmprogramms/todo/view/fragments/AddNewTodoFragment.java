@@ -26,14 +26,18 @@ import com.pmprogramms.todo.API.retrofit.API;
 import com.pmprogramms.todo.API.retrofit.Client;
 import com.pmprogramms.todo.MainActivity;
 import com.pmprogramms.todo.R;
+import com.pmprogramms.todo.helpers.api.SessionHelper;
 import com.pmprogramms.todo.helpers.input.HideKeyboard;
+import com.pmprogramms.todo.helpers.user.UserData;
 import com.pmprogramms.todo.helpers.view.HideAppBarHelper;
 import com.pmprogramms.todo.helpers.view.TagsHelper;
-import com.pmprogramms.todo.API.jsonhelper.JSONHelperSaveTodo;
+import com.pmprogramms.todo.API.retrofit.todo.todo.save.JSONHelperSaveTodo;
 import com.pmprogramms.todo.utils.text.Messages;
 import com.pmprogramms.todo.view.dialogs.SelectTodoTagDialog;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.pmprogramms.todo.view.dialogs.SessionDialog;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -44,7 +48,7 @@ import retrofit2.Response;
 public class AddNewTodoFragment extends Fragment implements View.OnClickListener {
 
     private final static String TAG = "AddNewTodoFragment";
-    private String userID;
+    private String userToken;
     private Context context;
     private EditText newTitleEditText;
     private LinearLayout box;
@@ -75,8 +79,8 @@ public class AddNewTodoFragment extends Fragment implements View.OnClickListener
     public AddNewTodoFragment() {
     }
 
-    public AddNewTodoFragment(String userID) {
-        this.userID = userID;
+    public AddNewTodoFragment(String userToken) {
+        this.userToken = userToken;
     }
 
     @Override
@@ -209,18 +213,30 @@ public class AddNewTodoFragment extends Fragment implements View.OnClickListener
                 HashMap<String, String> map = new HashMap<>();
                 map.put("title", title);
                 map.put("color", stringColor);
-                map.put("user_id", userID);
                 map.put("todos", new Gson().toJson(saveTodoData, new TypeToken<ArrayList<JSONHelperSaveTodo>>() {
                 }.getType()));
                 map.put("tag", tag);
 
-                Call<Void> call = api.saveTodo(map);
+                Call<Void> call = api.saveTodo(map, userToken);
                 call.enqueue(new Callback<Void>() {
                     @Override
                     public void onResponse(Call<Void> call, Response<Void> response) {
                         progressDialog.cancel();
                         if (!response.isSuccessful()) {
-                            new Messages(context).showMessage(response.message());
+                            SessionHelper sessionHelper = new SessionHelper();
+                            try {
+                                assert response.errorBody() != null;
+                                if (sessionHelper.checkSession(response.errorBody().string())) {
+                                    new Messages(context).showMessage("Something wrong, try again");
+                                } else {
+                                    new UserData(context).removeUserToken();
+                                    DialogFragment dialogFragment = new SessionDialog();
+                                    dialogFragment.show(getChildFragmentManager(), "session fragment");
+                                }
+                            } catch (IOException e) {
+                                new Messages(context).showMessage("Something wrong, try again");
+                                e.printStackTrace();
+                            }
                             return;
                         }
                         mainActivity.closeFragment(AddNewTodoFragment.this, new TodoFragment());

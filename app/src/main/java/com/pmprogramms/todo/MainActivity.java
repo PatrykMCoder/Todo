@@ -50,11 +50,12 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         setContentView(R.layout.activity_main);
         new NotificationBar(getWindow()).updateColorNotificationBar();
         new Permissions(this).getAllPermissions();
-        String userID = new UserData(this).getUserID();
+        deleteOldData();
+        String userToken = new UserData(this).getUserToken();
         initView();
 
         if (TitleSearchHandle.getTitle() != null) {
-            initFragment(new TodoDetailsFragment(userID, TitleSearchHandle.getId(), TitleSearchHandle.getTitle(), TitleSearchHandle.isArchive(), Color.parseColor(TitleSearchHandle.getColor())), false);
+            initFragment(new TodoDetailsFragment(userToken, TitleSearchHandle.getId(), TitleSearchHandle.getTitle(), TitleSearchHandle.isArchive(), Color.parseColor(TitleSearchHandle.getColor())), false);
         } else
             initFragment(new TodoFragment(), false);
     }
@@ -176,5 +177,12 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         } else if (id == R.id.open_slide_menu) {
             drawerLayout.openDrawer(GravityCompat.START);
         }
+    }
+
+    // 14.04.2021
+    // This method is for remove user_id from devices (Version app: 2.1.12 to 2.2)
+    // Todo -> Remove this method soon
+    private void deleteOldData() {
+        new UserData(getApplicationContext()).removeOldData();
     }
 }

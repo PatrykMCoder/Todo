@@ -23,7 +23,7 @@ import com.pmprogramms.todo.view.dialogs.LoginEditProfileDialog;
 public class UserProfileEditFragment extends Fragment {
     private View rootView;
 
-    private String userID;
+    private String userToken;
     private String username;
     private String emailNew;
     private String emailOld;
@@ -49,8 +49,8 @@ public class UserProfileEditFragment extends Fragment {
 
     }
 
-    public UserProfileEditFragment(String userID, String username, String email) {
-        this.userID = userID;
+    public UserProfileEditFragment(String userToken, String username, String email) {
+        this.userToken = userToken;
         this.username = username;
         emailOld = email;
     }
@@ -81,9 +81,9 @@ public class UserProfileEditFragment extends Fragment {
                         }
                         LoginEditProfileDialog loginEditProfileDialog;
                         if (password.equals(""))
-                            loginEditProfileDialog = new LoginEditProfileDialog(userID, username, emailNew, emailOld, null);
+                            loginEditProfileDialog = new LoginEditProfileDialog(username, emailNew, emailOld, userToken, null);
                         else
-                            loginEditProfileDialog = new LoginEditProfileDialog(userID, username, emailNew, emailOld, password);
+                            loginEditProfileDialog = new LoginEditProfileDialog(username, emailNew, emailOld, userToken, password);
 
                         loginEditProfileDialog.show(getFragmentManager(), "login require");
                     } else {

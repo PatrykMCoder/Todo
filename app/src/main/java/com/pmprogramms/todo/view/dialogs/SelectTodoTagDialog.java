@@ -15,7 +15,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 
-import com.pmprogramms.todo.API.jsonhelper.JSONHelperCustomTags;
 import com.pmprogramms.todo.API.retrofit.API;
 import com.pmprogramms.todo.API.retrofit.Client;
 import com.pmprogramms.todo.API.retrofit.customTags.JsonHelperTag;
@@ -37,8 +36,6 @@ public class SelectTodoTagDialog extends DialogFragment {
     private ArrayList<String> tags;
     private ArrayAdapter<String> adapterSelect;
 
-    private FragmentManager fragmentManager;
-
     private Spinner selectTags;
 
     public SelectTodoTagDialog() {
@@ -53,7 +50,7 @@ public class SelectTodoTagDialog extends DialogFragment {
 
     private void loadTags() {
         API api = Client.getInstance().create(API.class);
-        Call<JsonHelperTag> call = api.loadCustomTags(new UserData(context).getUserID());
+        Call<JsonHelperTag> call = api.loadCustomTags(new UserData(context).getUserToken());
         call.enqueue(new Callback<JsonHelperTag>() {
             @Override
             public void onResponse(Call<JsonHelperTag> call, Response<JsonHelperTag> response) {
@@ -91,7 +88,6 @@ public class SelectTodoTagDialog extends DialogFragment {
         selectTags = view.findViewById(R.id.tags_select);
 
         builder.setView(view)
-
                 .setPositiveButton("OK", (dialog, which) -> TagsHelper.setTag(selectTags.getSelectedItem().toString()))
                 .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
                 .setNeutralButton("Add custom", (dialog, which) -> addCustomTag(getFragmentManager()));
@@ -105,7 +101,6 @@ public class SelectTodoTagDialog extends DialogFragment {
     }
 
     private void addCustomTag(FragmentManager fragmentManager) {
-        this.fragmentManager = fragmentManager;
         EditText input = new EditText(context);
         input.setSingleLine();
         input.setHint("Tag");
@@ -124,11 +119,10 @@ public class SelectTodoTagDialog extends DialogFragment {
                     if (!tag.equals("")) {
 
                         HashMap<String, String> map = new HashMap<>();
-                        map.put("user_id", new UserData(context).getUserID());
                         map.put("tag_name", tag);
 
                         API api = Client.getInstance().create(API.class);
-                        Call<Void> call = api.createCustomTag(map);
+                        Call<Void> call = api.createCustomTag(map, new UserData(context).getUserToken());
                         call.enqueue(new Callback<Void>() {
                             @Override
                             public void onResponse(Call<Void> call, Response<Void> response) {

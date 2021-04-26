@@ -1,4 +1,4 @@
-package com.pmprogramms.todo.API.retrofit.todo;
+package com.pmprogramms.todo.API.retrofit.todo.todo;
 
 import java.util.ArrayList;
 

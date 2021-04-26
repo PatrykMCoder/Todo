@@ -31,7 +31,7 @@ public class SplashScreenActivity extends AppCompatActivity {
     private void launchActivity() {
         Intent intent;
         if (new Network(this).connected()) {
-            if (new UserData(this).getUserID() != null)
+            if (new UserData(this).getUserToken() != null)
                 intent = new Intent(this, MainActivity.class);
             else
                 intent = new Intent(this, LoginActivity.class);

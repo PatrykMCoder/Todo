@@ -27,7 +27,6 @@ import com.pmprogramms.todo.MainActivity;
 import com.pmprogramms.todo.R;
 import com.pmprogramms.todo.helpers.user.UserData;
 import com.pmprogramms.todo.helpers.view.HideAppBarHelper;
-import com.pmprogramms.todo.API.jsonhelper.user.JSONHelperUser;
 import com.pmprogramms.todo.utils.text.Messages;
 import com.pmprogramms.todo.view.dialogs.PolicyDialog;
 import com.pmprogramms.todo.view.dialogs.SourceDialog;
@@ -46,7 +45,7 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
     private ImageButton editUserDataButton;
 
     private Context context;
-    private String userID;
+    private String userToken;
     private JsonHelperUser userObject;
     private ProgressDialog progressDialog;
 
@@ -59,7 +58,7 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
         mainActivity = (MainActivity) context;
         this.context = context;
         new HideAppBarHelper(mainActivity).hideBar();
-        userID = new UserData(context).getUserID();
+        userToken = new UserData(context).getUserToken();
     }
 
     @Nullable
@@ -97,7 +96,7 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
     private void getData() {
         swipeRefreshLayout.setRefreshing(false);
         API api = Client.getInstance().create(API.class);
-        Call<JsonHelperUser> call = api.getUserData(userID);
+        Call<JsonHelperUser> call = api.getUserData(userToken);
         call.enqueue(new Callback<JsonHelperUser>() {
             @Override
             public void onResponse(Call<JsonHelperUser> call, Response<JsonHelperUser> response) {
@@ -133,12 +132,12 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
     public void onClick(View v) {
         int id = v.getId();
         if (id == R.id.button_logout) {
-            new UserData(context).removeUserID();
+            new UserData(context).removeUserToken();
             Intent intent = new Intent(mainActivity, LoginActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
         } else if (id == R.id.edit_userdata_button) {
-            mainActivity.initFragment(new UserProfileEditFragment(userID, username, email), true);
+            mainActivity.initFragment(new UserProfileEditFragment(userToken, username, email), true);
         } else if (id == R.id.privacy) {
             DialogFragment dialogFragment = new PolicyDialog();
             dialogFragment.show(mainActivity.getSupportFragmentManager(), "Policy dialog");

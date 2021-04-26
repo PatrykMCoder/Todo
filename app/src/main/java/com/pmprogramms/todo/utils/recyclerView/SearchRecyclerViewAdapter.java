@@ -11,14 +11,12 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.pmprogramms.todo.API.retrofit.todo.Data;
+import com.pmprogramms.todo.API.retrofit.todo.todo.Data;
 import com.pmprogramms.todo.MainActivity;
 import com.pmprogramms.todo.R;
 import com.pmprogramms.todo.helpers.search.TitleSearchHandle;
-import com.pmprogramms.todo.API.jsonhelper.JSONHelperTodo;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Set;
 
 public class SearchRecyclerViewAdapter extends RecyclerView.Adapter<SearchRecyclerViewAdapter.SearchListViewHolder> {

@@ -21,19 +21,23 @@ import androidx.fragment.app.Fragment;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.pmprogramms.todo.API.jsonhelper.JSONHelperSaveTodo;
+import com.pmprogramms.todo.API.retrofit.todo.todo.save.JSONHelperSaveTodo;
 import com.pmprogramms.todo.API.retrofit.API;
 import com.pmprogramms.todo.API.retrofit.Client;
-import com.pmprogramms.todo.API.retrofit.todo.Todos;
+import com.pmprogramms.todo.API.retrofit.todo.todo.Todos;
 import com.pmprogramms.todo.MainActivity;
 import com.pmprogramms.todo.R;
+import com.pmprogramms.todo.helpers.api.SessionHelper;
+import com.pmprogramms.todo.helpers.user.UserData;
 import com.pmprogramms.todo.helpers.view.TagsHelper;
 import com.pmprogramms.todo.helpers.input.HideKeyboard;
-import com.pmprogramms.todo.API.jsonhelper.JSONHelperEditTodo;
+import com.pmprogramms.todo.API.retrofit.todo.todo.edit.JSONHelperEditTodo;
 import com.pmprogramms.todo.utils.text.Messages;
 import com.pmprogramms.todo.view.dialogs.SelectTodoTagDialog;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.pmprogramms.todo.view.dialogs.SessionDialog;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -63,7 +67,7 @@ public class EditTodoFragment extends Fragment implements View.OnClickListener {
     private View rootView;
     private LinearLayout linearLayout;
 
-    private String userID, todoID, tag;
+    private String userToken, todoID, tag;
     private API api;
 
     private int tmpPosition;
@@ -78,9 +82,9 @@ public class EditTodoFragment extends Fragment implements View.OnClickListener {
 
     }
 
-    public EditTodoFragment(String title, String userID, String todoID, ArrayList<Todos> arrayData, String tag, boolean archive, int color) {
+    public EditTodoFragment(String title, String userToken, String todoID, ArrayList<Todos> arrayData, String tag, boolean archive, int color) {
         this.title = title;
-        this.userID = userID;
+        this.userToken = userToken;
         this.todoID = todoID;
         this.arrayData = arrayData;
         this.tag = tag;
@@ -265,19 +269,33 @@ public class EditTodoFragment extends Fragment implements View.OnClickListener {
         map.put("title", title);
         map.put("tag", tag);
         map.put("color", newColor);
-        map.put("todos", new Gson().toJson(dataHelper, new TypeToken<ArrayList<JSONHelperSaveTodo>>() {}.getType()));
+        map.put("todos", new Gson().toJson(dataHelper, new TypeToken<ArrayList<JSONHelperSaveTodo>>() {
+        }.getType()));
 
-        Call<Void> call = api.editTodo(userID, todoID, map);
+        Call<Void> call = api.editTodo(todoID, map, userToken);
         call.enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 progressDialog.cancel();
                 if (!response.isSuccessful()) {
-                    new Messages(context).showMessage(response.message());
+                    SessionHelper sessionHelper = new SessionHelper();
+                    try {
+                        assert response.errorBody() != null;
+                        if (sessionHelper.checkSession(response.errorBody().string())) {
+                            new Messages(context).showMessage("Something wrong, try again");
+                        } else {
+                            new UserData(context).removeUserToken();
+                            DialogFragment dialogFragment = new SessionDialog();
+                            dialogFragment.show(getChildFragmentManager(), "session fragment");
+                        }
+                    } catch (IOException e) {
+                        new Messages(context).showMessage("Something wrong, try again");
+                        e.printStackTrace();
+                    }
                     return;
                 }
                 new Messages(context).showMessage("Updated todo");
-                mainActivity.closeFragment(EditTodoFragment.this, new TodoDetailsFragment(userID, todoID, title, archive, Color.parseColor(newColor)));
+                mainActivity.closeFragment(EditTodoFragment.this, new TodoDetailsFragment(userToken, todoID, title, archive, Color.parseColor(newColor)));
                 TagsHelper.setTag("");
             }
 

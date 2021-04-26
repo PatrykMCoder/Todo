@@ -1,20 +1,18 @@
 package com.pmprogramms.todo.API.retrofit;
 
-import com.pmprogramms.todo.API.jsonhelper.JSONHelperCustomTags;
-import com.pmprogramms.todo.API.jsonhelper.user.JSONHelperUser;
 import com.pmprogramms.todo.API.retrofit.customTags.JsonHelperTag;
 import com.pmprogramms.todo.API.retrofit.login.JsonHelperLogin;
-import com.pmprogramms.todo.API.retrofit.todo.Data;
-import com.pmprogramms.todo.API.retrofit.todo.JSONHelperTodo;
+import com.pmprogramms.todo.API.retrofit.todo.todo.Data;
+import com.pmprogramms.todo.API.retrofit.todo.todo.JSONHelperTodo;
 import com.pmprogramms.todo.API.retrofit.user.JsonHelperUser;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
+import retrofit2.http.Header;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
@@ -26,42 +24,43 @@ public interface API {
     @POST("/user")
     Call<Void> createUser(@Body HashMap<String, Object> data);
 
-    @GET("/todos/{userId}")
-    Call<JSONHelperTodo> getUserTodosTitle(@Path("userId") String id);
+    @GET("/todos")
+    Call<JSONHelperTodo> getUserTodosTitle(@Header("x-access-token") String token);
 
-    @GET("/todos/{userId}/{todoId}")
-    Call<JSONHelperTodo> getUserTodoData(@Path("userId") String userId, @Path("todoId") String todoId);
+    @GET("/todos/{todoId}")
+    Call<JSONHelperTodo> getUserTodoData(@Path("todoId") String todoId, @Header("x-access-token") String token);
 
-    @PUT("/todos/status/{userId}/{todoId}")
-    Call<Data> updateTodoStatus(@Path("userId") String userId, @Path("todoId") String todoId, @Body HashMap<String, String> todos);
+    @PUT("/todos/status/{todoId}")
+    Call<Data> updateTodoStatus(@Path("todoId") String todoId, @Body HashMap<String, String> todos, @Header("x-access-token") String token);
 
-    @PUT("/todos/archive/{userId}/{todoId}")
-    Call<Void> archiveAction(@Path("userId") String userId, @Path("todoId") String todoId, @Body HashMap<String, Boolean> archiveStatus);
+    @PUT("/todos/archive/{todoId}")
+    Call<Void> archiveAction(@Path("todoId") String todoId, @Body HashMap<String, Boolean> archiveStatus, @Header("x-access-token") String token);
 
-    @PUT("/todos/{userId}/{todoId}")
-    Call<Void> editTodo(@Path("userId") String userId, @Path("todoId") String todoId, @Body HashMap<String, String> data);
+    @PUT("/todos/{todoId}")
+    Call<Void> editTodo(@Path("todoId") String todoId, @Body HashMap<String, String> data, @Header("x-access-token") String token);
 
     @POST("/create_todo")
-    Call<Void> saveTodo(@Body HashMap<String, String> data);
+    Call<Void> saveTodo(@Body HashMap<String, String> data, @Header("x-access-token") String token);
 
-    @GET("/tags/{userId}")
-    Call<JsonHelperTag> getUserTagData(@Path("userId") String userId);
+    @GET("/tags")
+    Call<JsonHelperTag> getUserTagData(@Header("x-access-token") String token);
 
-    @GET("/user/{userId}")
-    Call<JsonHelperUser> getUserData(@Path("userId") String userId);
+    @GET("/user")
+    Call<JsonHelperUser> getUserData(@Header("x-access-token") String token);
 
-    @DELETE("/todos/{userId}/{todoId}")
-    Call<Void> deleteTodo(@Path("userId") String userId, @Path("todoId") String todoId);
+    @DELETE("/todos/{todoId}")
+    Call<Void> deleteTodo(@Path("todoId") String todoId, @Header("x-access-token") String token);
 
-    @PUT("/user/edit/{userId}")
-    Call<JSONHelperUser> editProfile(@Path("userId") String userId, @Body HashMap<String, String> data);
+    //todo - make new system for edit. we can't now use login method
+    @PUT("/user/edit")
+    Call<Void> editProfile(@Body HashMap<String, String> data, @Header("x-access-token") String token);
 
     @POST("/create_tag")
-    Call<Void> createCustomTag(@Body HashMap<String, String> data);
+    Call<Void> createCustomTag(@Body HashMap<String, String> data, @Header("x-access-token") String token);
 
-    @GET("/tags/{userId}")
-    Call<JsonHelperTag> loadCustomTags(@Path("userId") String userID);
+    @GET("/tags")
+    Call<JsonHelperTag> loadCustomTags(@Header("x-access-token") String token);
 
-    @DELETE("/tags/{userId}/{tagId}")
-    Call<Void> deleteCustomTag(@Path("userId") String userID, @Path("tagId") String tagId);
+    @DELETE("/tags/{tagId}")
+    Call<Void> deleteCustomTag(@Path("tagId") String tagId, @Header("x-access-token") String token);
 }
