@@ -11,8 +11,8 @@ android {
         applicationId "com.pmprogramms.todo"
         minSdkVersion 23
         targetSdkVersion 30
-        versionCode 22
-        versionName "2.1.0"
+        versionCode 23
+        versionName "2.1.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         buildConfigField("String", "LOCAL_API", secretProperties['LOCAL_API'])
