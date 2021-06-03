@@ -1,5 +1,6 @@
 package com.pmprogramms.todo.API.retrofit;
 
+import com.pmprogramms.todo.BuildConfig;
 import com.pmprogramms.todo.utils.device.CheckTypeApplication;
 
 import retrofit2.Retrofit;
@@ -10,8 +11,8 @@ public class Client {
 
     public static Retrofit getInstance() {
         String url = "";
-        if (CheckTypeApplication.isDebugApp()) url = "";
-        else url = "https://todo-note-api.herokuapp.com";
+        if (CheckTypeApplication.isDebugApp()) url = BuildConfig.LOCAL_API;
+        else url = BuildConfig.PRODUCTION_API;
 
         if (retrofit == null) {
             retrofit = new Retrofit.Builder()

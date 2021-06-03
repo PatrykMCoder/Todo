@@ -210,3 +210,5 @@ fabric.properties
 
 app/release
 app/build/outputs/apk/debug
+
+secret.properties
