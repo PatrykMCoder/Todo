@@ -62,7 +62,11 @@ public class LoginActivity extends AppCompatActivity {
 
         loginButton.setOnClickListener(v -> {
             new HideKeyboard(v, LoginActivity.this).hide();
-
+            if (emailEditText.getText().toString().equals("") && passwordEditText.getText().toString().equals("")) {
+                new Messages(this).showMessage("Please enter email and password");
+                return;
+            }
+        
             String email = emailEditText.getText().toString().trim();
             String password = passwordEditText.getText().toString();
 

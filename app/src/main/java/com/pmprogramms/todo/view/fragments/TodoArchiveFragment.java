@@ -61,7 +61,6 @@ public class TodoArchiveFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         api = Client.getInstance().create(API.class);
-        getData();
         rootView = inflater.inflate(R.layout.fragment_archive_todo, null);
 
         todoList = rootView.findViewById(R.id.todoListRecyclerView);
@@ -78,6 +77,8 @@ public class TodoArchiveFragment extends Fragment {
                 swipeRefreshLayout.setEnabled(dy <= 0);
             }
         });
+
+        getData();
 
         return rootView;
     }

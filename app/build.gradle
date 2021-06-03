@@ -1,3 +1,7 @@
+def secretPropertiesFile = rootProject.file("secret.properties")
+def secretProperties = new Properties()
+secretProperties.load(new FileInputStream(secretPropertiesFile))
+
 apply plugin: 'com.android.application'
 
 android {
@@ -10,6 +14,9 @@ android {
         versionCode 22
         versionName "2.1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String", "LOCAL_API", secretProperties['LOCAL_API'])
+        buildConfigField("String", "PRODUCTION_API", secretProperties['PRODUCTION_API'])
     }
     buildTypes {
         release {
