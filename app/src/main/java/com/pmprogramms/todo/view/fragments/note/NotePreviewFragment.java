@@ -1,6 +1,8 @@
 package com.pmprogramms.todo.view.fragments.note;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.Html;
 import android.view.LayoutInflater;
@@ -28,15 +30,19 @@ import com.pmprogramms.todo.R;
 import com.pmprogramms.todo.helpers.text.TextFormat;
 import com.pmprogramms.todo.helpers.user.UserData;
 import com.pmprogramms.todo.helpers.view.HideAppBarHelper;
+import com.pmprogramms.todo.utils.note.pdf.PDFGenerator;
 import com.pmprogramms.todo.utils.text.Messages;
 import com.pmprogramms.todo.view.dialogs.DeleteNoteAskDialog;
 
-import java.util.ArrayList;
+import java.io.File;
+import java.net.URI;
 import java.util.HashMap;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
+import static androidx.core.content.FileProvider.getUriForFile;
 
 
 public class NotePreviewFragment extends Fragment implements View.OnClickListener {
@@ -50,7 +56,8 @@ public class NotePreviewFragment extends Fragment implements View.OnClickListene
     private FloatingActionButton deleteNoteButton;
     private FloatingActionButton editNoteButton;
     private FloatingActionButton archiveNoteButton;
-    private CardView menuCardView;
+    private FloatingActionButton generatePDFNote;
+    private CardView detailsCardView;
     private ScrollView scrollView;
 
     private String userToken;
@@ -88,29 +95,31 @@ public class NotePreviewFragment extends Fragment implements View.OnClickListene
         deleteNoteButton = view.findViewById(R.id.delete_note);
         editNoteButton = view.findViewById(R.id.edit_note);
         archiveNoteButton = view.findViewById(R.id.archive_note);
+        generatePDFNote = view.findViewById(R.id.generate_pdf_note);
         scrollView = view.findViewById(R.id.note_scroll);
         menuButton = view.findViewById(R.id.menu);
-        menuCardView = view.findViewById(R.id.menu_card);
+        detailsCardView = view.findViewById(R.id.details);
 
         deleteNoteButton.setOnClickListener(this);
         editNoteButton.setOnClickListener(this);
         archiveNoteButton.setOnClickListener(this);
+        generatePDFNote.setOnClickListener(this);
 
         scrollView.setOnScrollChangeListener((v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
             swipeRefreshLayout.setEnabled(scrollY == 0);
             if (scrollY > oldScrollY) {
-                if (menuCardView.getVisibility() != View.INVISIBLE) {
+                if (detailsCardView.getVisibility() != View.INVISIBLE) {
                     Animation animation = AnimationUtils.loadAnimation(context, R.anim.menu_card_slide_down);
-                    menuCardView.setVisibility(View.INVISIBLE);
+                    detailsCardView.setVisibility(View.INVISIBLE);
                     menuButton.setVisibility(View.INVISIBLE);
-                    menuCardView.startAnimation(animation);
+                    detailsCardView.startAnimation(animation);
                 }
             } else if (scrollY < oldScrollY) {
-                if (menuCardView.getVisibility() != View.VISIBLE) {
+                if (detailsCardView.getVisibility() != View.VISIBLE) {
                     Animation animation = AnimationUtils.loadAnimation(context, R.anim.menu_card_slide_up);
-                    menuCardView.setVisibility(View.VISIBLE);
+                    detailsCardView.setVisibility(View.VISIBLE);
                     menuButton.setVisibility(View.VISIBLE);
-                    menuCardView.startAnimation(animation);
+                    detailsCardView.startAnimation(animation);
                 }
             }
         });
@@ -160,7 +169,22 @@ public class NotePreviewFragment extends Fragment implements View.OnClickListene
             mainActivity.initFragment(new EditNoteFragment(titleTextView.getText().toString().trim(), jsonNoteHelper.data.get(0).contents, noteID), true);
         } else if (id == R.id.archive_note) {
             archiveAction();
+        } else if (id == R.id.generate_pdf_note) {
+            generatePDFNote();
         }
+    }
+
+    private void generatePDFNote() {
+        boolean pdfCreated = new PDFGenerator().generatePDF(context, titleTextView.getText().toString(), view, contentsTextView);
+        if (pdfCreated) {
+            Intent openPDFIntent = new Intent();
+            File pdfFolderPath = new File(context.getFilesDir(), PDFGenerator.mainFolderName);
+            File pdfFile = new File(pdfFolderPath, titleTextView.getText().toString() + ".pdf");
+            Uri pdfContentUri = getUriForFile(context, context.getPackageName() + ".fileprovider", pdfFile);
+            openPDFIntent.setDataAndType(pdfContentUri, "application/pdf");
+            startActivity(openPDFIntent);
+        } else
+            new Messages(context).showMessage("Something wrong, try again");
     }
 
     private void archiveAction() {

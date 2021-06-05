@@ -47,7 +47,7 @@
             </ScrollView>
 
             <androidx.cardview.widget.CardView
-                android:id="@+id/menu_card"
+                android:id="@+id/details"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_alignParentBottom="true"
@@ -120,6 +120,15 @@
         app:menu_shadowXOffset="1dp"
         app:menu_shadowYOffset="3dp"
         app:menu_showShadow="true">
+
+
+        <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/generate_pdf_note"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_baseline_picture_as_pdf_24"
+            app:fab_colorNormal="@color/colorFAB"
+            app:fab_size="mini" />
 
         <com.github.clans.fab.FloatingActionButton
             android:id="@+id/archive_note"
