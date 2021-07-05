@@ -4,12 +4,6 @@
         android:id="@+id/archive_todo"
         android:icon="@drawable/ic_outline_archive_24"
         android:title="Archive todo" />
-
-    <item
-        android:id="@+id/archive_note"
-        android:icon="@drawable/ic_outline_note_24"
-        android:title="Archive note" />
-
     <item
         android:id="@+id/tags"
         android:title="Tags"
@@ -34,4 +28,9 @@
         android:id="@+id/settings"
         android:icon="@drawable/ic_settings_black_24dp"
         android:title="Settings" />
+
+    <item
+        android:id="@+id/review_app"
+        android:icon="@drawable/ic_baseline_rate_review_24"
+        android:title="@string/review_app" />
 </menu>
