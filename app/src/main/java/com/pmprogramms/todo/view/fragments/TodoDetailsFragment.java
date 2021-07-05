@@ -101,15 +101,6 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
 
     }
 
-    public TodoDetailsFragment(String userToken, String todoID, String title, boolean archive, int color) {
-        this.todoID = todoID;
-        this.title = title;
-        this.userToken = userToken;
-        this.archive = archive;
-        this.color = color;
-        tmpArchive = archive;
-    }
-
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -352,7 +343,17 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
     public void onClick(View v) {
         int id = v.getId();
         if (id == R.id.editTODO) {
-            mainActivity.initFragment(new EditTodoFragment(title, userToken, todoID, todosArrayList, tag, archive, color), true);
+            Bundle bundle = new Bundle();
+            bundle.putString("title", title);
+            bundle.putString("userToken", userToken);
+            bundle.putString("todoID", todoID);
+            bundle.putSerializable("todosArrayList", todosArrayList);
+            bundle.putString("tag", tag);
+            bundle.putInt("color", color);
+
+            EditTodoFragment editTodoFragment = new EditTodoFragment();
+            editTodoFragment.setArguments(bundle);
+            mainActivity.initFragment(new EditTodoFragment(), true);
         } else if (id == R.id.create_reminder) {
             DialogFragment dialogFragment = new CreateReminderDialog();
             ReminderHelper.setTitle(titleTextView.getText().toString());

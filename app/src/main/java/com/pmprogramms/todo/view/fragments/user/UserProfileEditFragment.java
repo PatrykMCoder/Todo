@@ -49,12 +49,6 @@ public class UserProfileEditFragment extends Fragment {
 
     }
 
-    public UserProfileEditFragment(String userToken, String username, String email) {
-        this.userToken = userToken;
-        this.username = username;
-        emailOld = email;
-    }
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {

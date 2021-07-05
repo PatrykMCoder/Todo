@@ -155,7 +155,11 @@ public class TodoFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onClick(View view) {
         if (view.getId() == R.id.add_new_todo) {
-            mainActivity.initFragment(new AddNewTodoFragment(userToken), true);
+            Bundle bundle = new Bundle();
+            bundle.putString("user_token", userToken);
+            AddNewTodoFragment addNewTodoFragment = new AddNewTodoFragment();
+            addNewTodoFragment.setArguments(bundle);
+            mainActivity.initFragment(new AddNewTodoFragment(), true);
         }
     }
 }

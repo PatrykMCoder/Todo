@@ -128,9 +128,6 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
             initFragment(new TagsFragment(), true);
             drawerLayout.closeDrawers();
             return true;
-        } else if (itemId == R.id.note_item || itemId == R.id.settings || itemId == R.id.archive_note) {
-            Toast.makeText(this, "Available in future :)", Toast.LENGTH_SHORT).show();
-            return true;
         } else if (itemId == R.id.archive_todo) {
             initFragment(new TodoArchiveFragment(), true);
             drawerLayout.closeDrawers();

@@ -82,21 +82,6 @@ public class EditTodoFragment extends Fragment implements View.OnClickListener {
 
     }
 
-    public EditTodoFragment(String title, String userToken, String todoID, ArrayList<Todos> arrayData, String tag, boolean archive, int color) {
-        this.title = title;
-        this.userToken = userToken;
-        this.todoID = todoID;
-        this.arrayData = arrayData;
-        this.tag = tag;
-        this.archive = archive;
-        this.color = color;
-
-//        variable for edit
-        newColor = String.format("#%06X", (0xFFFFFF & color));
-
-        Log.d("EditTodoFragment: ", "EditTodoFragment: " + newColor);
-    }
-
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);

@@ -4,12 +4,6 @@
         android:id="@+id/archive_todo"
         android:icon="@drawable/ic_outline_archive_24"
         android:title="Archive todo" />
-
-    <item
-        android:id="@+id/archive_note"
-        android:icon="@drawable/ic_outline_note_24"
-        android:title="Archive note" />
-
     <item
         android:id="@+id/tags"
         android:title="Tags"

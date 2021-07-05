@@ -36,15 +36,6 @@
             app:itemTextColor="@color/bottom_navigation_view_item_color"
             app:menu="@menu/menu_nav_item" />
 
-
-        <!--    <com.google.android.gms.ads.AdView-->
-        <!--        android:id="@+id/ad_view"-->
-        <!--        android:layout_width="wrap_content"-->
-        <!--        android:layout_height="wrap_content"-->
-        <!--        ads:adSize="BANNER"-->
-        <!--        android:layout_centerHorizontal="true"-->
-        <!--        android:layout_alignParentBottom="true"-->
-        <!--        ads:adUnitId="ca-app-pub-3940256099942544/6300978111"/>-->
     </RelativeLayout>
 
     <com.google.android.material.navigation.NavigationView

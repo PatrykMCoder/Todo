@@ -42,7 +42,6 @@ public class TodoArchiveFragment extends Fragment {
     private RecyclerView.Adapter adapterTodoRecyclerView;
     private RecyclerView.LayoutManager layoutManager;
 
-    private ArrayList<JSONHelperTodo> arrayTodos;
     private API api;
     private String userToken;
 

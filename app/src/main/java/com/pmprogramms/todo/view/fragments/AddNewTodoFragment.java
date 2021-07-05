@@ -79,10 +79,6 @@ public class AddNewTodoFragment extends Fragment implements View.OnClickListener
     public AddNewTodoFragment() {
     }
 
-    public AddNewTodoFragment(String userToken) {
-        this.userToken = userToken;
-    }
-
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
