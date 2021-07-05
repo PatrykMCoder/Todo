@@ -45,7 +45,7 @@
                     android:autofillHints="@null"
                     android:background="@null"
                     android:focusable="false"
-                    android:hint="Search todo..."
+                    android:hint="@string/search_hint"
                     android:inputType="none" />
             </LinearLayout>
 

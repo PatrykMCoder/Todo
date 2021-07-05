@@ -1,6 +1,5 @@
 package com.pmprogramms.todo.utils.recyclerView;
 
-import android.content.Context;
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,29 +8,25 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
+import androidx.navigation.NavDirections;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.pmprogramms.todo.API.retrofit.todo.todo.Data;
-import com.pmprogramms.todo.MainActivity;
 import com.pmprogramms.todo.R;
-import com.pmprogramms.todo.view.fragments.TodoDetailsFragment;
+import com.pmprogramms.todo.view.fragments.TodoArchiveFragmentDirections;
+import com.pmprogramms.todo.view.fragments.TodoFragmentDirections;
 
 import java.util.ArrayList;
 
 public class TodoRecyclerViewAdapter extends RecyclerView.Adapter<TodoRecyclerViewAdapter.TodoListViewHolder> {
-    private final static String TAG = "TODORECYCLERVIEW";
-    private MainActivity mainActivity;
-    private String userToken;
 
-    private ArrayList<Data> arrayTodos;
+    private final ArrayList<Data> arrayTodos;
 
-    private Context context;
-
-    public TodoRecyclerViewAdapter(Context context, ArrayList<Data> arrayTodos, String userToken) {
+    public TodoRecyclerViewAdapter(ArrayList<Data> arrayTodos) {
         this.arrayTodos = arrayTodos;
-        this.context = context;
-        this.userToken = userToken;
     }
+
 
     @NonNull
     @Override
@@ -44,35 +39,30 @@ public class TodoRecyclerViewAdapter extends RecyclerView.Adapter<TodoRecyclerVi
 
     @Override
     public void onBindViewHolder(@NonNull final TodoListViewHolder holder, final int position) {
-        mainActivity = (MainActivity) context;
-        if (arrayTodos != null && arrayTodos.size() > 0) {
-            holder.titleTextView.setText(arrayTodos.get(position).title);
-            String tag = arrayTodos.get(position).tag == null ? "" : arrayTodos.get(position).tag;
-            if (tag.equals("") || tag.toLowerCase().equals("no tag"))
-                holder.todoTagView.setVisibility(View.INVISIBLE);
-            holder.todoTagView.setText(tag);
+        holder.bind(arrayTodos.get(position));
+        if (arrayTodos.get(position).color != null && !arrayTodos.get(position).color.equals("")) {
+            holder.cardView.setCardBackgroundColor(Color.parseColor(arrayTodos.get(position).color));
+        }
 
-            if (arrayTodos.get(position).color != null && !arrayTodos.get(position).color.equals("")) {
-                holder.cardView.setCardBackgroundColor(Color.parseColor(arrayTodos.get(position).color));
+        holder.cardView.setOnClickListener(view -> {
+            NavDirections navDirections;
+
+            if (arrayTodos.get(position).archive) {
+                navDirections = TodoArchiveFragmentDirections.actionTodoArchiveFragmentToTodoDetailsFragment(arrayTodos.get(position)._id);
+            } else {
+                navDirections = TodoFragmentDirections.actionTodoFragmentToTodoDetailsFragment(arrayTodos.get(position)._id);
             }
 
-            holder.cardView.setOnClickListener(view -> {
-                if (arrayTodos.get(position).color != null  && !arrayTodos.get(position).color.equals("")) {
-                    mainActivity.initFragment(new TodoDetailsFragment(userToken, arrayTodos.get(position)._id, arrayTodos.get(position).title, arrayTodos.get(position).archive, Color.parseColor(arrayTodos.get(position).color)), true);
-                }else
-                    mainActivity.initFragment(new TodoDetailsFragment(userToken, arrayTodos.get(position)._id, arrayTodos.get(position).title, arrayTodos.get(position).archive, Color.parseColor("#ffffff")), true);
-            });
-        }
+            Navigation.findNavController(view).navigate(navDirections);
+        });
     }
 
     @Override
     public int getItemCount() {
-        if (arrayTodos != null)
-            return arrayTodos.size();
-        return 0;
+        return arrayTodos.size();
     }
 
-    static class TodoListViewHolder extends RecyclerView.ViewHolder {
+    class TodoListViewHolder extends RecyclerView.ViewHolder {
         private TextView titleTextView;
         private TextView todoTagView;
         private CardView cardView;
@@ -82,6 +72,21 @@ public class TodoRecyclerViewAdapter extends RecyclerView.Adapter<TodoRecyclerVi
             titleTextView = itemView.findViewById(R.id.todoTitle);
             cardView = itemView.findViewById(R.id.cardView);
             todoTagView = itemView.findViewById(R.id.todo_tag);
+        }
+
+        private void bind(Data todoData) {
+            titleTextView.setText(todoData.title);
+            if (todoData.tag != null) {
+                if (todoData.tag.equals("") || todoData.tag.equals("no tag"))
+                    todoTagView.setVisibility(View.INVISIBLE);
+                else todoTagView.setText(todoData.tag);
+            } else {
+                todoTagView.setVisibility(View.INVISIBLE);
+            }
+
+            if (todoData.color != null && !todoData.color.equals("")) {
+                cardView.setCardBackgroundColor(Color.parseColor(todoData.color));
+            }
         }
     }
 }

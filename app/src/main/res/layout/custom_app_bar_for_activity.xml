@@ -27,7 +27,7 @@
                 android:orientation="horizontal">
 
                 <ImageButton
-                    android:id="@+id/back"
+                    android:id="@+id/back_button"
                     android:layout_width="wrap_content"
                     android:layout_height="?android:attr/actionBarSize"
                     android:layout_gravity="center_horizontal"
@@ -37,14 +37,14 @@
                     android:focusable="true" />
 
                 <EditText
-                    android:id="@+id/search_label"
+                    android:id="@+id/search_edit_text"
                     android:layout_width="match_parent"
                     android:layout_height="?android:attr/actionBarSize"
                     android:layout_marginStart="25dp"
                     android:layout_marginEnd="0dp"
                     android:autofillHints="@null"
                     android:background="@null"
-                    android:hint="Search todo..."
+                    android:hint="@string/search_hint"
                     android:inputType="text"
                     android:imeOptions="actionSearch" />
             </LinearLayout>

@@ -3,13 +3,14 @@ def secretProperties = new Properties()
 secretProperties.load(new FileInputStream(secretPropertiesFile))
 
 apply plugin: 'com.android.application'
+apply plugin: "androidx.navigation.safeargs"
 
 android {
     compileSdkVersion 30
     buildToolsVersion "29.0.3"
     defaultConfig {
         applicationId "com.pmprogramms.todo"
-        minSdkVersion 23
+        minSdkVersion 26
         targetSdkVersion 30
         versionCode 23
         versionName "2.1.1"
@@ -23,6 +24,9 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+        buildFeatures {
+            viewBinding true
+        }
     }
     compileOptions {
         sourceCompatibility = 1.8
@@ -31,6 +35,8 @@ android {
 }
 
 dependencies {
+    def nav_version = "2.3.5"
+
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
@@ -47,7 +53,15 @@ dependencies {
     implementation 'com.squareup.retrofit2:converter-gson:2.7.0'
     implementation 'com.google.android.gms:play-services-auth:19.0.0'
 
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
+    implementation "androidx.lifecycle:lifecycle-viewmodel:2.3.1"
+
+    implementation "androidx.navigation:navigation-fragment:$nav_version"
+    implementation "androidx.navigation:navigation-ui:$nav_version"
+
     androidTestImplementation('com.squareup:fest-android:1.0.8') {
         exclude module: 'support-v4'
     }
+
+    implementation 'com.google.android.gms:play-services-ads:20.4.0'
 }
