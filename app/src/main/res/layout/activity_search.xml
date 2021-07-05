@@ -7,15 +7,15 @@
     tools:context=".view.search.SearchActivity">
 
     <include
-        android:id="@+id/custom_app_bar2"
+        android:id="@+id/search_bar"
         layout="@layout/custom_app_bar_for_activity"/>
 
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/search_container"
+        android:id="@+id/search_recycler"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/custom_app_bar2" />
+        android:layout_below="@+id/search_bar" />
 
 
 </RelativeLayout>

@@ -17,6 +17,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Design.Light.NoActionBar"
         android:usesCleartextTraffic="true"> <!--that line is only for connection to localhost. API connection use https protocol-->
+
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="@string/id_ad_mob"/>
+
         <activity android:name="com.pmprogramms.todo.RegisterActivity"
             android:screenOrientation="portrait"/>
 
