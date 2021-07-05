@@ -11,24 +11,16 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="25sp"
-        android:text="Todo title"
         android:textColor="#ffffff"
         android:layout_above="@id/open_app"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="20dp" />
 
-<!--    <ImageView-->
-<!--        android:id="@+id/animated_view"-->
-<!--        android:layout_width="100dp"-->
-<!--        android:layout_height="100dp"-->
-<!--        android:src="@drawable/checkboxes_for_alarm_activity"-->
-<!--        android:layout_centerInParent="true"/>-->
-
     <Button
         android:id="@+id/open_app"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Open app"
+        android:text="@string/open_app"
         android:background="@drawable/close_alarm_button_color"
         android:shadowColor="@null"
         android:textColor="#ffffff"

@@ -1,8 +1,9 @@
 package com.pmprogramms.todo.API.retrofit.todo.todo;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Data {
+public class Data implements Serializable {
     public String color;
     public boolean archive;
     public String _id;

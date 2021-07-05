@@ -27,7 +27,7 @@
                 android:id="@+id/todoTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Simple title"
+                android:text="@string/title_hint"
                 android:textColor="#000000"
                 android:textSize="35sp" />
 
@@ -36,7 +36,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/todoTitle"
-                android:text="Percent task"
                 android:textColor="#858585"
                 android:textSize="12sp" />
 
