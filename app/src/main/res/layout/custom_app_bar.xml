@@ -17,7 +17,7 @@
         app:cardElevation="8dp"
         app:cardUseCompatPadding="true">
 
-        <Toolbar
+        <androidx.appcompat.widget.Toolbar
             android:layout_width="match_parent"
             android:layout_height="?android:attr/actionBarSize">
 
@@ -45,10 +45,10 @@
                     android:autofillHints="@null"
                     android:background="@null"
                     android:focusable="false"
-                    android:hint="Search todo..."
+                    android:hint="@string/search_hint"
                     android:inputType="none" />
             </LinearLayout>
 
-        </Toolbar>
+        </androidx.appcompat.widget.Toolbar>
     </androidx.cardview.widget.CardView>
 </RelativeLayout>

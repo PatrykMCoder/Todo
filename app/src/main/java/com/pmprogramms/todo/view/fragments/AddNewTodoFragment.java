@@ -19,43 +19,33 @@ import android.widget.RelativeLayout;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.Navigation;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.pmprogramms.todo.API.retrofit.API;
-import com.pmprogramms.todo.API.retrofit.Client;
 import com.pmprogramms.todo.MainActivity;
 import com.pmprogramms.todo.R;
-import com.pmprogramms.todo.helpers.api.SessionHelper;
+import com.pmprogramms.todo.databinding.FragmentAddNewTodoBinding;
 import com.pmprogramms.todo.helpers.input.HideKeyboard;
-import com.pmprogramms.todo.helpers.user.UserData;
 import com.pmprogramms.todo.helpers.view.HideAppBarHelper;
 import com.pmprogramms.todo.helpers.view.TagsHelper;
 import com.pmprogramms.todo.API.retrofit.todo.todo.save.JSONHelperSaveTodo;
 import com.pmprogramms.todo.utils.text.Messages;
 import com.pmprogramms.todo.view.dialogs.SelectTodoTagDialog;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.pmprogramms.todo.view.dialogs.SessionDialog;
+import com.pmprogramms.todo.viewmodel.TodoNoteViewModel;
 
-import java.io.IOException;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-
 public class AddNewTodoFragment extends Fragment implements View.OnClickListener {
 
-    private final static String TAG = "AddNewTodoFragment";
     private String userToken;
     private Context context;
-    private EditText newTitleEditText;
-    private LinearLayout box;
     private CheckBox checkBoxDone;
     private EditText newTaskEditText;
-    private FloatingActionButton saveTodoButton;
-    private FloatingActionButton setTagButton;
     private MainActivity mainActivity;
     private String title;
     private String task;
@@ -63,24 +53,16 @@ public class AddNewTodoFragment extends Fragment implements View.OnClickListener
     private String stringColor = "#ffffff";
     private boolean done;
     private int createdElement = 0;
-    private View rootView;
-    private RelativeLayout relativeLayout;
-    private API api;
+
+    private FragmentAddNewTodoBinding fragmentAddNewTodoBinding;
 
     private ProgressDialog progressDialog;
 
-    private LinearLayout linearLayout;
     private ArrayList<JSONHelperSaveTodo> saveTodoData;
 
-    //buttons color
-    private View colorsViewLayout;
-    private ImageButton defaultColorButton, color1Button, color2Button, color3Button, color4Button, color5Button;
+    private TodoNoteViewModel todoNoteViewModel;
 
     public AddNewTodoFragment() {
-    }
-
-    public AddNewTodoFragment(String userToken) {
-        this.userToken = userToken;
     }
 
     @Override
@@ -94,39 +76,26 @@ public class AddNewTodoFragment extends Fragment implements View.OnClickListener
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         setHasOptionsMenu(true);
-        api = Client.getInstance().create(API.class);
+        userToken = AddNewTodoFragmentArgs.fromBundle(getArguments()).getUserToken();
+        fragmentAddNewTodoBinding = FragmentAddNewTodoBinding.inflate(inflater);
 
-        rootView = inflater.inflate(R.layout.fragment_add_new_todo, container, false);
-        relativeLayout = rootView.findViewById(R.id.main);
-        colorsViewLayout = rootView.findViewById(R.id.colors_layout);
-        defaultColorButton = colorsViewLayout.findViewById(R.id.default_color);
-        color1Button = colorsViewLayout.findViewById(R.id.pastel1);
-        color2Button = colorsViewLayout.findViewById(R.id.pastel2);
-        color3Button = colorsViewLayout.findViewById(R.id.pastel3);
-        color4Button = colorsViewLayout.findViewById(R.id.pastel4);
-        color5Button = colorsViewLayout.findViewById(R.id.pastel5);
+        todoNoteViewModel = new ViewModelProvider(this).get(TodoNoteViewModel.class);
 
-        newTitleEditText = rootView.findViewById(R.id.new_title_todo);
-        saveTodoButton = rootView.findViewById(R.id.save_todo);
-        setTagButton = rootView.findViewById(R.id.set_tag);
-        box = rootView.findViewById(R.id.box);
-        linearLayout = rootView.findViewById(R.id.box_new_item);
+        fragmentAddNewTodoBinding.saveTodo.setOnClickListener(this);
+        fragmentAddNewTodoBinding.setTag.setOnClickListener(this);
+        fragmentAddNewTodoBinding.boxNewItem.setOnClickListener(this);
 
-        saveTodoButton.setOnClickListener(this);
-        setTagButton.setOnClickListener(this);
-        linearLayout.setOnClickListener(this);
-
-        defaultColorButton.setOnClickListener(this);
-        color1Button.setOnClickListener(this);
-        color2Button.setOnClickListener(this);
-        color3Button.setOnClickListener(this);
-        color4Button.setOnClickListener(this);
-        color5Button.setOnClickListener(this);
+        fragmentAddNewTodoBinding.colorsLayout.defaultColor.setOnClickListener(this);
+        fragmentAddNewTodoBinding.colorsLayout.pastel1.setOnClickListener(this);
+        fragmentAddNewTodoBinding.colorsLayout.pastel2.setOnClickListener(this);
+        fragmentAddNewTodoBinding.colorsLayout.pastel3.setOnClickListener(this);
+        fragmentAddNewTodoBinding.colorsLayout.pastel4.setOnClickListener(this);
+        fragmentAddNewTodoBinding.colorsLayout.pastel5.setOnClickListener(this);
 
         createElements();
-        return rootView;
+        return fragmentAddNewTodoBinding.getRoot();
     }
 
     @Override
@@ -154,7 +123,7 @@ public class AddNewTodoFragment extends Fragment implements View.OnClickListener
             stringColor = "#D7D4D7";
         }
 
-        relativeLayout.setBackgroundColor(Color.parseColor(stringColor));
+        fragmentAddNewTodoBinding.main.setBackgroundColor(Color.parseColor(stringColor));
     }
 
     private void createElements() {
@@ -185,20 +154,21 @@ public class AddNewTodoFragment extends Fragment implements View.OnClickListener
         linearLayout.addView(checkBoxDone);
         linearLayout.addView(newTaskEditText);
 
-        box.addView(linearLayout);
+        fragmentAddNewTodoBinding.box.addView(linearLayout);
         createdElement++;
     }
 
+    // FIXME: 19/08/2021 make readable this code
     private void saveTodo() {
         int tmp = createdElement;
         progressDialog = ProgressDialog.show(context, "Save...", "Please wait..");
         saveTodoData = new ArrayList<>();
-        title = newTitleEditText.getText().toString().trim();
+        title = fragmentAddNewTodoBinding.newTitleTodo.getText().toString().trim();
         tag = TagsHelper.getTag();
         if (!title.isEmpty()) {
             for (int i = 0; i < createdElement; i++) {
-                newTaskEditText = rootView.findViewWithTag("t_" + i);
-                checkBoxDone = rootView.findViewWithTag("c_" + i);
+                newTaskEditText = fragmentAddNewTodoBinding.getRoot().findViewWithTag("t_" + i);
+                checkBoxDone = fragmentAddNewTodoBinding.getRoot().findViewWithTag("c_" + i);
                 task = newTaskEditText.getText().toString().trim();
                 done = checkBoxDone.isChecked();
 
@@ -217,41 +187,15 @@ public class AddNewTodoFragment extends Fragment implements View.OnClickListener
                 }.getType()));
                 map.put("tag", tag);
 
-                Call<Void> call = api.saveTodo(map, userToken);
-                call.enqueue(new Callback<Void>() {
-                    @Override
-                    public void onResponse(Call<Void> call, Response<Void> response) {
-                        progressDialog.cancel();
-                        if (!response.isSuccessful()) {
-                            SessionHelper sessionHelper = new SessionHelper();
-                            try {
-                                assert response.errorBody() != null;
-                                if (sessionHelper.checkSession(response.errorBody().string())) {
-                                    new Messages(context).showMessage("Something wrong, try again");
-                                } else {
-                                    new UserData(context).removeUserToken();
-                                    DialogFragment dialogFragment = new SessionDialog();
-                                    dialogFragment.show(getChildFragmentManager(), "session fragment");
-                                }
-                            } catch (IOException e) {
-                                new Messages(context).showMessage("Something wrong, try again");
-                                e.printStackTrace();
-                            }
-                            return;
-                        }
-                        mainActivity.closeFragment(AddNewTodoFragment.this, new TodoFragment());
-                    }
-
-                    @Override
-                    public void onFailure(Call<Void> call, Throwable t) {
-                        progressDialog.cancel();
-                        new Messages(context).showMessage("Cannot save todo, try again");
-                    }
+                todoNoteViewModel.createTodo(map, userToken).observe(getViewLifecycleOwner(), code -> {
+                    progressDialog.dismiss();
+                    if (code == 200 || code == 201)
+                        Navigation.findNavController(fragmentAddNewTodoBinding.getRoot()).navigate(R.id.todoFragment);
+                    else
+                        new Messages(context).showMessage("Something wrong, try again");
                 });
-            } else {
-                progressDialog.dismiss();
-                new Messages(context).showMessage("Todo list cannot be empty");
             }
+
         } else {
             progressDialog.dismiss();
             new Messages(context).showMessage("Title cannot be empty");

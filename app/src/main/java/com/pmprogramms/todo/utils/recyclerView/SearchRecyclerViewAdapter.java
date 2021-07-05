@@ -14,7 +14,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.pmprogramms.todo.API.retrofit.todo.todo.Data;
 import com.pmprogramms.todo.MainActivity;
 import com.pmprogramms.todo.R;
-import com.pmprogramms.todo.helpers.search.TitleSearchHandle;
 
 import java.util.ArrayList;
 import java.util.Set;
@@ -58,16 +57,10 @@ public class SearchRecyclerViewAdapter extends RecyclerView.Adapter<SearchRecycl
         if (archives.get(position))
             holder.archiveStatusImage.setImageResource(R.drawable.ic_outline_archive_24);
 
-        holder.searchCard.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(view.getContext(), MainActivity.class);
-                TitleSearchHandle.setTitle(titles.get(position));
-                TitleSearchHandle.setId(ids.get(position));
-                TitleSearchHandle.setArchive(archives.get(position));
-                TitleSearchHandle.setColor(colors.get(position));
-                view.getContext().startActivity(intent);
-            }
+        holder.searchCard.setOnClickListener(view -> {
+            Intent intent = new Intent(view.getContext(), MainActivity.class);
+            intent.putExtra("id", ids.get(position));
+            view.getContext().startActivity(intent);
         });
     }
 

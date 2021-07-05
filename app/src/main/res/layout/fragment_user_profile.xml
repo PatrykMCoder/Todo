@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -10,21 +11,21 @@
         android:layout_height="wrap_content">
 
         <ImageView
-            android:id="@+id/waveImage"
+            android:id="@+id/wave_image"
             android:layout_width="match_parent"
             android:layout_height="300dp"
             android:scaleType="fitXY"
-            android:src="@drawable/ic_waveseven"
+            android:src="@drawable/ic_wave_seven"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            android:contentDescription="@string/app_name" />
 
         <TextView
             android:id="@+id/welcome_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:text="Welcome\nUsername"
             android:textAlignment="center"
             android:textColor="#ffffff"
             android:textSize="32sp" />
@@ -45,7 +46,8 @@
                 android:id="@+id/scroll_view_profile"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fillViewport="true">
+                android:fillViewport="true"
+                tools:ignore="UselessParent">
 
                 <FrameLayout
                     android:id="@+id/container_profile"
@@ -62,7 +64,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:padding="20dp"
-                            android:text="User data"
+                            android:text="@string/user_data"
                             android:textSize="24sp" />
 
                         <TextView
@@ -71,7 +73,7 @@
                             android:layout_height="wrap_content"
                             android:layout_below="@id/user_data"
                             android:padding="20dp"
-                            android:text="Privacy"
+                            android:text="@string/privacy"
                             android:textSize="24sp" />
 
                         <TextView
@@ -80,7 +82,7 @@
                             android:layout_height="wrap_content"
                             android:layout_below="@id/privacy"
                             android:padding="20dp"
-                            android:text="Open source"
+                            android:text="@string/open_source"
                             android:textSize="24sp" />
 
                         <ImageButton
@@ -92,7 +94,8 @@
                             android:layout_alignEnd="@+id/user_data"
                             android:layout_alignBottom="@+id/user_data"
                             android:layout_marginEnd="20dp"
-                            android:src="@drawable/ic_baseline_edit_24" />
+                            android:src="@drawable/ic_baseline_edit_24"
+                            android:contentDescription="@string/app_name" />
 
                         <Button
                             android:id="@+id/button_logout"
@@ -102,7 +105,7 @@
                             android:layout_centerHorizontal="true"
                             android:layout_marginTop="20dp"
                             android:background="@drawable/button_login_background"
-                            android:text="Logout"
+                            android:text="@string/logout"
                             android:textColor="#ffffff" />
                     </RelativeLayout>
                 </FrameLayout>
