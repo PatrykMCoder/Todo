@@ -3,54 +3,42 @@ package com.pmprogramms.todo.view.fragments.user;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
+
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ImageButton;
-import android.widget.ScrollView;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import androidx.lifecycle.ViewModelProvider;
 
-import com.pmprogramms.todo.API.retrofit.API;
-import com.pmprogramms.todo.API.retrofit.Client;
-import com.pmprogramms.todo.API.retrofit.user.JsonHelperUser;
 import com.pmprogramms.todo.LoginActivity;
 import com.pmprogramms.todo.MainActivity;
 import com.pmprogramms.todo.R;
+import com.pmprogramms.todo.databinding.FragmentUserProfileBinding;
 import com.pmprogramms.todo.helpers.user.UserData;
 import com.pmprogramms.todo.helpers.view.HideAppBarHelper;
 import com.pmprogramms.todo.utils.text.Messages;
 import com.pmprogramms.todo.view.dialogs.PolicyDialog;
 import com.pmprogramms.todo.view.dialogs.SourceDialog;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import com.pmprogramms.todo.viewmodel.TodoNoteViewModel;
 
 public class UserProfileFragment extends Fragment implements View.OnClickListener {
-    private View rootView;
+
+    private FragmentUserProfileBinding fragmentUserProfileBinding;
     private MainActivity mainActivity;
-    private ScrollView scrollView;
-    private TextView welcomeUserTextView, pricacyTextView, openSourceTextView;
-    private SwipeRefreshLayout swipeRefreshLayout;
-    private Button logoutButton;
-    private ImageButton editUserDataButton;
+    private TodoNoteViewModel todoNoteViewModel;
 
     private Context context;
     private String userToken;
-    private JsonHelperUser userObject;
-    private ProgressDialog progressDialog;
 
     private String username;
     private String email;
+
+    private ProgressDialog progressDialog;
 
     @Override
     public void onAttach(Context context) {
@@ -64,68 +52,48 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        rootView = inflater.inflate(R.layout.fragment_user_profile, null);
+        fragmentUserProfileBinding = FragmentUserProfileBinding.inflate(inflater);
+        todoNoteViewModel = new ViewModelProvider(this).get(TodoNoteViewModel.class);
 
-        welcomeUserTextView = rootView.findViewById(R.id.welcome_text);
-        pricacyTextView = rootView.findViewById(R.id.privacy);
-        openSourceTextView = rootView.findViewById(R.id.open_source);
-        editUserDataButton = rootView.findViewById(R.id.edit_userdata_button);
+        fragmentUserProfileBinding.buttonLogout.setOnClickListener(this);
+        fragmentUserProfileBinding.editUserdataButton.setOnClickListener(this);
 
-        scrollView = rootView.findViewById(R.id.scroll_view_profile);
-        swipeRefreshLayout = rootView.findViewById(R.id.swipe_refresh);
+        fragmentUserProfileBinding.privacy.setOnClickListener(this);
+        fragmentUserProfileBinding.openSource.setOnClickListener(this);
+        fragmentUserProfileBinding.scrollViewProfile
+                .setOnScrollChangeListener((v, scrollX, scrollY, oldScrollX, oldScrollY) -> fragmentUserProfileBinding.swipeRefresh.setEnabled(scrollY == 0));
 
-        logoutButton = rootView.findViewById(R.id.button_logout);
-        logoutButton.setOnClickListener(this);
-        editUserDataButton.setOnClickListener(this);
-
-        pricacyTextView.setOnClickListener(this);
-        openSourceTextView.setOnClickListener(this);
+        fragmentUserProfileBinding.swipeRefresh.setOnRefreshListener(this::getData);
 
         progressDialog = ProgressDialog.show(context, "Loading data", "Please wait...");
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            scrollView.setOnScrollChangeListener((v, scrollX, scrollY, oldScrollX, oldScrollY) -> swipeRefreshLayout.setEnabled(scrollY == 0));
-        }
 
         getData();
 
-        swipeRefreshLayout.setOnRefreshListener(this::getData);
-        return rootView;
+        return fragmentUserProfileBinding.getRoot();
     }
 
     private void getData() {
-        swipeRefreshLayout.setRefreshing(false);
-        API api = Client.getInstance().create(API.class);
-        Call<JsonHelperUser> call = api.getUserData(userToken);
-        call.enqueue(new Callback<JsonHelperUser>() {
-            @Override
-            public void onResponse(Call<JsonHelperUser> call, Response<JsonHelperUser> response) {
-                progressDialog.cancel();
-                if (!response.isSuccessful()) {
-                    new Messages(context).showMessage(response.message());
-                    return;
-                }
-                userObject = response.body();
-                if (userObject != null) {
-                    email = userObject.data.email;
-                    username = userObject.data.username;
-                }
-                updateUI(username);
-            }
+        fragmentUserProfileBinding.swipeRefresh.setRefreshing(false);
+        String userToken = new UserData(requireContext()).getUserToken();
+        todoNoteViewModel.getUserData(userToken).observe(getViewLifecycleOwner(), userData -> {
+            progressDialog.dismiss();
+            if (userData != null) {
+                email = userData.data.email;
+                username = userData.data.username;
 
-            @Override
-            public void onFailure(Call<JsonHelperUser> call, Throwable t) {
-                progressDialog.dismiss();
-                new Messages(context).showMessage(t.getMessage());
+                updateUI(username);
+            } else {
+                new Messages(context).showMessage("Something wrong, try again");
             }
         });
     }
 
     private void updateUI(String username) {
         if (username.length() > 15)
-            username = username.substring(0, Math.min(username.length(), 15)) + "...";
+            username = username.substring(0, 15) + "...";
 
-        welcomeUserTextView.setText(String.format("Welcome\n%s", username));
+        fragmentUserProfileBinding.welcomeText.setText(String.format("Welcome\n%s", username));
     }
 
     @Override
@@ -137,7 +105,16 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
         } else if (id == R.id.edit_userdata_button) {
-            mainActivity.initFragment(new UserProfileEditFragment(userToken, username, email), true);
+// TODO: 21/09/2021 Task: https://github.com/PatrykMCoder/Todo/issues/198
+//            UserProfileFragment userProfileFragment = new UserProfileFragment();
+//            Bundle bundle = new Bundle();
+//            bundle.putString("userToken", userToken);
+//            bundle.putString("username", username);
+//            bundle.putString("userEmail", email);
+//
+//            userProfileFragment.setArguments(bundle);
+            new Messages(context).showMessage("For now is blocking, please be patient for 2.2.1 version");
+
         } else if (id == R.id.privacy) {
             DialogFragment dialogFragment = new PolicyDialog();
             dialogFragment.show(mainActivity.getSupportFragmentManager(), "Policy dialog");

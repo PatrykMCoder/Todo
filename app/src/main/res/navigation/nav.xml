@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav"
+    app:startDestination="@id/todoFragment">
+
+    <fragment
+        android:id="@+id/todoFragment"
+        android:name="com.pmprogramms.todo.view.fragments.TodoFragment"
+        android:label="TodoFragment" >
+        <action
+            android:id="@+id/action_todoFragment_to_addNewTodoFragment"
+            app:destination="@id/addNewTodoFragment" />
+        <action
+            android:id="@+id/action_todoFragment_to_todoDetailsFragment"
+            app:destination="@id/todoDetailsFragment"
+            app:popUpToInclusive="false" />
+        <argument
+            android:name="detailsIDFromSearch"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="@null"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/addNewTodoFragment"
+        android:name="com.pmprogramms.todo.view.fragments.AddNewTodoFragment"
+        android:label="AddNewTodoFragment" >
+        <action
+            android:id="@+id/action_addNewTodoFragment_to_todoFragment"
+            app:destination="@id/todoFragment" />
+        <argument
+            android:name="userToken"
+            app:argType="string" />
+    </fragment>
+    <fragment
+        android:id="@+id/userProfileFragment"
+        android:name="com.pmprogramms.todo.view.fragments.user.UserProfileFragment"
+        android:label="UserProfileFragment" >
+        <action
+            android:id="@+id/action_userProfileFragment_to_userProfileEditFragment"
+            app:destination="@id/userProfileEditFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/tagsFragment"
+        android:name="com.pmprogramms.todo.view.fragments.TagsFragment"
+        android:label="TagsFragment" />
+    <fragment
+        android:id="@+id/todoArchiveFragment"
+        android:name="com.pmprogramms.todo.view.fragments.TodoArchiveFragment"
+        android:label="TodoArchiveFragment" >
+        <action
+            android:id="@+id/action_todoArchiveFragment_to_todoDetailsFragment"
+            app:destination="@id/todoDetailsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/todoDetailsFragment"
+        android:name="com.pmprogramms.todo.view.fragments.TodoDetailsFragment"
+        android:label="TodoDetailsFragment" >
+        <argument
+            android:name="todoID"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_todoDetailsFragment_to_editTodoFragment"
+            app:destination="@id/editTodoFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/editTodoFragment"
+        android:name="com.pmprogramms.todo.view.fragments.EditTodoFragment"
+        android:label="EditTodoFragment" >
+        <argument
+            android:name="editTodoFields"
+            app:argType="com.pmprogramms.todo.helpers.view.EditTodoHelper" />
+    </fragment>
+    <fragment
+        android:id="@+id/userProfileEditFragment"
+        android:name="com.pmprogramms.todo.view.fragments.user.UserProfileEditFragment"
+        android:label="UserProfileEditFragment" />
+
+</navigation>

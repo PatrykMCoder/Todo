@@ -2,17 +2,6 @@
     <string name="app_name">Todo Note</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
-
-    <!-- Key for preferences -->
-    <string name="key_background_color">color_picker_key</string>
-    <string name="key_sort_todo">sort_todo_key</string>
-
-    <string-array name="sort_by">
-        <item>Date created</item>
-        <item>Alphabetically</item>
-        <item>Date reaming</item>
-    </string-array>
-
     <string-array name="tags">
         <item>No tag</item>
         <item>Important</item>
@@ -30,4 +19,36 @@
         <item>Notification and open application with song</item>
         <item>Only open application with song</item>
     </string-array>
+
+    <string name="id_ad_mob">ca-app-pub-4871499696146883~1687909048</string>
+
+    <!-- Buttons -->
+    <string name="login">Login</string>
+    <string name="no_account">No have account yet? Click here and create!</string>
+    <string name="accept_privacy">Accept privacy policy</string>
+    <string name="create_account">Create account</string>
+    <string name="open_app">Open app</string>
+
+    <!-- Hints -->
+    <string name="email_hint">Email</string>
+    <string name="password_hint">Password</string>
+    <string name="password_optional_hint">Password(optional)</string>
+    <string name="confirm_password_hint">Confirm password</string>
+    <string name="username_hint">Username</string>
+    <string name="search_hint">Search</string>
+    <string name="repeat_hint">Repeat</string>
+    <string name="display_hint">Display</string>
+    <string name="title_hint">Title</string>
+    <string name="create_element_hint">Tap to add item</string>
+    <string name="update_user_data">Update user data</string>
+    <string name="user_data">User data</string>
+    <string name="privacy">Privacy</string>
+    <string name="open_source">Open source</string>
+    <string name="logout">Logout</string>
+
+    <!-- Texts -->
+    <string name="edit_username">Edit\nUsername</string>
+
+    <!-- Texts with parameters -->
+    <string name="last_edit">Edited\n%1s</string>
 </resources>
