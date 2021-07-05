@@ -24,7 +24,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:text="Welcome\nUsername"
             android:textAlignment="center"
             android:textColor="#ffffff"
             android:textSize="32sp" />
@@ -62,7 +61,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:padding="20dp"
-                            android:text="User data"
+                            android:text="@string/user_data"
                             android:textSize="24sp" />
 
                         <TextView
@@ -71,7 +70,7 @@
                             android:layout_height="wrap_content"
                             android:layout_below="@id/user_data"
                             android:padding="20dp"
-                            android:text="Privacy"
+                            android:text="@string/privacy"
                             android:textSize="24sp" />
 
                         <TextView
@@ -80,7 +79,7 @@
                             android:layout_height="wrap_content"
                             android:layout_below="@id/privacy"
                             android:padding="20dp"
-                            android:text="Open source"
+                            android:text="@string/open_source"
                             android:textSize="24sp" />
 
                         <ImageButton
@@ -102,7 +101,7 @@
                             android:layout_centerHorizontal="true"
                             android:layout_marginTop="20dp"
                             android:background="@drawable/button_login_background"
-                            android:text="Logout"
+                            android:text="@string/logout"
                             android:textColor="#ffffff" />
                     </RelativeLayout>
                 </FrameLayout>

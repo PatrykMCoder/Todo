@@ -14,10 +14,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.pmprogramms.todo.API.retrofit.API;
 import com.pmprogramms.todo.API.retrofit.Client;
+import com.pmprogramms.todo.API.retrofit.customTags.JsonHelperTag;
+import com.pmprogramms.todo.API.retrofit.customTags.TagsData;
 import com.pmprogramms.todo.R;
 import com.pmprogramms.todo.helpers.user.UserData;
 import com.pmprogramms.todo.utils.text.Messages;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 import retrofit2.Call;
@@ -26,17 +29,10 @@ import retrofit2.Response;
 
 public class TagsRecyclerAdapter extends RecyclerView.Adapter<TagsRecyclerAdapter.TagRecyclerListHolder> {
 
-    private Activity mainActivity;
-    private Context context;
-    private ArrayList<String> tags;
-    private ArrayList<String> tagsID;
+    private ArrayList<TagsData> tags;
 
-    public TagsRecyclerAdapter(Context context, ArrayList<String> tags, ArrayList<String> tagsID) {
-        this.context = context;
+    public TagsRecyclerAdapter(ArrayList<TagsData> tags) {
         this.tags = tags;
-        this.tagsID = tagsID;
-
-        mainActivity = (Activity) context;
     }
 
     @NonNull
@@ -50,29 +46,27 @@ public class TagsRecyclerAdapter extends RecyclerView.Adapter<TagsRecyclerAdapte
 
     @Override
     public void onBindViewHolder(@NonNull TagRecyclerListHolder holder, int position) {
-        holder.textView.setText(tags.get(position));
+        holder.bind(tags.get(holder.getAdapterPosition()));
         holder.removeButton.setOnClickListener(v -> {
             API api = Client.getInstance().create(API.class);
-            Call<Void> call = api.deleteCustomTag(tagsID.get(position), new UserData(context).getUserToken());
+            Call<Void> call = api.deleteCustomTag(tags.get(holder.getAdapterPosition())._id, new UserData(holder.itemView.getContext()).getUserToken());
             call.enqueue(new Callback<Void>() {
                 @Override
                 public void onResponse(Call<Void> call, Response<Void> response) {
                     if(!response.isSuccessful()) {
-                        new Messages(context).showMessage(response.message());
+                        new Messages(holder.itemView.getContext()).showMessage(response.message());
                     }
 
                     if(response.code() == 200 || response.code() == 201) {
-                        notifyItemRemoved(position);
-                        tags.remove(position);
-                        tagsID.remove(position);
+                        notifyItemRemoved(holder.getAdapterPosition());
                     } else {
-                        new Messages(context).showMessage("Something wrong, try again");
+                        new Messages(holder.itemView.getContext()).showMessage("Something wrong, try again");
                     }
                 }
 
                 @Override
                 public void onFailure(Call<Void> call, Throwable t) {
-                    new Messages(context).showMessage(t.getMessage());
+                    new Messages(holder.itemView.getContext()).showMessage(t.getMessage());
                 }
             });
         });
@@ -80,19 +74,24 @@ public class TagsRecyclerAdapter extends RecyclerView.Adapter<TagsRecyclerAdapte
 
     @Override
     public int getItemCount() {
-        return tags != null ? tags.size() : 0;
+        return tags.size();
     }
 
 
-    static class TagRecyclerListHolder extends RecyclerView.ViewHolder {
+    class TagRecyclerListHolder extends RecyclerView.ViewHolder {
         private TextView textView;
         private CardView tagDataHolderCard;
         private ImageButton removeButton;
-        public TagRecyclerListHolder(@NonNull View itemView) {
+
+        public TagRecyclerListHolder(View itemView) {
             super(itemView);
             textView = itemView.findViewById(R.id.tag_text);
             removeButton = itemView.findViewById(R.id.remove_tag_button);
             tagDataHolderCard = itemView.findViewById(R.id.card_view);
+        }
+
+        public void bind(TagsData data) {
+            textView.setText(data.tag_name);
         }
     }
 }

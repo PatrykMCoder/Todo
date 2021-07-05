@@ -16,16 +16,17 @@ import retrofit2.http.Header;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 public interface API {
     @POST("/login")
-    Call<JsonHelperLogin> loginUser(@Body HashMap<String, String> data);
+    Call<JsonHelperLogin> loginUser(@Body HashMap<String, String> authData);
 
     @POST("/user")
     Call<Void> createUser(@Body HashMap<String, Object> data);
 
     @GET("/todos")
-    Call<JSONHelperTodo> getUserTodosTitle(@Header("x-access-token") String token);
+    Call<JSONHelperTodo> getUserTodosTitle(@Query("archive") boolean archive, @Header("x-access-token") String token);
 
     @GET("/todos/{todoId}")
     Call<JSONHelperTodo> getUserTodoData(@Path("todoId") String todoId, @Header("x-access-token") String token);
@@ -51,7 +52,6 @@ public interface API {
     @DELETE("/todos/{todoId}")
     Call<Void> deleteTodo(@Path("todoId") String todoId, @Header("x-access-token") String token);
 
-    //todo - make new system for edit. we can't now use login method
     @PUT("/user/edit")
     Call<Void> editProfile(@Body HashMap<String, String> data, @Header("x-access-token") String token);
 

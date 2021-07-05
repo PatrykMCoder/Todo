@@ -5,149 +5,101 @@ import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.InputType;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.Navigation;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.pmprogramms.todo.API.retrofit.todo.todo.save.JSONHelperSaveTodo;
-import com.pmprogramms.todo.API.retrofit.API;
-import com.pmprogramms.todo.API.retrofit.Client;
 import com.pmprogramms.todo.API.retrofit.todo.todo.Todos;
 import com.pmprogramms.todo.MainActivity;
 import com.pmprogramms.todo.R;
-import com.pmprogramms.todo.helpers.api.SessionHelper;
+import com.pmprogramms.todo.databinding.FragmentEditTodoBinding;
 import com.pmprogramms.todo.helpers.user.UserData;
-import com.pmprogramms.todo.helpers.view.TagsHelper;
 import com.pmprogramms.todo.helpers.input.HideKeyboard;
 import com.pmprogramms.todo.API.retrofit.todo.todo.edit.JSONHelperEditTodo;
 import com.pmprogramms.todo.utils.text.Messages;
 import com.pmprogramms.todo.view.dialogs.SelectTodoTagDialog;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.pmprogramms.todo.view.dialogs.SessionDialog;
+import com.pmprogramms.todo.viewmodel.TodoNoteViewModel;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-
 
 public class EditTodoFragment extends Fragment implements View.OnClickListener {
-
-    private ArrayList<Todos> arrayData;
-    private EditText titleEditText;
+    private EditTodoFragmentArgs args;
     private EditText taskEditText;
     private CheckBox doneCheckBox;
-    private LinearLayout box;
     private MainActivity mainActivity;
     private Context context;
-    private String title;
-    private boolean archive;
-    private ArrayList<JSONHelperEditTodo> dataHelper;
-    private FloatingActionButton saveTodoButton;
-    private FloatingActionButton setTagButton;
-    private RelativeLayout relativeLayout;
-
-    private ProgressDialog progressDialog;
-
-    private View rootView;
-    private LinearLayout linearLayout;
 
     private String userToken, todoID, tag;
-    private API api;
-
-    private int tmpPosition;
     private int color;
-
-    //buttons color
-    private View colorsViewLayout;
-    private ImageButton defaultColorButton, color1Button, color2Button, color3Button, color4Button, color5Button;
     private String newColor;
+    private int tmpPosition;
 
-    public EditTodoFragment() {
-
-    }
-
-    public EditTodoFragment(String title, String userToken, String todoID, ArrayList<Todos> arrayData, String tag, boolean archive, int color) {
-        this.title = title;
-        this.userToken = userToken;
-        this.todoID = todoID;
-        this.arrayData = arrayData;
-        this.tag = tag;
-        this.archive = archive;
-        this.color = color;
-
-//        variable for edit
-        newColor = String.format("#%06X", (0xFFFFFF & color));
-
-        Log.d("EditTodoFragment: ", "EditTodoFragment: " + newColor);
-    }
+    private FragmentEditTodoBinding fragmentEditTodoBinding;
+    private TodoNoteViewModel todoNoteViewModel;
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         this.context = context;
         mainActivity = (MainActivity) context;
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        api = Client.getInstance().create(API.class);
+        fragmentEditTodoBinding = FragmentEditTodoBinding.inflate(inflater);
+        todoNoteViewModel = new ViewModelProvider(this).get(TodoNoteViewModel.class);
 
-        rootView = inflater.inflate(R.layout.fragment_edit_todo, container, false);
-        relativeLayout = rootView.findViewById(R.id.container);
-        relativeLayout.setBackgroundColor(color);
+        args = EditTodoFragmentArgs.fromBundle(getArguments());
 
-        colorsViewLayout = rootView.findViewById(R.id.colors_layout_edit);
+        fragmentEditTodoBinding.container.setBackgroundColor(color);
+        fragmentEditTodoBinding.colorsLayoutEdit.defaultColor.setOnClickListener(this);
+        fragmentEditTodoBinding.colorsLayoutEdit.pastel1.setOnClickListener(this);
+        fragmentEditTodoBinding.colorsLayoutEdit.pastel2.setOnClickListener(this);
+        fragmentEditTodoBinding.colorsLayoutEdit.pastel3.setOnClickListener(this);
+        fragmentEditTodoBinding.colorsLayoutEdit.pastel4.setOnClickListener(this);
+        fragmentEditTodoBinding.colorsLayoutEdit.pastel5.setOnClickListener(this);
+        fragmentEditTodoBinding.saveTodo.setOnClickListener(this);
+        fragmentEditTodoBinding.setTag.setOnClickListener(this);
+        fragmentEditTodoBinding.boxNewItem.setOnClickListener(this);
 
-        defaultColorButton = colorsViewLayout.findViewById(R.id.default_color);
-        color1Button = colorsViewLayout.findViewById(R.id.pastel1);
-        color2Button = colorsViewLayout.findViewById(R.id.pastel2);
-        color3Button = colorsViewLayout.findViewById(R.id.pastel3);
-        color4Button = colorsViewLayout.findViewById(R.id.pastel4);
-        color5Button = colorsViewLayout.findViewById(R.id.pastel5);
+        loadData(args);
+        return fragmentEditTodoBinding.getRoot();
+    }
 
-        defaultColorButton.setOnClickListener(this);
-        color1Button.setOnClickListener(this);
-        color2Button.setOnClickListener(this);
-        color3Button.setOnClickListener(this);
-        color4Button.setOnClickListener(this);
-        color5Button.setOnClickListener(this);
+    private void loadData(EditTodoFragmentArgs args) {
+        userToken = new UserData(requireContext()).getUserToken();
+        todoID = args.getEditTodoFields().getDataTodo()._id;
+        tag = args.getEditTodoFields().getDataTodo().tag;
+        color = Color.parseColor(args.getEditTodoFields().getDataTodo().color);
 
-        TagsHelper.setTag(null);
-        box = rootView.findViewById(R.id.box);
-        titleEditText = rootView.findViewById(R.id.title_edit);
-        saveTodoButton = rootView.findViewById(R.id.save_todo);
-        setTagButton = rootView.findViewById(R.id.set_tag);
-
-        saveTodoButton.setOnClickListener(this);
-        setTagButton.setOnClickListener(this);
-
-        titleEditText.setText(title);
-        linearLayout = rootView.findViewById(R.id.box_new_item);
-        linearLayout.setOnClickListener(this);
-
-        loadData();
-        return rootView;
+        int index = 0;
+        for (Todos data : args.getEditTodoFields().getDataTodo().todos) {
+            createElementsWithData(data, index);
+            index++;
+        }
+        fragmentEditTodoBinding.titleEdit.setText(args.getEditTodoFields().getDataTodo().title);
+        tmpPosition = args.getEditTodoFields().getDataTodo().todos.size();
     }
 
     @Override
     public void onClick(View view) {
+        newColor = "#ffffff";
         int id = view.getId();
         if (id == R.id.save_todo) {
             new HideKeyboard(view, mainActivity).hide();
@@ -171,16 +123,7 @@ public class EditTodoFragment extends Fragment implements View.OnClickListener {
             newColor = "#D7D4D7";
         }
 
-        relativeLayout.setBackgroundColor(Color.parseColor(newColor));
-    }
-
-    private void loadData() {
-        int index = 0;
-        for (Todos data : arrayData) {
-            createElementsWithData(data, index);
-            index++;
-        }
-        tmpPosition = arrayData.size();
+        fragmentEditTodoBinding.container.setBackgroundColor(Color.parseColor(newColor));
     }
 
     private void createElementsWithData(Todos data, int position) {
@@ -212,7 +155,7 @@ public class EditTodoFragment extends Fragment implements View.OnClickListener {
         linearLayout.addView(doneCheckBox);
         linearLayout.addView(taskEditText);
 
-        box.addView(linearLayout);
+        fragmentEditTodoBinding.box.addView(linearLayout);
     }
 
     private void createElement() {
@@ -243,25 +186,26 @@ public class EditTodoFragment extends Fragment implements View.OnClickListener {
 
         linearLayout.addView(doneCheckBox);
         linearLayout.addView(taskEditText);
-        box.addView(linearLayout);
+        fragmentEditTodoBinding.box.addView(linearLayout);
 
         tmpPosition++;
     }
 
     private void updateTodo() {
-        progressDialog = ProgressDialog.show(context, "Update...", "Please wait...");
-        title = titleEditText.getText().toString();
+        ProgressDialog progressDialog = ProgressDialog.show(context, "Update...", "Please wait...");
+        String title = fragmentEditTodoBinding.titleEdit.getText().toString();
+
         EditText editText;
         CheckBox checkBox;
         JSONHelperEditTodo helper;
-        dataHelper = new ArrayList<>();
+        ArrayList<JSONHelperEditTodo> todoListDataHelper = new ArrayList<>();
         for (int i = 0; i < tmpPosition; i++) {
-            editText = rootView.findViewWithTag("t_" + i);
-            checkBox = rootView.findViewWithTag("d_" + i);
+            editText = fragmentEditTodoBinding.getRoot().findViewWithTag("t_" + i);
+            checkBox = fragmentEditTodoBinding.getRoot().findViewWithTag("d_" + i);
 
             if (!editText.getText().toString().trim().isEmpty()) {
                 helper = new JSONHelperEditTodo(editText.getText().toString().trim(), checkBox.isChecked());
-                dataHelper.add(helper);
+                todoListDataHelper.add(helper);
             }
         }
 
@@ -269,41 +213,15 @@ public class EditTodoFragment extends Fragment implements View.OnClickListener {
         map.put("title", title);
         map.put("tag", tag);
         map.put("color", newColor);
-        map.put("todos", new Gson().toJson(dataHelper, new TypeToken<ArrayList<JSONHelperSaveTodo>>() {
+        map.put("todos", new Gson().toJson(todoListDataHelper, new TypeToken<ArrayList<JSONHelperSaveTodo>>() {
         }.getType()));
 
-        Call<Void> call = api.editTodo(todoID, map, userToken);
-        call.enqueue(new Callback<Void>() {
-            @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
-                progressDialog.cancel();
-                if (!response.isSuccessful()) {
-                    SessionHelper sessionHelper = new SessionHelper();
-                    try {
-                        assert response.errorBody() != null;
-                        if (sessionHelper.checkSession(response.errorBody().string())) {
-                            new Messages(context).showMessage("Something wrong, try again");
-                        } else {
-                            new UserData(context).removeUserToken();
-                            DialogFragment dialogFragment = new SessionDialog();
-                            dialogFragment.show(getChildFragmentManager(), "session fragment");
-                        }
-                    } catch (IOException e) {
-                        new Messages(context).showMessage("Something wrong, try again");
-                        e.printStackTrace();
-                    }
-                    return;
-                }
-                new Messages(context).showMessage("Updated todo");
-                mainActivity.closeFragment(EditTodoFragment.this, new TodoDetailsFragment(userToken, todoID, title, archive, Color.parseColor(newColor)));
-                TagsHelper.setTag("");
-            }
-
-            @Override
-            public void onFailure(Call<Void> call, Throwable t) {
-                progressDialog.cancel();
-                new Messages(context).showMessage(t.getMessage());
-            }
+        todoNoteViewModel.editTodo(todoID, map, userToken).observe(getViewLifecycleOwner(), code -> {
+            if (code == 200 || code == 201)
+                Navigation.findNavController(fragmentEditTodoBinding.getRoot()).navigate(R.id.todoFragment);
+            else
+                new Messages(context).showMessage("Something wrong, try again");
         });
+        progressDialog.dismiss();
     }
 }
