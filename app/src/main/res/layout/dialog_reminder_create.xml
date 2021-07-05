@@ -26,11 +26,12 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/time_picker"
         android:gravity="center">
+
         <TextView
             android:id="@+id/info1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Repeat"
+            android:text="@string/repeat_hint"
             android:textAlignment="center"
             android:layout_margin="10dp" />
 
@@ -45,7 +46,7 @@
             android:id="@+id/info2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Display"
+            android:text="@string/display_hint"
             android:textAlignment="center"
             android:layout_margin="10dp"
             android:layout_below="@+id/info1" />
@@ -59,5 +60,4 @@
             android:layout_below="@id/reminder_repeat_type"/>
 
     </RelativeLayout>
-
 </RelativeLayout>

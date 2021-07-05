@@ -29,6 +29,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+// FIXME: 03/09/2021 fix this shit code
+
 public class LoginEditProfileDialog extends DialogFragment {
     private ProgressDialog progressDialog;
     private MainActivity mainActivity;
@@ -71,40 +73,37 @@ public class LoginEditProfileDialog extends DialogFragment {
         builder.setView(password);
 
         builder.setTitle("Password required")
-                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        String pass = password.getText().toString();
-                        progressDialog = ProgressDialog.show(getContext(), "Please wait", "");
+                .setPositiveButton("Ok", (dialog, which) -> {
+                    String pass = password.getText().toString();
+                    progressDialog = ProgressDialog.show(getContext(), "Please wait", "");
 
-                        HashMap<String, String> map = new HashMap<>();
-                        map.put("email", emailOld);
-                        map.put("password", pass);
+                    HashMap<String, String> map = new HashMap<>();
+                    map.put("email", emailOld);
+                    map.put("password", pass);
 
-                        API api = Client.getInstance().create(API.class);
-                        Call<JsonHelperLogin> call = api.loginUser(map);
-                        call.enqueue(new Callback<JsonHelperLogin>() {
-                            @Override
-                            public void onResponse(Call<JsonHelperLogin> call, Response<JsonHelperLogin> response) {
-                                progressDialog.cancel();
-                                if (!response.isSuccessful()) {
-                                    new Messages(context).showMessage(response.message());
-                                }
-
-                                JsonHelperLogin helperLogin = response.body();
-                                assert helperLogin != null;
-                                if (helperLogin.code == 200) {
-                                    callEditProfile();
-                                }
+                    API api = Client.getInstance().create(API.class);
+                    Call<JsonHelperLogin> call = api.loginUser(map);
+                    call.enqueue(new Callback<JsonHelperLogin>() {
+                        @Override
+                        public void onResponse(Call<JsonHelperLogin> call, Response<JsonHelperLogin> response) {
+                            progressDialog.cancel();
+                            if (!response.isSuccessful()) {
+                                new Messages(context).showMessage(response.message());
                             }
 
-                            @Override
-                            public void onFailure(Call<JsonHelperLogin> call, Throwable t) {
-                                progressDialog.cancel();
-                                new Messages(context).showMessage(t.getMessage());
+                            JsonHelperLogin helperLogin = response.body();
+                            assert helperLogin != null;
+                            if (helperLogin.code == 200) {
+                                callEditProfile();
                             }
-                        });
-                    }
+                        }
+
+                        @Override
+                        public void onFailure(Call<JsonHelperLogin> call, Throwable t) {
+                            progressDialog.cancel();
+                            new Messages(context).showMessage(t.getMessage());
+                        }
+                    });
                 });
         return builder.create();
     }
@@ -135,7 +134,6 @@ public class LoginEditProfileDialog extends DialogFragment {
 
                 if (response.code() == 200 || response.code() == 201) {
                     new Messages(context).showMessage("User updated");
-                    mainActivity.initFragment(new UserProfileFragment(), false);
                 } else {
                     new Messages(context).showMessage("Cannot update user, try again");
                 }

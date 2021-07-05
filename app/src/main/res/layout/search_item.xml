@@ -21,7 +21,7 @@
                 android:id="@+id/search_icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:contentDescription="search"
+                android:contentDescription="@string/app_name"
                 android:paddingStart="5dp"
                 android:paddingTop="10dp"
                 android:paddingEnd="10dp"
@@ -34,7 +34,8 @@
                 android:paddingTop="10dp"
                 android:paddingStart="0dp"
                 android:paddingEnd="10dp"
-                android:layout_alignParentEnd="true"/>
+                android:layout_alignParentEnd="true"
+                android:contentDescription="@string/app_name" />
 
             <TextView
                 android:id="@+id/search_result_text"

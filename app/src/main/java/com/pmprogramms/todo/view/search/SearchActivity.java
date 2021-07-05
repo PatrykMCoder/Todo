@@ -1,7 +1,7 @@
 package com.pmprogramms.todo.view.search;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.DialogFragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -9,129 +9,83 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.KeyEvent;
-import android.view.View;
 import android.view.inputmethod.EditorInfo;
-import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.pmprogramms.todo.API.retrofit.API;
-import com.pmprogramms.todo.API.retrofit.Client;
 import com.pmprogramms.todo.API.retrofit.todo.todo.Data;
-import com.pmprogramms.todo.API.retrofit.todo.todo.JSONHelperTodo;
-import com.pmprogramms.todo.MainActivity;
-import com.pmprogramms.todo.R;
-import com.pmprogramms.todo.helpers.api.SessionHelper;
+import com.pmprogramms.todo.databinding.ActivitySearchBinding;
 import com.pmprogramms.todo.helpers.user.UserData;
-import com.pmprogramms.todo.utils.text.Messages;
 import com.pmprogramms.todo.utils.recyclerView.SearchRecyclerViewAdapter;
-import com.pmprogramms.todo.view.dialogs.SessionDialog;
+import com.pmprogramms.todo.viewmodel.TodoNoteViewModel;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-
 public class SearchActivity extends AppCompatActivity {
-    private View includeView;
-    private EditText searchEditText;
-    private ImageButton backButton;
-
-    private RecyclerView searchList;
     private RecyclerView.Adapter adapterSearchRecyclerView;
     private RecyclerView.LayoutManager layoutManager;
 
-    private static final String TAG = "SearchActivity";
-    private MainActivity mainActivity;
+    private ActivitySearchBinding activitySearchBinding;
+    private TodoNoteViewModel todoNoteViewModel;
 
     private ArrayList<Data> arrayTodos;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_search);
-        arrayTodos = new ArrayList<>();
-        includeView = findViewById(R.id.custom_app_bar2);
-        searchEditText = includeView.findViewById(R.id.search_label);
-        backButton = includeView.findViewById(R.id.back);
 
-        searchList = findViewById(R.id.search_container);
+        activitySearchBinding = ActivitySearchBinding.inflate(getLayoutInflater());
+
+        setContentView(activitySearchBinding.getRoot());
+
+        todoNoteViewModel = new ViewModelProvider(this).get(TodoNoteViewModel.class);
 
         getData();
 
-        backButton.setOnClickListener(v -> onBackPressed());
+        activitySearchBinding.searchBar.backButton.setOnClickListener(v -> onBackPressed());
 
-        Intent intent = getIntent();
 
-        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            searchEditText.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-                }
-
-                @Override
-                public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                    search(searchEditText.getText().toString());
-                }
-
-                @Override
-                public void afterTextChanged(Editable editable) {
-
-                }
-            });
-
-            searchEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-                @Override
-                public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
-                    if (i == EditorInfo.IME_ACTION_SEARCH) {
-                        search(searchEditText.getText().toString());
-                    }
-                    return true;
-                }
-            });
-        }
-    }
-
-    private void getData() {
-        API api = Client.getInstance().create(API.class);
-
-        Call<JSONHelperTodo> call = api.getUserTodosTitle(
-                new UserData(getApplicationContext()).getUserToken()
-        );
-        call.enqueue(new Callback<JSONHelperTodo>() {
+        activitySearchBinding.searchBar.searchEditText.addTextChangedListener(new TextWatcher() {
             @Override
-            public void onResponse(Call<JSONHelperTodo> call, Response<JSONHelperTodo> response) {
-                if (!response.isSuccessful()) {
-                    SessionHelper sessionHelper = new SessionHelper();
-                    try {
-                        assert response.errorBody() != null;
-                        if (sessionHelper.checkSession(response.errorBody().string())) {
-                            new Messages(getApplicationContext()).showMessage("Something wrong, try again");
-                        } else {
-                            new UserData(getApplicationContext()).removeUserToken();
-                            DialogFragment dialogFragment = new SessionDialog();
-                            dialogFragment.show(getSupportFragmentManager(), "session fragment");
-                        }
-                    } catch (IOException e) {
-                        new Messages(getApplicationContext()).showMessage("Something wrong, try again");
-                        e.printStackTrace();
-                    }
-                    return;
-                }
-                JSONHelperTodo jsonHelperTodo = response.body();
-                arrayTodos = jsonHelperTodo.data;
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
             }
 
             @Override
-            public void onFailure(Call<JSONHelperTodo> call, Throwable t) {
-                Toast.makeText(SearchActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                search(activitySearchBinding.searchBar.searchEditText.getText().toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+
+        activitySearchBinding.searchBar.searchEditText.setOnEditorActionListener((textView, i, keyEvent) -> {
+            if (i == EditorInfo.IME_ACTION_SEARCH) {
+                search(activitySearchBinding.searchBar.searchEditText.getText().toString());
+            }
+            return true;
+        });
+
+    }
+
+    private void getData() {
+        arrayTodos = new ArrayList<>();
+        String userToken = new UserData(getApplicationContext()).getUserToken();
+        todoNoteViewModel.getAllTodos(false, userToken).observe(this, data -> {
+            if (data != null) {
+                arrayTodos.addAll(data.data);
+            }
+        });
+
+        todoNoteViewModel.getAllTodos(true, userToken).observe(this, data -> {
+            if (data != null) {
+                arrayTodos.addAll(data.data);
             }
         });
     }
@@ -145,19 +99,16 @@ public class SearchActivity extends AppCompatActivity {
                     result.add(t);
                 }
             }
-        } else
-            result.clear();
-
+        }
         displayResult(result);
     }
 
     private void displayResult(Set<Data> result) {
         adapterSearchRecyclerView = new SearchRecyclerViewAdapter(result);
-        searchList.setAdapter(adapterSearchRecyclerView);
-        adapterSearchRecyclerView.getItemCount();
-        searchList.setNestedScrollingEnabled(false);
-        searchList.setHasFixedSize(false);
+        activitySearchBinding.searchRecycler.setAdapter(adapterSearchRecyclerView);
+        activitySearchBinding.searchRecycler.setNestedScrollingEnabled(false);
+        activitySearchBinding.searchRecycler.setHasFixedSize(false);
         layoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
-        searchList.setLayoutManager(layoutManager);
+        activitySearchBinding.searchRecycler.setLayoutManager(layoutManager);
     }
 }

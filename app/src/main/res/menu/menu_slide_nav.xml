@@ -3,35 +3,34 @@
     <item
         android:id="@+id/archive_todo"
         android:icon="@drawable/ic_outline_archive_24"
-        android:title="Archive todo" />
-
-    <item
-        android:id="@+id/archive_note"
-        android:icon="@drawable/ic_outline_note_24"
-        android:title="Archive note" />
-
+        android:title="@string/archive_todo" />
     <item
         android:id="@+id/tags"
-        android:title="Tags"
+        android:title="@string/tags"
         android:icon="@drawable/ic_outline_label_24"/>
 
     <item
         android:id="@+id/reminders"
         android:icon="@drawable/ic_outline_notifications_24"
-        android:title="Reminders" />
+        android:title="@string/reminders" />
 
     <item
         android:id="@+id/contact_with_me"
         android:icon="@drawable/ic_outline_message_24"
-        android:title="Contact with me" />
+        android:title="@string/contact_with_me" />
 
     <item
         android:id="@+id/send_feedback"
         android:icon="@drawable/ic_outline_feedback_24"
-        android:title="Send feedback" />
+        android:title="@string/send_feedback" />
 
     <item
         android:id="@+id/settings"
         android:icon="@drawable/ic_settings_black_24dp"
-        android:title="Settings" />
+        android:title="@string/settings" />
+
+    <item
+        android:id="@+id/review_app"
+        android:icon="@drawable/ic_baseline_rate_review_24"
+        android:title="@string/review_app" />
 </menu>
