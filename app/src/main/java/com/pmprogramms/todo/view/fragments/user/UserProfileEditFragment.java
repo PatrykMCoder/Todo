@@ -17,9 +17,9 @@ import com.pmprogramms.todo.MainActivity;
 import com.pmprogramms.todo.R;
 import com.pmprogramms.todo.helpers.input.HideKeyboard;
 import com.pmprogramms.todo.utils.text.Messages;
-import com.pmprogramms.todo.utils.text.TextHelper;
 import com.pmprogramms.todo.view.dialogs.LoginEditProfileDialog;
 
+// FIXME: 03/09/2021 fix this shit code
 public class UserProfileEditFragment extends Fragment {
     private View rootView;
 
@@ -38,21 +38,15 @@ public class UserProfileEditFragment extends Fragment {
     private MainActivity mainActivity;
     private Context context;
 
+    public UserProfileEditFragment() {
+
+    }
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         mainActivity = (MainActivity) context;
         this.context = context;
-    }
-
-    public UserProfileEditFragment() {
-
-    }
-
-    public UserProfileEditFragment(String userToken, String username, String email) {
-        this.userToken = userToken;
-        this.username = username;
-        emailOld = email;
     }
 
     @Nullable
@@ -65,34 +59,31 @@ public class UserProfileEditFragment extends Fragment {
         passwordEdit = rootView.findViewById(R.id.user_password_edit);
         editButton = rootView.findViewById(R.id.button_submit);
 
-        editButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new HideKeyboard(v, mainActivity).hide();
+        editButton.setOnClickListener(v -> {
+            new HideKeyboard(v, mainActivity).hide();
 
-                if (!emailEdit.getText().toString().trim().equals("") && !usernameEdit.getText().toString().trim().equals("")) {
-                    if (new TextHelper().emailValid(emailEdit.getText().toString())) {
-                        emailNew = emailEdit.getText().toString().trim();
-                        username = usernameEdit.getText().toString().trim();
-                        password = passwordEdit.getText().toString();
-
-                        if (emailOld.equals(emailNew)) {
-                            emailNew = null;
-                        }
-                        LoginEditProfileDialog loginEditProfileDialog;
-                        if (password.equals(""))
-                            loginEditProfileDialog = new LoginEditProfileDialog(username, emailNew, emailOld, userToken, null);
-                        else
-                            loginEditProfileDialog = new LoginEditProfileDialog(username, emailNew, emailOld, userToken, password);
-
-                        loginEditProfileDialog.show(getFragmentManager(), "login require");
-                    } else {
-                        new Messages(context).showMessage("Invalid email");
-                    }
-                } else {
-                    new Messages(context).showMessage("Email and username can't be empty!");
-                }
-            }
+//            if (!emailEdit.getText().toString().trim().equals("") && !usernameEdit.getText().toString().trim().equals("")) {
+//                if (new TextHelper().emailValid(emailEdit.getText().toString())) {
+//                    emailNew = emailEdit.getText().toString().trim();
+//                    username = usernameEdit.getText().toString().trim();
+//                    password = passwordEdit.getText().toString();
+//
+//                    if (emailOld.equals(emailNew)) {
+//                        emailNew = null;
+//                    }
+//                    LoginEditProfileDialog loginEditProfileDialog;
+//                    if (password.equals(""))
+//                        loginEditProfileDialog = new LoginEditProfileDialog(username, emailNew, emailOld, userToken, null);
+//                    else
+//                        loginEditProfileDialog = new LoginEditProfileDialog(username, emailNew, emailOld, userToken, password);
+//
+//                    loginEditProfileDialog.show(getFragmentManager(), "login require");
+//                } else {
+//                    new Messages(context).showMessage("Invalid email");
+//                }
+//            } else {
+//                new Messages(context).showMessage("Email and username can't be empty!");
+//            }
         });
 
         fillInputs();
