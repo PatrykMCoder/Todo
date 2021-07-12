@@ -135,7 +135,6 @@ public class LoginEditProfileDialog extends DialogFragment {
 
                 if (response.code() == 200 || response.code() == 201) {
                     new Messages(context).showMessage("User updated");
-                    mainActivity.initFragment(new UserProfileFragment(), false);
                 } else {
                     new Messages(context).showMessage("Cannot update user, try again");
                 }

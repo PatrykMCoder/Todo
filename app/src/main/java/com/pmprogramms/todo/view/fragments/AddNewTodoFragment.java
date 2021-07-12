@@ -6,6 +6,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.InputType;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -92,6 +93,7 @@ public class AddNewTodoFragment extends Fragment implements View.OnClickListener
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         setHasOptionsMenu(true);
+        userToken = AddNewTodoFragmentArgs.fromBundle(getArguments()).getUserToken();
         api = Client.getInstance().create(API.class);
 
         rootView = inflater.inflate(R.layout.fragment_add_new_todo, container, false);
@@ -235,7 +237,6 @@ public class AddNewTodoFragment extends Fragment implements View.OnClickListener
                             }
                             return;
                         }
-                        mainActivity.closeFragment(AddNewTodoFragment.this, new TodoFragment());
                     }
 
                     @Override

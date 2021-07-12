@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav"
+    app:startDestination="@id/todoFragment">
+
+    <fragment
+        android:id="@+id/todoFragment"
+        android:name="com.pmprogramms.todo.view.fragments.TodoFragment"
+        android:label="TodoFragment" >
+        <action
+            android:id="@+id/action_todoFragment_to_addNewTodoFragment"
+            app:destination="@id/addNewTodoFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/addNewTodoFragment"
+        android:name="com.pmprogramms.todo.view.fragments.AddNewTodoFragment"
+        android:label="AddNewTodoFragment" >
+        <action
+            android:id="@+id/action_addNewTodoFragment_to_todoFragment"
+            app:destination="@id/todoFragment" />
+        <argument
+            android:name="userToken"
+            app:argType="string" />
+    </fragment>
+    <fragment
+        android:id="@+id/userProfileFragment"
+        android:name="com.pmprogramms.todo.view.fragments.user.UserProfileFragment"
+        android:label="UserProfileFragment" />
+    <fragment
+        android:id="@+id/tagsFragment"
+        android:name="com.pmprogramms.todo.view.fragments.TagsFragment"
+        android:label="TagsFragment" />
+    <fragment
+        android:id="@+id/todoArchiveFragment"
+        android:name="com.pmprogramms.todo.view.fragments.TodoArchiveFragment"
+        android:label="TodoArchiveFragment" />
+
+</navigation>

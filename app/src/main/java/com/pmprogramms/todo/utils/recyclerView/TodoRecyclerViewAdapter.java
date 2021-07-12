@@ -2,6 +2,7 @@ package com.pmprogramms.todo.utils.recyclerView;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,12 +15,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.pmprogramms.todo.API.retrofit.todo.todo.Data;
 import com.pmprogramms.todo.MainActivity;
 import com.pmprogramms.todo.R;
+import com.pmprogramms.todo.helpers.search.TitleSearchHandle;
 import com.pmprogramms.todo.view.fragments.TodoDetailsFragment;
 
 import java.util.ArrayList;
 
 public class TodoRecyclerViewAdapter extends RecyclerView.Adapter<TodoRecyclerViewAdapter.TodoListViewHolder> {
-    private final static String TAG = "TODORECYCLERVIEW";
     private MainActivity mainActivity;
     private String userToken;
 
@@ -57,10 +58,17 @@ public class TodoRecyclerViewAdapter extends RecyclerView.Adapter<TodoRecyclerVi
             }
 
             holder.cardView.setOnClickListener(view -> {
-                if (arrayTodos.get(position).color != null  && !arrayTodos.get(position).color.equals("")) {
-                    mainActivity.initFragment(new TodoDetailsFragment(userToken, arrayTodos.get(position)._id, arrayTodos.get(position).title, arrayTodos.get(position).archive, Color.parseColor(arrayTodos.get(position).color)), true);
-                }else
-                    mainActivity.initFragment(new TodoDetailsFragment(userToken, arrayTodos.get(position)._id, arrayTodos.get(position).title, arrayTodos.get(position).archive, Color.parseColor("#ffffff")), true);
+                TodoDetailsFragment todoDetailsFragment = new TodoDetailsFragment();
+
+                Bundle bundle = new Bundle();
+                bundle.putString("userToken", userToken);
+                bundle.putString("todoID", arrayTodos.get(position)._id);
+                bundle.putString("todoTitle", arrayTodos.get(position).title);
+                bundle.putBoolean("todoArchive", arrayTodos.get(position).archive);
+                bundle.putInt("todoColor", arrayTodos.get(position).color == null || !arrayTodos.get(position).color.equals("") ?
+                        Color.parseColor("#ffffff") : Color.parseColor(arrayTodos.get(position).color));
+
+                todoDetailsFragment.setArguments(bundle);
             });
         }
     }

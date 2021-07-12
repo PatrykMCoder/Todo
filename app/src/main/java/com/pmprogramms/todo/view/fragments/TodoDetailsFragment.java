@@ -295,7 +295,6 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
             textView.setTextColor(b ? Color.GRAY : Color.BLACK);
 
         } else {
-            mainActivity.closeFragment(this, new TodoFragment());
             new Messages(context).showMessage("Something wrong, try again.");
         }
     }
@@ -353,7 +352,6 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
 
             EditTodoFragment editTodoFragment = new EditTodoFragment();
             editTodoFragment.setArguments(bundle);
-            mainActivity.initFragment(new EditTodoFragment(), true);
         } else if (id == R.id.create_reminder) {
             DialogFragment dialogFragment = new CreateReminderDialog();
             ReminderHelper.setTitle(titleTextView.getText().toString());

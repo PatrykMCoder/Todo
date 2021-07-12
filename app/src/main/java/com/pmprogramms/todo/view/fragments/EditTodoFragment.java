@@ -28,6 +28,7 @@ import com.pmprogramms.todo.API.retrofit.todo.todo.Todos;
 import com.pmprogramms.todo.MainActivity;
 import com.pmprogramms.todo.R;
 import com.pmprogramms.todo.helpers.api.SessionHelper;
+import com.pmprogramms.todo.helpers.search.TitleSearchHandle;
 import com.pmprogramms.todo.helpers.user.UserData;
 import com.pmprogramms.todo.helpers.view.TagsHelper;
 import com.pmprogramms.todo.helpers.input.HideKeyboard;
@@ -280,7 +281,15 @@ public class EditTodoFragment extends Fragment implements View.OnClickListener {
                     return;
                 }
                 new Messages(context).showMessage("Updated todo");
-                mainActivity.closeFragment(EditTodoFragment.this, new TodoDetailsFragment(userToken, todoID, title, archive, Color.parseColor(newColor)));
+                Bundle bundle = new Bundle();
+                bundle.putString("userToken", userToken);
+                bundle.putString("todoID", todoID);
+                bundle.putString("todoTitle", title);
+                bundle.putBoolean("todoArchive", archive);
+                bundle.putInt("todoColor", Color.parseColor(newColor));
+                TodoDetailsFragment todoDetailsFragment = new TodoDetailsFragment();
+                todoDetailsFragment.setArguments(bundle);
+
                 TagsHelper.setTag("");
             }
 

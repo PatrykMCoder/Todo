@@ -137,7 +137,14 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
         } else if (id == R.id.edit_userdata_button) {
-            mainActivity.initFragment(new UserProfileEditFragment(userToken, username, email), true);
+            UserProfileFragment userProfileFragment = new UserProfileFragment();
+            Bundle bundle = new Bundle();
+            bundle.putString("userToken", userToken);
+            bundle.putString("username", username);
+            bundle.putString("userEmail", email);
+
+            userProfileFragment.setArguments(bundle);
+
         } else if (id == R.id.privacy) {
             DialogFragment dialogFragment = new PolicyDialog();
             dialogFragment.show(mainActivity.getSupportFragmentManager(), "Policy dialog");

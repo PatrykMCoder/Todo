@@ -38,15 +38,15 @@ public class UserProfileEditFragment extends Fragment {
     private MainActivity mainActivity;
     private Context context;
 
+    public UserProfileEditFragment() {
+
+    }
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         mainActivity = (MainActivity) context;
         this.context = context;
-    }
-
-    public UserProfileEditFragment() {
-
     }
 
     @Nullable

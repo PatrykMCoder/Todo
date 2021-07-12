@@ -56,7 +56,6 @@ public class DeleteTodoAskDialog extends DialogFragment {
                                 new Messages(context).showMessage(response.message());
                             }
                             new Messages(context).showMessage("Todo deleted");
-                            mainActivity.closeFragment(todoDetailsFragment, new TodoFragment());
                         }
 
                         @Override
