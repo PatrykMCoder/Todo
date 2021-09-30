@@ -17,7 +17,7 @@
         app:cardElevation="8dp"
         app:cardUseCompatPadding="true">
 
-        <Toolbar
+        <androidx.appcompat.widget.Toolbar
             android:layout_width="match_parent"
             android:layout_height="?android:attr/actionBarSize">
 
@@ -49,6 +49,6 @@
                     android:inputType="none" />
             </LinearLayout>
 
-        </Toolbar>
+        </androidx.appcompat.widget.Toolbar>
     </androidx.cardview.widget.CardView>
 </RelativeLayout>
