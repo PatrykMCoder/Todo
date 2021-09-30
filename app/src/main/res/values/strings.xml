@@ -48,6 +48,7 @@
 
     <!-- Texts -->
     <string name="edit_username">Edit\nUsername</string>
+    <string name="review_app">Review app 😅</string>
 
     <!-- Texts with parameters -->
     <string name="last_edit">Edited\n%1s</string>

@@ -2,10 +2,8 @@ package com.pmprogramms.todo;
 
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -17,10 +15,12 @@ import androidx.navigation.NavDirections;
 import androidx.navigation.Navigation;
 
 import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.MobileAds;
-import com.google.android.gms.ads.initialization.InitializationStatus;
-import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
+import com.google.android.material.snackbar.Snackbar;
+import com.google.android.play.core.review.ReviewInfo;
+import com.google.android.play.core.review.ReviewManager;
+import com.google.android.play.core.review.ReviewManagerFactory;
+import com.google.android.play.core.tasks.Task;
 import com.pmprogramms.todo.databinding.ActivityMainBinding;
 import com.pmprogramms.todo.helpers.tools.Permissions;
 import com.pmprogramms.todo.helpers.user.UserData;
@@ -34,6 +34,8 @@ import com.google.android.material.navigation.NavigationView;
 public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener, NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
 
     private ActivityMainBinding activityMainBinding;
+    private ReviewManager reviewManager;
+    private ReviewInfo reviewInfo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +73,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
         deleteOldData();
         setupAdMob();
+        setupInAppReview();
     }
 
     @Override
@@ -121,6 +124,13 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                         Uri.parse("https://www.instagram.com/patryk_programmer/")));
             }
             return true;
+        } else if (itemId == R.id.review_app) {
+           Task<Void> flow = reviewManager.launchReviewFlow(this, reviewInfo);
+           if (flow.isSuccessful()) {
+               Snackbar.make(activityMainBinding.getRoot(), "Thank you for review! 😇", Snackbar.LENGTH_SHORT)
+                       .setAnimationMode(Snackbar.ANIMATION_MODE_SLIDE)
+                       .show();
+           }
         }
         return false;
     }
@@ -153,6 +163,16 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         AdRequest adRequest = new AdRequest.Builder().build();
         activityMainBinding.adView.loadAd(adRequest);
 
+    }
+
+    private void setupInAppReview() {
+        reviewManager = ReviewManagerFactory.create(this);
+        Task<ReviewInfo> request = reviewManager.requestReviewFlow();
+        request.addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                reviewInfo = task.getResult();
+            }
+        });
     }
 
     private void deleteOldData() {

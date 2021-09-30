@@ -28,4 +28,9 @@
         android:id="@+id/settings"
         android:icon="@drawable/ic_settings_black_24dp"
         android:title="Settings" />
+
+    <item
+        android:id="@+id/review_app"
+        android:icon="@drawable/ic_baseline_rate_review_24"
+        android:title="@string/review_app" />
 </menu>
