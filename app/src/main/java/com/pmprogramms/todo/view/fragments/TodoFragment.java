@@ -2,13 +2,18 @@ package com.pmprogramms.todo.view.fragments;
 
 
 import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavDirections;
 import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -34,6 +39,9 @@ public class TodoFragment extends Fragment implements View.OnClickListener {
     private FragmentTodoBinding fragmentTodoBinding;
     private TodoFragmentArgs args;
 
+    private ArrayList<Data> todosData;
+    private TodoRecyclerViewAdapter todoRecyclerViewAdapter;
+
     public TodoFragment() {
     }
 
@@ -55,6 +63,9 @@ public class TodoFragment extends Fragment implements View.OnClickListener {
 
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false);
         fragmentTodoBinding.todoListRecyclerView.setLayoutManager(layoutManager);
+
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleCallback);
+        itemTouchHelper.attachToRecyclerView(fragmentTodoBinding.todoListRecyclerView);
 
         fragmentTodoBinding.todoListRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -86,14 +97,15 @@ public class TodoFragment extends Fragment implements View.OnClickListener {
         userToken = new UserData(requireContext()).getUserToken();
         todoNoteViewModel.getAllTodos(false, userToken).observe(getViewLifecycleOwner(), jsonHelperTodo -> {
             if (jsonHelperTodo != null) {
-                initRecyclerView(jsonHelperTodo.data);
+                todosData = jsonHelperTodo.data;
+                initRecyclerView(todosData);
             }
         });
     }
 
 
     private void initRecyclerView(ArrayList<Data> dataTodo) {
-        TodoRecyclerViewAdapter todoRecyclerViewAdapter = new TodoRecyclerViewAdapter(dataTodo);
+        todoRecyclerViewAdapter = new TodoRecyclerViewAdapter(dataTodo);
         fragmentTodoBinding.todoListRecyclerView.setAdapter(todoRecyclerViewAdapter);
     }
 
@@ -104,4 +116,45 @@ public class TodoFragment extends Fragment implements View.OnClickListener {
             Navigation.findNavController(view).navigate(navDirections);
         }
     }
+
+    ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+        @Override
+        public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+            return false;
+        }
+
+        @Override
+        public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+            if (direction == ItemTouchHelper.LEFT) {
+                todoNoteViewModel.deleteTodo(todosData.get(viewHolder.getAdapterPosition())._id, userToken);
+                todosData.remove(viewHolder.getAdapterPosition());
+                todoRecyclerViewAdapter.notifyDataSetChanged();
+            }
+        }
+
+        @Override
+        public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+            View item = viewHolder.itemView;
+
+            Paint paint = new Paint();
+          if (dX < 0) {
+                paint.setARGB(255, 255, 0, 0);
+                c.drawRect(item.getRight() + (dX / 4), item.getTop(), item.getRight(), item.getBottom(), paint);
+                Drawable deleteIcon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_delete_white_24dp);
+
+                int intrinsicWidth = deleteIcon.getIntrinsicWidth();
+                int intrinsicHeight = deleteIcon.getIntrinsicHeight();
+
+                int deleteIconTop = item.getTop() + ((item.getBottom() - item.getTop()) - intrinsicHeight) / 2;
+                int deleteIconMargin = ((item.getBottom() - item.getTop()) - intrinsicHeight) / 2;
+                int deleteIconLeft = item.getRight() - deleteIconMargin - intrinsicWidth;
+                int deleteIconRight = item.getRight() - deleteIconMargin;
+                int deleteIconBottom = deleteIconTop + intrinsicHeight;
+
+                deleteIcon.setBounds(deleteIconLeft, deleteIconTop, deleteIconRight, deleteIconBottom);
+                deleteIcon.draw(c);
+            }
+            super.onChildDraw(c, recyclerView, viewHolder, dX / 4, dY, actionState, isCurrentlyActive);
+        }
+    };
 }
