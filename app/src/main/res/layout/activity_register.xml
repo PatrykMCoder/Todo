@@ -21,7 +21,7 @@
         android:layout_below="@id/icon_app"
         android:layout_centerHorizontal="true"
         android:drawableEnd="@drawable/ic_baseline_account_circle_24"
-        android:hint="Username"
+        android:hint="@string/username_hint"
         android:inputType="text"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
@@ -35,7 +35,7 @@
         android:layout_below="@id/username_edit_text"
         android:layout_centerHorizontal="true"
         android:drawableEnd="@drawable/ic_baseline_alternate_email_24"
-        android:hint="Email"
+        android:hint="@string/email_hint"
         android:inputType="textEmailAddress"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
@@ -48,7 +48,7 @@
         android:layout_below="@id/email_edit_text"
         android:layout_centerHorizontal="true"
         android:drawableEnd="@drawable/ic_baseline_lock_24"
-        android:hint="Password"
+        android:hint="@string/password_hint"
         android:inputType="textPassword"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
@@ -61,7 +61,7 @@
         android:layout_below="@id/password_edit_text"
         android:layout_centerHorizontal="true"
         android:drawableEnd="@drawable/ic_baseline_lock_24"
-        android:hint="Confirm password"
+        android:hint="@string/confirm_password_hint"
         android:inputType="textPassword"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
@@ -87,7 +87,7 @@
             android:minWidth="48dp"
             android:minHeight="48dp"
             android:textSize="16sp"
-            android:text="Accept privacy policy"/>
+            android:text="@string/accept_privacy"/>
     </LinearLayout>
 
     <Button
@@ -98,7 +98,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="10dp"
         android:background="@drawable/button_login_background"
-        android:text="Create"
+        android:text="@string/create_account"
         android:textColor="#ffffff" />
 
 </RelativeLayout>
