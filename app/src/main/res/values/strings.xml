@@ -30,4 +30,6 @@
         <item>Notification and open application with song</item>
         <item>Only open application with song</item>
     </string-array>
+
+    <string name="id_ad_mob">ca-app-pub-4871499696146883~1687909048</string>
 </resources>

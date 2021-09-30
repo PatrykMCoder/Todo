@@ -32,12 +32,21 @@
             android:id="@+id/nav_bar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
             android:layout_marginBottom="0dp"
             android:background="#ffffff"
             app:itemIconTint="@color/bottom_navigation_view_item_color"
             app:itemTextColor="@color/bottom_navigation_view_item_color"
-            app:menu="@menu/menu_nav_item" />
+            app:menu="@menu/menu_nav_item"
+            android:layout_above="@id/adView"/>
+
+        <com.google.android.gms.ads.AdView
+            android:id="@+id/adView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            ads:adSize="BANNER"
+            ads:adUnitId="ca-app-pub-3940256099942544/6300978111"/>
 
     </RelativeLayout>
 

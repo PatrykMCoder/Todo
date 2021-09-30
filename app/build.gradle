@@ -59,8 +59,9 @@ dependencies {
     implementation "androidx.navigation:navigation-fragment:$nav_version"
     implementation "androidx.navigation:navigation-ui:$nav_version"
 
-
     androidTestImplementation('com.squareup:fest-android:1.0.8') {
         exclude module: 'support-v4'
     }
+
+    implementation 'com.google.android.gms:play-services-ads:20.4.0'
 }

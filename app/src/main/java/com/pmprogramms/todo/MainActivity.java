@@ -16,6 +16,11 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.navigation.NavDirections;
 import androidx.navigation.Navigation;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.initialization.InitializationStatus;
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 import com.pmprogramms.todo.databinding.ActivityMainBinding;
 import com.pmprogramms.todo.helpers.tools.Permissions;
 import com.pmprogramms.todo.helpers.user.UserData;
@@ -65,6 +70,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         activityMainBinding.navigationView.setNavigationItemSelectedListener(this);
 
         deleteOldData();
+        setupAdMob();
     }
 
     @Override
@@ -137,6 +143,16 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         } else if (id == R.id.open_slide_menu) {
             activityMainBinding.drawerLayout.openDrawer(GravityCompat.START);
         }
+    }
+
+    private void setupAdMob() {
+        MobileAds.initialize(this, initializationStatus -> {
+
+        });
+
+        AdRequest adRequest = new AdRequest.Builder().build();
+        activityMainBinding.adView.loadAd(adRequest);
+
     }
 
     private void deleteOldData() {
