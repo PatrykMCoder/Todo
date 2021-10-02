@@ -34,7 +34,8 @@
                 android:paddingTop="10dp"
                 android:paddingStart="0dp"
                 android:paddingEnd="10dp"
-                android:layout_alignParentEnd="true"/>
+                android:layout_alignParentEnd="true"
+                android:contentDescription="@string/app_name" />
 
             <TextView
                 android:id="@+id/search_result_text"

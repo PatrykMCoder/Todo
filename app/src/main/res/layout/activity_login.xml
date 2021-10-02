@@ -11,7 +11,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:src="@mipmap/app_icon" />
+        android:src="@mipmap/app_icon"
+        android:contentDescription="@string/app_name" />
 
     <EditText
         android:id="@+id/email_edit_text"
@@ -24,7 +25,8 @@
         android:inputType="textEmailAddress"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
-        android:paddingBottom="20dp" />
+        android:paddingBottom="20dp"
+        android:autofillHints="@null" />
 
     <EditText
         android:id="@+id/password_edit_text"
@@ -37,7 +39,8 @@
         android:inputType="textPassword"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
-        android:paddingBottom="20dp" />
+        android:paddingBottom="20dp"
+        android:autofillHints="@null" />
 
     <Button
         android:id="@+id/button_login"

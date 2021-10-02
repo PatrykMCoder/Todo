@@ -42,7 +42,8 @@
                 android:layout_height="50dp"
                 android:background="@null"
                 android:layout_alignEnd="@id/reminder_text"
-                android:src="@drawable/ic_baseline_delete_forever_24"/>
+                android:src="@drawable/ic_baseline_delete_forever_24"
+                android:contentDescription="@string/app_name" />
         </RelativeLayout>
 
     </androidx.cardview.widget.CardView>

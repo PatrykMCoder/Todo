@@ -9,11 +9,9 @@
         android:id="@+id/search_bar"
         layout="@layout/custom_app_bar_for_activity"/>
 
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/search_recycler"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/search_bar" />
-
 </RelativeLayout>

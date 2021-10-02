@@ -62,5 +62,4 @@
         android:contentDescription="@string/app_name"
         android:src="@drawable/border"
         android:layout_marginEnd="10dp"/>
-
 </RelativeLayout>
