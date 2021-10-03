@@ -17,11 +17,16 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Handler;
+import android.os.Looper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.pmprogramms.todo.API.retrofit.todo.todo.Data;
+import com.pmprogramms.todo.API.retrofit.todo.todo.JSONHelperTodo;
 import com.pmprogramms.todo.MainActivity;
 import com.pmprogramms.todo.R;
 import com.pmprogramms.todo.databinding.FragmentTodoBinding;
@@ -118,6 +123,11 @@ public class TodoFragment extends Fragment implements View.OnClickListener {
     }
 
     ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+        private final Handler handler = new Handler(Looper.getMainLooper());
+        private Runnable runnable;
+        private Data deletedItem;
+        private int deletedItemPosition;
+
         @Override
         public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
             return false;
@@ -126,9 +136,7 @@ public class TodoFragment extends Fragment implements View.OnClickListener {
         @Override
         public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
             if (direction == ItemTouchHelper.LEFT) {
-                todoNoteViewModel.deleteTodo(todosData.get(viewHolder.getAdapterPosition())._id, userToken);
-                todosData.remove(viewHolder.getAdapterPosition());
-                todoRecyclerViewAdapter.notifyDataSetChanged();
+                deleteAction(viewHolder);
             }
         }
 
@@ -137,7 +145,7 @@ public class TodoFragment extends Fragment implements View.OnClickListener {
             View item = viewHolder.itemView;
 
             Paint paint = new Paint();
-          if (dX < 0) {
+            if (dX < 0) {
                 paint.setARGB(255, 255, 0, 0);
                 c.drawRect(item.getRight() + (dX / 4), item.getTop(), item.getRight(), item.getBottom(), paint);
                 Drawable deleteIcon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_delete_white_24dp);
@@ -155,6 +163,28 @@ public class TodoFragment extends Fragment implements View.OnClickListener {
                 deleteIcon.draw(c);
             }
             super.onChildDraw(c, recyclerView, viewHolder, dX / 4, dY, actionState, isCurrentlyActive);
+        }
+
+        private void deleteAction(RecyclerView.ViewHolder viewHolder) {
+            deletedItem = todosData.get(viewHolder.getAdapterPosition());
+            deletedItemPosition = viewHolder.getAdapterPosition();
+
+            todosData.remove(viewHolder.getAdapterPosition());
+            todoRecyclerViewAdapter.notifyDataSetChanged();
+
+            Snackbar.make(fragmentTodoBinding.getRoot(), R.string.element_deleted, Snackbar.LENGTH_LONG)
+                    .setAction(R.string.undo, v -> dismissDeleteAction())
+                    .show();
+            
+            runnable = () -> todoNoteViewModel.deleteTodo(todosData.get(viewHolder.getAdapterPosition())._id, userToken);
+            handler.postDelayed(runnable, 2750);
+
+        }
+
+        private void dismissDeleteAction() {
+            handler.removeCallbacks(runnable);
+            todosData.add(deletedItemPosition, deletedItem);
+            todoRecyclerViewAdapter.notifyDataSetChanged();
         }
     };
 }

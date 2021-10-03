@@ -227,7 +227,7 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
     @Override
     public void onClick(View v) {
         int id = v.getId();
-        if (id == R.id.editTODO) {
+        if (id == R.id.edit_TODO) {
             EditTodoHelper editTodoHelper = new EditTodoHelper(dataTodo);
 
             NavDirections navDirections = TodoDetailsFragmentDirections.actionTodoDetailsFragmentToEditTodoFragment(editTodoHelper);
@@ -237,9 +237,9 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
             DialogFragment dialogFragment = new CreateReminderDialog();
             ReminderHelper.setTitle(fragmentTodoDetailsBinding.titlePreview.getText().toString());
             dialogFragment.show(((MainActivity) context).getSupportFragmentManager(), "create reminder");
-        } else if (id == R.id.archiveTODO) {
+        } else if (id == R.id.archive_TODO) {
             archiveAction();
-        } else if (id == R.id.deleteTODO) {
+        } else if (id == R.id.delete_TODO) {
             todoNoteViewModel.deleteTodo(todoID, userToken).observe(getViewLifecycleOwner(), code -> {
                 if (code == 200 || code == 201) {
                     Navigation.findNavController(v).navigate(R.id.todoFragment);

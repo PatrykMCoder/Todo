@@ -28,6 +28,7 @@
     <string name="accept_privacy">Accept privacy policy</string>
     <string name="create_account">Create account</string>
     <string name="open_app">Open app</string>
+    <string name="element_deleted">Element deleted</string>
 
     <!-- Hints -->
     <string name="email_hint">Email</string>
@@ -45,6 +46,7 @@
     <string name="privacy">Privacy</string>
     <string name="open_source">Open source</string>
     <string name="logout">Logout</string>
+    <string name="undo">Undo</string>
 
     <!-- Texts -->
     <string name="edit_username">Edit\nUsername</string>
@@ -63,4 +65,5 @@
     <string name="contact_with_me">Contact with me</string>
     <string name="send_feedback">Send feedback</string>
     <string name="settings">Settings</string>
+
 </resources>
