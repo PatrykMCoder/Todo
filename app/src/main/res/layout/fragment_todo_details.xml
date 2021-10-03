@@ -6,11 +6,19 @@
     android:layout_height="match_parent"
     android:id="@+id/container">
 
+    <include
+        android:id="@+id/app_bar"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        layout="@layout/app_bar_todo_details" />
+
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipe_refresh"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginEnd="-20dp">
+        android:layout_marginEnd="-20dp"
+        android:layout_below="@id/app_bar"
+        android:elevation="10dp">
 
         <RelativeLayout
             android:id="@+id/container_todos"
@@ -20,21 +28,10 @@
             android:padding="10dp"
             tools:context=".view.fragments.TodoDetailsFragment">
 
-            <TextView
-                android:id="@+id/title_preview"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentTop="true"
-                android:paddingBottom="10dp"
-                android:textColor="#000000"
-                android:textSize="20sp" />
-
             <ScrollView
                 android:id="@+id/scroll_view"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/title_preview">
+                android:layout_height="wrap_content">
 
                 <LinearLayout
                     android:id="@+id/container_scroll"
@@ -79,15 +76,6 @@
                         android:freezesText="false"
                         android:gravity="center"
                         android:text="@string/last_edit" />
-
-                    <ImageView
-                        android:id="@+id/reminder_status"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"
-                        android:layout_marginEnd="10dp"
-                        android:contentDescription="@string/app_name" />
 
                 </RelativeLayout>
 
@@ -138,22 +126,6 @@
         app:menu_shadowXOffset="1dp"
         app:menu_shadowYOffset="3dp"
         app:menu_showShadow="true">
-
-        <com.github.clans.fab.FloatingActionButton
-            android:id="@+id/create_reminder"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_notifications_none_white_24dp"
-            app:fab_colorNormal="@color/colorFAB"
-            app:fab_size="mini" />
-
-        <com.github.clans.fab.FloatingActionButton
-            android:id="@+id/archive_TODO"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_archive_white_24dp"
-            app:fab_colorNormal="@color/colorFAB"
-            app:fab_size="mini" />
 
         <com.github.clans.fab.FloatingActionButton
             android:id="@+id/edit_TODO"

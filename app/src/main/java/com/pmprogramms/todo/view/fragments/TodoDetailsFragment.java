@@ -79,9 +79,10 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
         fragmentTodoDetailsBinding = FragmentTodoDetailsBinding.inflate(inflater);
 
         fragmentTodoDetailsBinding.editTODO.setOnClickListener(this);
-        fragmentTodoDetailsBinding.archiveTODO.setOnClickListener(this);
         fragmentTodoDetailsBinding.deleteTODO.setOnClickListener(this);
-        fragmentTodoDetailsBinding.archiveTODO.setOnClickListener(this);
+        fragmentTodoDetailsBinding.appBar.archiveButton.setOnClickListener(this);
+        fragmentTodoDetailsBinding.appBar.notificationButton.setOnClickListener(this);
+        fragmentTodoDetailsBinding.appBar.backButton.setOnClickListener(v -> mainActivity.onBackPressed());
 
         todoNoteViewModel = new ViewModelProvider(this).get(TodoNoteViewModel.class);
 
@@ -121,7 +122,7 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
                 dataTodo.todos.sort((o1, o2) -> Boolean.compare(o1.done, o2.done));
 
                 TextFormat textFormat = new TextFormat();
-                fragmentTodoDetailsBinding.titlePreview.setText(jsonHelperTodo.data.get(0).title);
+                fragmentTodoDetailsBinding.appBar.titleTodo.setText(jsonHelperTodo.data.get(0).title);
                 fragmentTodoDetailsBinding.tag.setText(String.format("Tag: %s", textFormat.splitTextTag(jsonHelperTodo.data.get(0).tag)));
                 fragmentTodoDetailsBinding.lastEdited.setText(textFormat.formatForTextLastEdit(mainActivity, jsonHelperTodo.data.get(0).updatedAt));
                 int index = 0;
@@ -131,14 +132,14 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
                 }
                 tmpPosition = jsonHelperTodo.data.get(0).todos.size();
 
-                fragmentTodoDetailsBinding.reminderStatus.setImageResource(R.drawable.ic_outline_notifications_off_24);
+                fragmentTodoDetailsBinding.appBar.notificationButton.setImageResource(R.drawable.ic_outline_notifications_off_24);
 
                 remindersTitlePreference = context.getSharedPreferences("reminders_title", Context.MODE_PRIVATE);
                 for (Map.Entry<String, ?> s :
                         remindersTitlePreference.getAll().entrySet()) {
 
-                    if (s.getValue().equals(fragmentTodoDetailsBinding.titlePreview.getText().toString()))
-                        fragmentTodoDetailsBinding.reminderStatus.setImageResource(R.drawable.ic_notifications_green_24dp);
+                    if (s.getValue().equals(fragmentTodoDetailsBinding.appBar.titleTodo.getText().toString()))
+                        fragmentTodoDetailsBinding.appBar.notificationButton.setImageResource(R.drawable.ic_notifications_green_24dp);
                 }
 
                 initView();
@@ -147,7 +148,8 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
     }
 
     private void initView() {
-        fragmentTodoDetailsBinding.archiveTODO.setImageResource(dataTodo.archive ? R.drawable.ic_baseline_unarchive_24 : R.drawable.ic_archive_white_24dp);
+        fragmentTodoDetailsBinding.appBar.container.setBackgroundColor(Color.parseColor(dataTodo.color));
+        fragmentTodoDetailsBinding.appBar.archiveButton.setImageResource(dataTodo.archive ? R.drawable.ic_baseline_unarchive_24 : R.drawable.ic_baseline_archive_24);
         fragmentTodoDetailsBinding.containerTodos.setBackgroundColor(Color.parseColor(dataTodo.color));
         fragmentTodoDetailsBinding.containerScroll.setBackgroundColor(Color.parseColor(dataTodo.color));
     }
@@ -233,11 +235,11 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
             NavDirections navDirections = TodoDetailsFragmentDirections.actionTodoDetailsFragmentToEditTodoFragment(editTodoHelper);
             Navigation.findNavController(v).navigate(navDirections);
 
-        } else if (id == R.id.create_reminder) {
+        } else if (id == R.id.notification_button) {
             DialogFragment dialogFragment = new CreateReminderDialog();
-            ReminderHelper.setTitle(fragmentTodoDetailsBinding.titlePreview.getText().toString());
+            ReminderHelper.setTitle(fragmentTodoDetailsBinding.appBar.titleTodo.getText().toString());
             dialogFragment.show(((MainActivity) context).getSupportFragmentManager(), "create reminder");
-        } else if (id == R.id.archive_TODO) {
+        } else if (id == R.id.archive_button) {
             archiveAction();
         } else if (id == R.id.delete_TODO) {
             todoNoteViewModel.deleteTodo(todoID, userToken).observe(getViewLifecycleOwner(), code -> {
@@ -258,7 +260,7 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
         todoNoteViewModel.archiveTodo(todoID, map, userToken).observe(getViewLifecycleOwner(), code -> {
             if (code == 200 || code == 201) {
                 String msg = archive ? "Archive" : "Unarchive";
-                fragmentTodoDetailsBinding.archiveTODO.setImageResource(archive ? R.drawable.ic_archive_white_24dp : R.drawable.ic_baseline_unarchive_24);
+                fragmentTodoDetailsBinding.appBar.archiveButton.setImageResource(archive ? R.drawable.ic_baseline_archive_24 : R.drawable.ic_baseline_unarchive_24);
                 new Messages(context).showMessage(msg);
             } else
                 new Messages(context).showMessage("Something wrong, try again");
