@@ -12,5 +12,7 @@
     <color name='pastel3'>#FFE5E7</color>
     <color name='pastel4'>#DFEDFA</color>
     <color name='pastel5'>#D7D4D7</color>
+    <color name="red">#FF1100</color>
 
+    <color name="error_color">#B00020</color>
 </resources>

@@ -3,17 +3,10 @@
     <item
         android:id="@+id/todo_item"
         android:icon="@drawable/ic_check_circle_black_24dp"
-        android:title="TODO"/>
-
-    <item
-        android:id="@+id/note_item"
-        android:icon="@drawable/ic_note_black_24dp"
-        android:title="NOTE"/>
-
+        android:title="@string/todo"/>
 
     <item
         android:id="@+id/user_profile"
         android:icon="@drawable/ic_baseline_person_24"
-        android:title="PROFILE"/>
-
+        android:title="@string/profile" />
 </menu>

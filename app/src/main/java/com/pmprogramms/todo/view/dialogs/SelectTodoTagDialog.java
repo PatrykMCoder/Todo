@@ -14,18 +14,22 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.pmprogramms.todo.API.retrofit.API;
 import com.pmprogramms.todo.API.retrofit.Client;
 import com.pmprogramms.todo.API.retrofit.customTags.JsonHelperTag;
 import com.pmprogramms.todo.API.retrofit.customTags.TagsData;
 import com.pmprogramms.todo.R;
+import com.pmprogramms.todo.databinding.DialogSelectTagTodoBinding;
 import com.pmprogramms.todo.helpers.view.TagsHelper;
 import com.pmprogramms.todo.helpers.user.UserData;
 import com.pmprogramms.todo.utils.text.Messages;
+import com.pmprogramms.todo.viewmodel.TodoNoteViewModel;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.stream.Collectors;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -33,54 +37,34 @@ import retrofit2.Response;
 
 public class SelectTodoTagDialog extends DialogFragment {
     private Context context;
-    private ArrayList<String> tags;
-    private ArrayAdapter<String> adapterSelect;
-
+    private TodoNoteViewModel todoNoteViewModel;
     private Spinner selectTags;
 
-    public SelectTodoTagDialog() {
-
-    }
-
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         this.context = context;
     }
 
     private void loadTags() {
-        API api = Client.getInstance().create(API.class);
-        Call<JsonHelperTag> call = api.loadCustomTags(new UserData(context).getUserToken());
-        call.enqueue(new Callback<JsonHelperTag>() {
-            @Override
-            public void onResponse(Call<JsonHelperTag> call, Response<JsonHelperTag> response) {
-                if (!response.isSuccessful()) {
-                    new Messages(context).showMessage(response.message());
-                }
-                JsonHelperTag responseBody = response.body();
-                if (responseBody != null) {
-                    tags = new ArrayList<>();
-                    for (TagsData tag : responseBody.data) {
-                        tags.add(tag.tag_name);
-                    }
-                    adapterSelect = new ArrayAdapter<>(context, R.layout.support_simple_spinner_dropdown_item, tags);
-                    selectTags.setAdapter(adapterSelect);
-                } else {
-                    new Messages(context).showMessage("No tags");
-                }
-            }
+        String userToken = new UserData(requireContext()).getUserToken();
 
-            @Override
-            public void onFailure(Call<JsonHelperTag> call, Throwable t) {
-                new Messages(context).showMessage(t.getMessage());
-            }
+        todoNoteViewModel.getAllTags(userToken).observe(this, tagsData -> {
+            setAdapterSelect(tagsData.data);
         });
     }
 
+    private void setAdapterSelect(ArrayList<TagsData> data) {
+        ArrayAdapter<String> adapterSelect = new ArrayAdapter<>(context, R.layout.support_simple_spinner_dropdown_item,
+                data.stream().map(tag -> tag.tag_name).collect(Collectors.toList()));
+
+        selectTags.setAdapter(adapterSelect);
+    }
 
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
+        todoNoteViewModel = new ViewModelProvider(this).get(TodoNoteViewModel.class);
         loadTags();
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         View view = View.inflate(context, R.layout.dialog_select_tag_todo, null);
@@ -107,43 +91,24 @@ public class SelectTodoTagDialog extends DialogFragment {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
 
-        builder.setTitle("Add custom tag");
-        builder.setView(input);
-        builder
+        builder.setTitle("Add custom tag")
+                .setView(input)
                 .setNegativeButton("Cancel", (dialog, which) -> {
                     dialog.dismiss();
                     show(fragmentManager, "set custom tag");
                 })
                 .setPositiveButton("Save", (dialog, which) -> {
+                    String userToken = new UserData(context).getUserToken();
                     String tag = input.getText().toString();
                     if (!tag.equals("")) {
-
                         HashMap<String, String> map = new HashMap<>();
                         map.put("tag_name", tag);
-
-                        API api = Client.getInstance().create(API.class);
-                        Call<Void> call = api.createCustomTag(map, new UserData(context).getUserToken());
-                        call.enqueue(new Callback<Void>() {
-                            @Override
-                            public void onResponse(Call<Void> call, Response<Void> response) {
-                                if (!response.isSuccessful()) {
-                                    new Messages(context).showMessage(response.message());
-                                }
-                                new Messages(context).showMessage("Set now your tag 😄");
-                                show(fragmentManager, "set custom tag");
-                            }
-
-                            @Override
-                            public void onFailure(Call<Void> call, Throwable t) {
-                                new Messages(context).showMessage("Cannot create tag, try again");
-                            }
-                        });
+                        todoNoteViewModel.createCustomTag(map, userToken);
                     } else {
                         Toast.makeText(context, "Tag can't be empty", Toast.LENGTH_SHORT).show();
-                        show(fragmentManager, "set custom tag");
                     }
+                    show(fragmentManager, "set custom tag");
                 });
-
         builder.create().show();
     }
 }
