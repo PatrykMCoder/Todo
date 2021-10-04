@@ -20,7 +20,7 @@
 
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="@string/id_ad_mob"/>
+            android:value="@string/id_ad_mob_pub"/>
 
         <activity android:name="com.pmprogramms.todo.RegisterActivity"
             android:screenOrientation="portrait"/>
