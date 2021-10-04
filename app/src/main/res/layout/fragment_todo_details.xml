@@ -125,7 +125,8 @@
         app:menu_shadowRadius="4dp"
         app:menu_shadowXOffset="1dp"
         app:menu_shadowYOffset="3dp"
-        app:menu_showShadow="true">
+        app:menu_showShadow="true"
+        android:elevation="201dp">
 
         <com.github.clans.fab.FloatingActionButton
             android:id="@+id/edit_TODO"
