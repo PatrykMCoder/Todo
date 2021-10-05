@@ -67,6 +67,8 @@ public class EditTodoFragment extends Fragment implements View.OnClickListener {
 
         args = EditTodoFragmentArgs.fromBundle(getArguments());
 
+        loadData(args);
+
         fragmentEditTodoBinding.container.setBackgroundColor(color);
         fragmentEditTodoBinding.colorsLayoutEdit.defaultColor.setOnClickListener(this);
         fragmentEditTodoBinding.colorsLayoutEdit.pastel1.setOnClickListener(this);
@@ -78,7 +80,6 @@ public class EditTodoFragment extends Fragment implements View.OnClickListener {
         fragmentEditTodoBinding.setTag.setOnClickListener(this);
         fragmentEditTodoBinding.boxNewItem.setOnClickListener(this);
 
-        loadData(args);
         return fragmentEditTodoBinding.getRoot();
     }
 
@@ -87,6 +88,7 @@ public class EditTodoFragment extends Fragment implements View.OnClickListener {
         todoID = args.getEditTodoFields().getDataTodo()._id;
         tag = args.getEditTodoFields().getDataTodo().tag;
         color = Color.parseColor(args.getEditTodoFields().getDataTodo().color);
+        newColor = String.format("#%06X", (0xFFFFFF & color));
 
         int index = 0;
         for (Todos data : args.getEditTodoFields().getDataTodo().todos) {
@@ -99,7 +101,6 @@ public class EditTodoFragment extends Fragment implements View.OnClickListener {
 
     @Override
     public void onClick(View view) {
-        newColor = "#ffffff";
         int id = view.getId();
         if (id == R.id.save_todo) {
             new HideKeyboard(view, mainActivity).hide();
