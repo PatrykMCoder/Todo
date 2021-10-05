@@ -174,7 +174,7 @@ public class TodoFragment extends Fragment implements View.OnClickListener {
                     .setAction(R.string.undo, v -> dismissDeleteAction())
                     .show();
             
-            runnable = () -> todoNoteViewModel.deleteTodo(todosData.get(viewHolder.getAdapterPosition())._id, userToken);
+            runnable = () -> todoNoteViewModel.deleteTodo(deletedItem._id, userToken);
             handler.postDelayed(runnable, 2750);
 
         }

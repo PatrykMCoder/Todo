@@ -46,7 +46,7 @@ import java.util.Map;
 
 // FIXME: 22/08/2021 make more readable this shit code :)
 
-public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCheckedChangeListener, View.OnClickListener {
+public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCheckedChangeListener, View.OnClickListener, View.OnLongClickListener {
     private FragmentTodoDetailsBinding fragmentTodoDetailsBinding;
     private Context context;
     private MainActivity mainActivity;
@@ -80,6 +80,7 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
 
         fragmentTodoDetailsBinding.editTODO.setOnClickListener(this);
         fragmentTodoDetailsBinding.deleteTODO.setOnClickListener(this);
+        fragmentTodoDetailsBinding.deleteTODO.setOnLongClickListener(this);
         fragmentTodoDetailsBinding.appBar.archiveButton.setOnClickListener(this);
         fragmentTodoDetailsBinding.appBar.notificationButton.setOnClickListener(this);
         fragmentTodoDetailsBinding.appBar.backButton.setOnClickListener(v -> mainActivity.onBackPressed());
@@ -242,13 +243,7 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
         } else if (id == R.id.archive_button) {
             archiveAction();
         } else if (id == R.id.delete_TODO) {
-            todoNoteViewModel.deleteTodo(todoID, userToken).observe(getViewLifecycleOwner(), code -> {
-                if (code == 200 || code == 201) {
-                    Navigation.findNavController(v).navigate(R.id.todoFragment);
-                } else {
-                    new Messages(context).showMessage("Can't delete todo, try again later");
-                }
-            });
+            new Messages(context).showMessage("For confirm delete, please long press on this button");
         }
     }
 
@@ -265,5 +260,20 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
             } else
                 new Messages(context).showMessage("Something wrong, try again");
         });
+    }
+
+    @Override
+    public boolean onLongClick(View view) {
+        if(view.getId() == R.id.delete_TODO) {
+            todoNoteViewModel.deleteTodo(todoID, userToken).observe(getViewLifecycleOwner(), code -> {
+                if (code == 200 || code == 201) {
+                    Navigation.findNavController(view).navigate(R.id.todoFragment);
+                } else {
+                    new Messages(context).showMessage("Can't delete todo, try again later");
+                }
+            });
+            return true;
+        }
+        return false;
     }
 }
