@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -90,8 +91,8 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
         getTodoData();
 
         fragmentTodoDetailsBinding.swipeRefresh.setOnRefreshListener(() -> {
-            fragmentTodoDetailsBinding.containerTodos.removeAllViews();
             getTodoData();
+            fragmentTodoDetailsBinding.swipeRefresh.setRefreshing(false);
         });
 
         fragmentTodoDetailsBinding.scrollView.setOnScrollChangeListener((v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
@@ -116,6 +117,7 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
 
     private void getTodoData() {
         todoNoteViewModel.getSelectedTodo(todoID, userToken).observe(getViewLifecycleOwner(), jsonHelperTodo -> {
+            fragmentTodoDetailsBinding.containerScroll.removeAllViews();
             if (jsonHelperTodo.data != null) {
                 dataTodo = jsonHelperTodo.data.get(0);
                 archive = dataTodo.archive;

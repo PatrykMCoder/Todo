@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".view.fragments.TodoFragment">
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -27,5 +28,6 @@
         android:layout_marginBottom="20dp"
         android:backgroundTint="@color/colorFAB"
         android:contentDescription="@string/app_name"
-        android:src="@drawable/ic_add_white_24dp" />
+        android:src="@drawable/ic_add_white_24dp"
+        app:borderWidth="0dp" />
 </RelativeLayout>

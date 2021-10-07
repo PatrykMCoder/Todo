@@ -16,7 +16,6 @@
         android:id="@+id/swipe_refresh"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginEnd="-20dp"
         android:layout_below="@id/app_bar"
         android:elevation="10dp">
 
@@ -124,7 +123,7 @@
         app:menu_shadowColor="#66000000"
         app:menu_shadowRadius="4dp"
         app:menu_shadowXOffset="1dp"
-        app:menu_shadowYOffset="3dp"
+        app:menu_shadowYOffset="1dp"
         app:menu_showShadow="true"
         android:elevation="201dp">
 

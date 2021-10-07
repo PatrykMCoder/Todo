@@ -25,7 +25,7 @@ import com.pmprogramms.todo.viewmodel.LoginViewModel;
 import java.util.HashMap;
 
 public class LoginActivity extends AppCompatActivity {
-    private static final int RC_SAVE = 100000;
+    private static final int RC_SAVE = 200;
     private CredentialsClient credentialsClient;
 
     private ActivityLoginBinding activityLoginBinding;
@@ -120,7 +120,6 @@ public class LoginActivity extends AppCompatActivity {
             if (resultCode == RESULT_OK) {
                 new Messages(this).showMessage("Credentials save");
             } else {
-                Log.e(LoginActivity.class.toString(), "SAVE: Canceled by user");
             }
         }
     }
