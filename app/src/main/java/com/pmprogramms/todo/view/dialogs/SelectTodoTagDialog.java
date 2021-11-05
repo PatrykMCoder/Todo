@@ -72,7 +72,13 @@ public class SelectTodoTagDialog extends DialogFragment {
         selectTags = view.findViewById(R.id.tags_select);
 
         builder.setView(view)
-                .setPositiveButton("OK", (dialog, which) -> TagsHelper.setTag(selectTags.getSelectedItem().toString()))
+                .setPositiveButton("OK", (dialog, which) -> {
+                    if(selectTags.getSelectedItem() != null)
+                        TagsHelper.setTag(selectTags.getSelectedItem().toString());
+                    else {
+                        new Messages(context).showMessage("You have not tags to select");
+                    }
+                })
                 .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
                 .setNeutralButton("Add custom", (dialog, which) -> addCustomTag(getFragmentManager()));
 
