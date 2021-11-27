@@ -1,7 +1,6 @@
 package com.pmprogramms.todo.view.fragments;
 
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -12,9 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
+import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
@@ -30,10 +28,9 @@ import com.pmprogramms.todo.databinding.FragmentAddNewTodoBinding;
 import com.pmprogramms.todo.helpers.input.HideKeyboard;
 import com.pmprogramms.todo.helpers.view.HideAppBarHelper;
 import com.pmprogramms.todo.helpers.view.TagsHelper;
-import com.pmprogramms.todo.API.retrofit.todo.todo.save.JSONHelperSaveTodo;
+import com.pmprogramms.todo.api.retrofit.todo.todo.save.JSONHelperSaveTodo;
 import com.pmprogramms.todo.utils.text.Messages;
 import com.pmprogramms.todo.view.dialogs.SelectTodoTagDialog;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.pmprogramms.todo.viewmodel.TodoNoteViewModel;
 
 
@@ -43,33 +40,21 @@ import java.util.HashMap;
 public class AddNewTodoFragment extends Fragment implements View.OnClickListener {
 
     private String userToken;
-    private Context context;
-    private CheckBox checkBoxDone;
+
     private EditText newTaskEditText;
     private MainActivity mainActivity;
-    private String title;
-    private String task;
-    private String tag;
     private String stringColor = "#ffffff";
-    private boolean done;
     private int createdElement = 0;
 
     private FragmentAddNewTodoBinding fragmentAddNewTodoBinding;
 
-    private ProgressDialog progressDialog;
-
-    private ArrayList<JSONHelperSaveTodo> saveTodoData;
+    private ProgressBar progressBar;
 
     private TodoNoteViewModel todoNoteViewModel;
-
-    public AddNewTodoFragment() {
-    }
 
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-
-        this.context = context;
         mainActivity = (MainActivity) context;
 
         new HideAppBarHelper(mainActivity).hideBar();
@@ -87,12 +72,12 @@ public class AddNewTodoFragment extends Fragment implements View.OnClickListener
         fragmentAddNewTodoBinding.setTag.setOnClickListener(this);
         fragmentAddNewTodoBinding.boxNewItem.setOnClickListener(this);
 
-        fragmentAddNewTodoBinding.colorsLayout.defaultColor.setOnClickListener(this);
-        fragmentAddNewTodoBinding.colorsLayout.pastel1.setOnClickListener(this);
-        fragmentAddNewTodoBinding.colorsLayout.pastel2.setOnClickListener(this);
-        fragmentAddNewTodoBinding.colorsLayout.pastel3.setOnClickListener(this);
-        fragmentAddNewTodoBinding.colorsLayout.pastel4.setOnClickListener(this);
-        fragmentAddNewTodoBinding.colorsLayout.pastel5.setOnClickListener(this);
+        fragmentAddNewTodoBinding.colorsMenu.defaultColor.setOnClickListener(this);
+        fragmentAddNewTodoBinding.colorsMenu.pastel1.setOnClickListener(this);
+        fragmentAddNewTodoBinding.colorsMenu.pastel2.setOnClickListener(this);
+        fragmentAddNewTodoBinding.colorsMenu.pastel3.setOnClickListener(this);
+        fragmentAddNewTodoBinding.colorsMenu.pastel4.setOnClickListener(this);
+        fragmentAddNewTodoBinding.colorsMenu.pastel5.setOnClickListener(this);
 
         createElements();
         return fragmentAddNewTodoBinding.getRoot();
@@ -127,12 +112,12 @@ public class AddNewTodoFragment extends Fragment implements View.OnClickListener
     }
 
     private void createElements() {
-        LinearLayout linearLayout = new LinearLayout(context);
+        LinearLayout linearLayout = new LinearLayout(requireContext());
         linearLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
         linearLayout.setOrientation(LinearLayout.HORIZONTAL);
 
-        checkBoxDone = new CheckBox(context);
-        newTaskEditText = new EditText(context);
+        CheckBox checkBoxDone = new CheckBox(requireContext());
+        newTaskEditText = new EditText(requireContext());
         newTaskEditText.setHint("Enter task");
         newTaskEditText.setBackgroundColor(Color.TRANSPARENT);
         newTaskEditText.setTextSize(20);
@@ -158,19 +143,20 @@ public class AddNewTodoFragment extends Fragment implements View.OnClickListener
         createdElement++;
     }
 
-    // FIXME: 19/08/2021 make readable this code
     private void saveTodo() {
         int tmp = createdElement;
-        progressDialog = ProgressDialog.show(context, "Save...", "Please wait..");
-        saveTodoData = new ArrayList<>();
-        title = fragmentAddNewTodoBinding.newTitleTodo.getText().toString().trim();
-        tag = TagsHelper.getTag();
+        progressBar = new ProgressBar(requireContext(), null, android.R.attr.progressBarStyle);
+        fragmentAddNewTodoBinding.getRoot().addView(progressBar);
+        progressBar.setVisibility(View.VISIBLE);
+        ArrayList<JSONHelperSaveTodo> saveTodoData = new ArrayList<>();
+        String title = fragmentAddNewTodoBinding.newTitleTodo.getText().toString().trim();
+        String tag = TagsHelper.getTag();
         if (!title.isEmpty()) {
             for (int i = 0; i < createdElement; i++) {
                 newTaskEditText = fragmentAddNewTodoBinding.getRoot().findViewWithTag("t_" + i);
-                checkBoxDone = fragmentAddNewTodoBinding.getRoot().findViewWithTag("c_" + i);
-                task = newTaskEditText.getText().toString().trim();
-                done = checkBoxDone.isChecked();
+                CheckBox checkBoxDone = fragmentAddNewTodoBinding.getRoot().findViewWithTag("c_" + i);
+                String task = newTaskEditText.getText().toString().trim();
+                boolean done = checkBoxDone.isChecked();
 
                 if (!task.isEmpty()) {
                     JSONHelperSaveTodo helper = new JSONHelperSaveTodo(task, done);
@@ -188,17 +174,17 @@ public class AddNewTodoFragment extends Fragment implements View.OnClickListener
                 map.put("tag", tag);
 
                 todoNoteViewModel.createTodo(map, userToken).observe(getViewLifecycleOwner(), code -> {
-                    progressDialog.dismiss();
+                    progressBar.setVisibility(View.GONE);
                     if (code == 200 || code == 201)
                         Navigation.findNavController(fragmentAddNewTodoBinding.getRoot()).navigate(R.id.todoFragment);
                     else
-                        new Messages(context).showMessage("Something wrong, try again");
+                        new Messages(requireContext()).showMessage("Something wrong, try again");
                 });
             }
 
         } else {
-            progressDialog.dismiss();
-            new Messages(context).showMessage("Title cannot be empty");
+            progressBar.setVisibility(View.GONE);
+            new Messages(requireContext()).showMessage("Title cannot be empty");
         }
     }
 }

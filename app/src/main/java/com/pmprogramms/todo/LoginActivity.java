@@ -4,11 +4,12 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.ProgressBar;
 
 import com.google.android.gms.auth.api.credentials.Credential;
 import com.google.android.gms.auth.api.credentials.Credentials;
@@ -26,12 +27,12 @@ import java.util.HashMap;
 
 public class LoginActivity extends AppCompatActivity {
     private static final int RC_SAVE = 200;
+    private LoginFieldForm loginFieldForm;
     private CredentialsClient credentialsClient;
 
     private ActivityLoginBinding activityLoginBinding;
     private LoginViewModel loginViewModel;
-
-    public ProgressDialog progressDialog;
+    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,13 +45,15 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(activityLoginBinding.getRoot());
 
 
-        activityLoginBinding.openRegisterText.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), RegisterActivity.class)));
+        activityLoginBinding.buttonRegister.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), RegisterActivity.class)));
 
         activityLoginBinding.buttonLogin.setOnClickListener(v -> {
-            progressDialog = ProgressDialog.show(this, "Login user...", "Please wait...");
+            progressBar = new ProgressBar(this, null, android.R.attr.progressBarStyle);
+            activityLoginBinding.getRoot().addView(progressBar);
+            progressBar.setVisibility(View.VISIBLE);
             new HideKeyboard(v, LoginActivity.this).hide();
 
-            LoginFieldForm loginFieldForm = new LoginFieldForm(activityLoginBinding.emailEditText.getText().toString(),
+            loginFieldForm = new LoginFieldForm(activityLoginBinding.emailEditText.getText().toString(),
                     activityLoginBinding.passwordEditText.getText().toString().trim());
 
             loginViewModel.validLoginForm(loginFieldForm).observe(this, resultValid -> {
@@ -63,7 +66,7 @@ public class LoginActivity extends AppCompatActivity {
                         if (resultLogin != null) {
                             if (resultLogin.data.auth) {
                                 new UserData(this).setUserToken(resultLogin.data.token);
-                                saveUserCredential(loginFieldForm.getEmail(), loginFieldForm.getPassword());
+                                saveUserCredential();
                                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                                 startActivity(intent);
@@ -82,14 +85,14 @@ public class LoginActivity extends AppCompatActivity {
                             .setAnimationMode(Snackbar.ANIMATION_MODE_SLIDE)
                             .show();
                 }
-                progressDialog.dismiss();
+                progressBar.setVisibility(View.GONE);
             });
         });
     }
 
-    public void saveUserCredential(String email, String password) {
-        Credential credential = new Credential.Builder(email)
-                .setPassword(password)
+    public void saveUserCredential() {
+        Credential credential = new Credential.Builder(loginFieldForm.getEmail())
+                .setPassword(loginFieldForm.getPassword())
                 .build();
 
 
@@ -119,7 +122,6 @@ public class LoginActivity extends AppCompatActivity {
         if (requestCode == RC_SAVE) {
             if (resultCode == RESULT_OK) {
                 new Messages(this).showMessage("Credentials save");
-            } else {
             }
         }
     }

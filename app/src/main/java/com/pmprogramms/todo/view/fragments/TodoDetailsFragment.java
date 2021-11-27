@@ -3,18 +3,13 @@ package com.pmprogramms.todo.view.fragments;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.os.Bundle;
-import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
@@ -22,11 +17,13 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavDirections;
 import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.pmprogramms.todo.API.retrofit.todo.todo.Data;
-import com.pmprogramms.todo.API.retrofit.todo.todo.Todos;
+import com.pmprogramms.todo.api.retrofit.todo.todo.Data;
+import com.pmprogramms.todo.api.retrofit.todo.todo.Todos;
 import com.pmprogramms.todo.MainActivity;
 import com.pmprogramms.todo.R;
 import com.pmprogramms.todo.databinding.FragmentTodoDetailsBinding;
@@ -34,8 +31,9 @@ import com.pmprogramms.todo.helpers.text.TextFormat;
 import com.pmprogramms.todo.helpers.user.UserData;
 import com.pmprogramms.todo.helpers.view.EditTodoHelper;
 import com.pmprogramms.todo.helpers.view.HideAppBarHelper;
-import com.pmprogramms.todo.API.retrofit.todo.todo.edit.JSONHelperEditTodo;
+import com.pmprogramms.todo.api.retrofit.todo.todo.edit.JSONHelperEditTodo;
 import com.pmprogramms.todo.helpers.view.TagsHelper;
+import com.pmprogramms.todo.utils.recyclerView.TodoDetailsRecyclerViewAdapter;
 import com.pmprogramms.todo.utils.text.Messages;
 import com.pmprogramms.todo.utils.reminders.ReminderHelper;
 import com.pmprogramms.todo.view.dialogs.CreateReminderDialog;
@@ -43,14 +41,16 @@ import com.pmprogramms.todo.viewmodel.TodoNoteViewModel;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 // FIXME: 22/08/2021 make more readable this shit code :)
 
-public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCheckedChangeListener, View.OnClickListener, View.OnLongClickListener {
+public class TodoDetailsFragment extends Fragment implements View.OnClickListener, View.OnLongClickListener, TodoDetailsRecyclerViewAdapter.onItemClickListener {
     private FragmentTodoDetailsBinding fragmentTodoDetailsBinding;
     private Context context;
     private MainActivity mainActivity;
+    private RecyclerView recyclerView;
 
     private TodoNoteViewModel todoNoteViewModel;
 
@@ -60,8 +60,6 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
     private Data dataTodo;
     private String userToken;
     private boolean archive;
-
-    private int tmpPosition;
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -78,7 +76,7 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
         userToken = new UserData(context).getUserToken();
 
         fragmentTodoDetailsBinding = FragmentTodoDetailsBinding.inflate(inflater);
-
+        recyclerView = fragmentTodoDetailsBinding.todosRecycler;
         fragmentTodoDetailsBinding.editTODO.setOnClickListener(this);
         fragmentTodoDetailsBinding.deleteTODO.setOnClickListener(this);
         fragmentTodoDetailsBinding.deleteTODO.setOnLongClickListener(this);
@@ -87,7 +85,6 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
         fragmentTodoDetailsBinding.appBar.backButton.setOnClickListener(v -> mainActivity.onBackPressed());
 
         todoNoteViewModel = new ViewModelProvider(this).get(TodoNoteViewModel.class);
-
         getTodoData();
 
         fragmentTodoDetailsBinding.swipeRefresh.setOnRefreshListener(() -> {
@@ -95,7 +92,7 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
             fragmentTodoDetailsBinding.swipeRefresh.setRefreshing(false);
         });
 
-        fragmentTodoDetailsBinding.scrollView.setOnScrollChangeListener((v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
+        recyclerView.setOnScrollChangeListener((v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
             fragmentTodoDetailsBinding.swipeRefresh.setEnabled(scrollY == 0);
             if (scrollY > oldScrollY) {
                 if (fragmentTodoDetailsBinding.menuCard.getVisibility() != View.INVISIBLE) {
@@ -117,24 +114,25 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
 
     private void getTodoData() {
         todoNoteViewModel.getSelectedTodo(todoID, userToken).observe(getViewLifecycleOwner(), jsonHelperTodo -> {
-            fragmentTodoDetailsBinding.containerScroll.removeAllViews();
+            Log.d("TAG", "getTodoData: " + jsonHelperTodo);
             if (jsonHelperTodo.data != null) {
                 dataTodo = jsonHelperTodo.data.get(0);
                 archive = dataTodo.archive;
 
                 dataTodo.todos.sort((o1, o2) -> Boolean.compare(o1.done, o2.done));
 
+                recyclerView.setHasFixedSize(true);
+                RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(context, RecyclerView.VERTICAL, false);
+                recyclerView.setLayoutManager(layoutManager);
+
+                TodoDetailsRecyclerViewAdapter todoDetailsRecyclerViewAdapter = new TodoDetailsRecyclerViewAdapter(dataTodo.todos);
+                todoDetailsRecyclerViewAdapter.setListener(this);
+                recyclerView.setAdapter(todoDetailsRecyclerViewAdapter);
+
                 TextFormat textFormat = new TextFormat();
                 fragmentTodoDetailsBinding.appBar.titleTodo.setText(jsonHelperTodo.data.get(0).title);
                 fragmentTodoDetailsBinding.tag.setText(String.format("Tag: %s", textFormat.splitTextTag(jsonHelperTodo.data.get(0).tag)));
                 fragmentTodoDetailsBinding.lastEdited.setText(textFormat.formatForTextLastEdit(mainActivity, jsonHelperTodo.data.get(0).updatedAt));
-                int index = 0;
-                for (Todos t : dataTodo.todos) {
-                    createElements(t, index);
-                    index++;
-                }
-                tmpPosition = jsonHelperTodo.data.get(0).todos.size();
-
                 fragmentTodoDetailsBinding.appBar.notificationButton.setImageResource(R.drawable.ic_outline_notifications_off_24);
 
                 remindersTitlePreference = context.getSharedPreferences("reminders_title", Context.MODE_PRIVATE);
@@ -144,90 +142,23 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
                     if (s.getValue().equals(fragmentTodoDetailsBinding.appBar.titleTodo.getText().toString()))
                         fragmentTodoDetailsBinding.appBar.notificationButton.setImageResource(R.drawable.ic_notifications_green_24dp);
                 }
-
-                initView();
             }
+
+            fragmentTodoDetailsBinding.appBar.container.setBackgroundColor(Color.parseColor(dataTodo.color));
+            fragmentTodoDetailsBinding.appBar.archiveButton.setImageResource(dataTodo.archive ? R.drawable.ic_baseline_unarchive_24 : R.drawable.ic_baseline_archive_24);
+            fragmentTodoDetailsBinding.containerTodos.setBackgroundColor(Color.parseColor(dataTodo.color));
         });
     }
 
-    private void initView() {
-        fragmentTodoDetailsBinding.appBar.container.setBackgroundColor(Color.parseColor(dataTodo.color));
-        fragmentTodoDetailsBinding.appBar.archiveButton.setImageResource(dataTodo.archive ? R.drawable.ic_baseline_unarchive_24 : R.drawable.ic_baseline_archive_24);
-        fragmentTodoDetailsBinding.containerTodos.setBackgroundColor(Color.parseColor(dataTodo.color));
-        fragmentTodoDetailsBinding.containerScroll.setBackgroundColor(Color.parseColor(dataTodo.color));
-    }
-
-    private void createElements(Todos data, int index) {
-        LinearLayout linearLayout = new LinearLayout(context);
-        linearLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-        linearLayout.setOrientation(LinearLayout.HORIZONTAL);
-
-        CheckBox doneCheckBox = new CheckBox(context);
-        TextView taskTextView = new TextView(context);
-
-        taskTextView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-        taskTextView.setBackgroundColor(Color.TRANSPARENT);
-        taskTextView.setTextSize(20);
-        taskTextView.setTextColor(Color.BLACK);
-        taskTextView.setPadding(0, 20, 0, 20);
-        taskTextView.setBackgroundColor(Color.TRANSPARENT);
-
-        taskTextView.setText(data.task);
-        doneCheckBox.setChecked(data.done);
-
-        taskTextView.setTag("t_" + index);
-        doneCheckBox.setTag("d_" + index);
-
-        doneCheckBox.setOnCheckedChangeListener(this);
-
-        taskTextView.setPaintFlags(doneCheckBox.isChecked() ?
-                taskTextView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG :
-                taskTextView.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
-        taskTextView.setTextColor(data.done ? Color.GRAY : Color.BLACK);
-
-        linearLayout.addView(doneCheckBox);
-        linearLayout.addView(taskTextView);
-
-        fragmentTodoDetailsBinding.containerScroll.addView(linearLayout);
-    }
-
-    private void updateUI(boolean b, String tag) {
-        TextView textView;
-        textView = fragmentTodoDetailsBinding.getRoot().findViewWithTag(tag);
-        textView.setPaintFlags(b ? textView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG :
-                textView.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
-        textView.setTextColor(b ? Color.GRAY : Color.BLACK);
-    }
-
-    private void updateTodoStatus() {
-        JSONHelperEditTodo jhet;
-        TextView taskTextView;
-        CheckBox doneCheckBox;
-        ArrayList<JSONHelperEditTodo> dataHelper = new ArrayList<>();
-        for (int i = 0; i < tmpPosition; i++) {
-            taskTextView = fragmentTodoDetailsBinding.getRoot().findViewWithTag("t_" + i);
-            doneCheckBox = fragmentTodoDetailsBinding.getRoot().findViewWithTag("d_" + i);
-            jhet = new JSONHelperEditTodo(taskTextView.getText().toString(), doneCheckBox.isChecked());
-            dataHelper.add(jhet);
-        }
-
+    private void updateTodoStatus( List<Todos> todos) {
         HashMap<String, String> map = new HashMap<>();
         if (TagsHelper.getTag() != null)
             map.put("tag", TagsHelper.getTag());
-        map.put("todos", new Gson().toJson(dataHelper, new TypeToken<ArrayList<JSONHelperEditTodo>>() {
+        map.put("todos", new Gson().toJson(todos, new TypeToken<ArrayList<JSONHelperEditTodo>>() {
         }.getType()));
 
         todoNoteViewModel.updateSelectedTodo(todoID, map, userToken);
     }
-
-    @Override
-    public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-        if (compoundButton.isPressed()) {
-            updateTodoStatus();
-            updateUI(b, compoundButton.getTag().toString().replace("d", "t"));
-        }
-    }
-
 
     @Override
     public void onClick(View v) {
@@ -277,5 +208,13 @@ public class TodoDetailsFragment extends Fragment implements CompoundButton.OnCh
             return true;
         }
         return false;
+    }
+
+    @Override
+    public void onItemClick(int position, boolean value) {
+        List<Todos> todos = dataTodo.todos;
+        todos.get(position).done = value;
+
+        updateTodoStatus(todos);
     }
 }

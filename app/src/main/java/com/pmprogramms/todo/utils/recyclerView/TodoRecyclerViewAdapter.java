@@ -12,7 +12,7 @@ import androidx.navigation.NavDirections;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.pmprogramms.todo.API.retrofit.todo.todo.Data;
+import com.pmprogramms.todo.api.retrofit.todo.todo.Data;
 import com.pmprogramms.todo.R;
 import com.pmprogramms.todo.view.fragments.TodoArchiveFragmentDirections;
 import com.pmprogramms.todo.view.fragments.TodoFragmentDirections;
@@ -62,10 +62,10 @@ public class TodoRecyclerViewAdapter extends RecyclerView.Adapter<TodoRecyclerVi
         return arrayTodos.size();
     }
 
-    class TodoListViewHolder extends RecyclerView.ViewHolder {
-        private TextView titleTextView;
-        private TextView todoTagView;
-        private CardView cardView;
+    static class TodoListViewHolder extends RecyclerView.ViewHolder {
+        private final TextView titleTextView;
+        private final TextView todoTagView;
+        private final CardView cardView;
 
         TodoListViewHolder(@NonNull View itemView) {
             super(itemView);

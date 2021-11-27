@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/root_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.pmprogramms.todo.LoginActivity">
@@ -11,7 +10,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:src="@mipmap/app_icon" />
+        android:src="@mipmap/app_icon"
+        android:contentDescription="@string/app_name"/>
 
     <EditText
         android:id="@+id/username_edit_text"
@@ -24,7 +24,9 @@
         android:inputType="text"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
-        android:paddingBottom="20dp" />
+        android:paddingBottom="20dp"
+        android:autofillHints="@null"
+        android:importantForAutofill="no" />
 
 
     <EditText
@@ -38,7 +40,8 @@
         android:inputType="textEmailAddress"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
-        android:paddingBottom="20dp" />
+        android:paddingBottom="20dp"
+        android:autofillHints="" />
 
     <EditText
         android:id="@+id/password_edit_text"
@@ -51,7 +54,8 @@
         android:inputType="textPassword"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
-        android:paddingBottom="20dp" />
+        android:paddingBottom="20dp"
+        android:importantForAutofill="no" />
 
     <EditText
         android:id="@+id/confirm_password_edit_text"
@@ -64,7 +68,8 @@
         android:inputType="textPassword"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
-        android:paddingBottom="20dp" />
+        android:paddingBottom="20dp"
+        android:importantForAutofill="no" />
 
     <LinearLayout
         android:id="@+id/container_privacy"
@@ -75,12 +80,11 @@
         android:layout_centerHorizontal="true">
 
         <CheckBox
-            android:id="@+id/accept_checkbox"
+            android:id="@+id/accept_privacy"
             android:layout_width="48dp"
             android:layout_height="48dp" />
 
         <TextView
-            android:id="@+id/info_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:minWidth="48dp"

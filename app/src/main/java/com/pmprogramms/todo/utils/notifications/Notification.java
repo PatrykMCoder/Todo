@@ -6,7 +6,6 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
-import android.os.Build;
 
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
@@ -15,7 +14,7 @@ import com.pmprogramms.todo.MainActivity;
 import com.pmprogramms.todo.R;
 
 public class Notification {
-    private Context context;
+    private final Context context;
 
     private static final String TAG = "CustomNotificationClass";
 
@@ -24,16 +23,14 @@ public class Notification {
     }
 
     public void createNotificationsChanel() {
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-            CharSequence name = "Reminders";
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
-            NotificationChannel channel = new NotificationChannel(NotificationChannels.REMINDER_CHANNEL_ID, name, importance);
-            channel.setLockscreenVisibility(android.app.Notification.VISIBILITY_PRIVATE);
-            channel.setLightColor(android.app.Notification.DEFAULT_LIGHTS);
-            NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-            if (context != null && notificationManager != null)
-                notificationManager.createNotificationChannel(channel);
-        }
+        CharSequence name = "Reminders";
+        int importance = NotificationManager.IMPORTANCE_DEFAULT;
+        NotificationChannel channel = new NotificationChannel(NotificationChannels.REMINDER_CHANNEL_ID, name, importance);
+        channel.setLockscreenVisibility(android.app.Notification.VISIBILITY_PRIVATE);
+        channel.setLightColor(android.app.Notification.DEFAULT_LIGHTS);
+        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        if (notificationManager != null)
+            notificationManager.createNotificationChannel(channel);
     }
 
     public void notifyReminder(String titleTodo){

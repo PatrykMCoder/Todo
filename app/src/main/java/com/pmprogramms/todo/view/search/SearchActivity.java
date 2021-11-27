@@ -5,16 +5,12 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
-import android.view.KeyEvent;
 import android.view.inputmethod.EditorInfo;
-import android.widget.TextView;
 
-import com.pmprogramms.todo.API.retrofit.todo.todo.Data;
+import com.pmprogramms.todo.api.retrofit.todo.todo.Data;
 import com.pmprogramms.todo.databinding.ActivitySearchBinding;
 import com.pmprogramms.todo.helpers.user.UserData;
 import com.pmprogramms.todo.utils.recyclerView.SearchRecyclerViewAdapter;
@@ -25,9 +21,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class SearchActivity extends AppCompatActivity {
-    private RecyclerView.Adapter adapterSearchRecyclerView;
-    private RecyclerView.LayoutManager layoutManager;
-
     private ActivitySearchBinding activitySearchBinding;
     private TodoNoteViewModel todoNoteViewModel;
 
@@ -104,11 +97,11 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     private void displayResult(Set<Data> result) {
-        adapterSearchRecyclerView = new SearchRecyclerViewAdapter(result);
-        activitySearchBinding.searchRecycler.setAdapter(adapterSearchRecyclerView);
+        SearchRecyclerViewAdapter searchRecyclerViewAdapter = new SearchRecyclerViewAdapter(result);
+        activitySearchBinding.searchRecycler.setAdapter(searchRecyclerViewAdapter);
         activitySearchBinding.searchRecycler.setNestedScrollingEnabled(false);
         activitySearchBinding.searchRecycler.setHasFixedSize(false);
-        layoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
-        activitySearchBinding.searchRecycler.setLayoutManager(layoutManager);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
+        activitySearchBinding.searchRecycler.setLayoutManager(linearLayoutManager);
     }
 }

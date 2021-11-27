@@ -9,10 +9,6 @@ import com.pmprogramms.todo.ReminderAlarmActivity;
 import com.pmprogramms.todo.utils.notifications.Notification;
 
 public class ReminderBroadcastReceiver extends BroadcastReceiver {
-
-    private static final String TAG = "ReminderBCReceiver";
-    private int indexDisplay;
-    private int indexRepeat;
     private String todoTitle;
     private Context context;
 
@@ -23,21 +19,17 @@ public class ReminderBroadcastReceiver extends BroadcastReceiver {
         this.context = context;
 
         notification = new Notification(context);
-        indexDisplay = intent.getIntExtra("displayType", -1);
-        indexRepeat = intent.getIntExtra("repeatType", -1);
+        int indexDisplay = intent.getIntExtra("displayType", -1);
+        int indexRepeat = intent.getIntExtra("repeatType", -1);
         ReminderDisplayType reminderDisplayType = null;
         ReminderRepeatType reminderRepeatType = null;
 
         if (indexDisplay > -1 && indexDisplay < ReminderDisplayType.values().length) {
             reminderDisplayType = ReminderDisplayType.values()[indexDisplay];
-        } else {
-            //handle error
         }
 
         if (indexRepeat > -1 && indexRepeat < ReminderDisplayType.values().length) {
             reminderRepeatType = ReminderRepeatType.values()[indexRepeat];
-        } else {
-            //handle error
         }
 
         todoTitle = intent.getStringExtra("todoName");
@@ -57,22 +49,14 @@ public class ReminderBroadcastReceiver extends BroadcastReceiver {
                 default:
                     break;
             }
-        else{
-            //handle error
-        }
 
         if(reminderRepeatType != null){
-            switch (reminderRepeatType){
-                case NONE: {
-                    SharedPreferences sharedPreferences = context.getSharedPreferences("reminders_title", Context.MODE_PRIVATE);
-                    SharedPreferences.Editor deleter = sharedPreferences.edit();
-                    deleter.remove(todoTitle);
-                    deleter.apply();
-                }
-                default: break;
+            if (reminderRepeatType == ReminderRepeatType.NONE) {
+                SharedPreferences sharedPreferences = context.getSharedPreferences("reminders_title", Context.MODE_PRIVATE);
+                SharedPreferences.Editor deleter = sharedPreferences.edit();
+                deleter.remove(todoTitle);
+                deleter.apply();
             }
-        }else{
-            //handle error
         }
 
     }

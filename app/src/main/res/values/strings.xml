@@ -1,12 +1,5 @@
 <resources>
     <string name="app_name">Todo Note</string>
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-
-    <string-array name="tags">
-        <item>No tag</item>
-        <item>Important</item>
-        <item>No important</item>
-    </string-array>
 
     <string-array name="reminder_repeat_type">
         <item>None</item>
@@ -33,7 +26,6 @@
     <!-- Hints -->
     <string name="email_hint">Email</string>
     <string name="password_hint">Password</string>
-    <string name="password_optional_hint">Password(optional)</string>
     <string name="confirm_password_hint">Confirm password</string>
     <string name="username_hint">Username</string>
     <string name="search_hint">Search</string>
@@ -41,7 +33,6 @@
     <string name="display_hint">Display</string>
     <string name="title_hint">Title</string>
     <string name="create_element_hint">Tap to add item</string>
-    <string name="update_user_data">Update user data</string>
     <string name="user_data">User data</string>
     <string name="privacy">Privacy</string>
     <string name="open_source">Open source</string>
@@ -49,12 +40,11 @@
     <string name="undo">Undo</string>
 
     <!-- Texts -->
-    <string name="edit_username">Edit\nUsername</string>
     <string name="review_app">Review app 😅</string>
+    <string name="reminder_for">Reminder for: %1$s</string>
 
     <!-- Texts with parameters -->
     <string name="last_edit">Edited\n%1s</string>
-    <string name="add_tag_for_todo">Add tag for todo</string>
 
     <!-- MENU -->
     <string name="todo">TODO</string>

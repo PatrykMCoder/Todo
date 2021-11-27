@@ -24,7 +24,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.google.android.material.snackbar.Snackbar;
-import com.pmprogramms.todo.API.retrofit.todo.todo.Data;
+import com.pmprogramms.todo.api.retrofit.todo.todo.Data;
 import com.pmprogramms.todo.MainActivity;
 import com.pmprogramms.todo.R;
 import com.pmprogramms.todo.databinding.FragmentTodoBinding;
@@ -40,7 +40,6 @@ public class TodoFragment extends Fragment implements View.OnClickListener {
     private String userToken;
     private TodoNoteViewModel todoNoteViewModel;
     private FragmentTodoBinding fragmentTodoBinding;
-    private TodoFragmentArgs args;
 
     private ArrayList<Data> todosData;
     private TodoRecyclerViewAdapter todoRecyclerViewAdapter;
@@ -55,11 +54,11 @@ public class TodoFragment extends Fragment implements View.OnClickListener {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         todoNoteViewModel = new ViewModelProvider(this).get(TodoNoteViewModel.class);
         userToken = new UserData(requireContext()).getUserToken();
-        args = TodoFragmentArgs.fromBundle(getArguments());
+        com.pmprogramms.todo.view.fragments.TodoFragmentArgs args = TodoFragmentArgs.fromBundle(getArguments());
 
         fragmentTodoBinding = FragmentTodoBinding.inflate(inflater);
         fragmentTodoBinding.addNewTodo.setOnClickListener(this);
@@ -101,15 +100,10 @@ public class TodoFragment extends Fragment implements View.OnClickListener {
         todoNoteViewModel.getAllTodos(false, userToken).observe(getViewLifecycleOwner(), jsonHelperTodo -> {
             if (jsonHelperTodo != null) {
                 todosData = jsonHelperTodo.data;
-                initRecyclerView(todosData);
+                todoRecyclerViewAdapter = new TodoRecyclerViewAdapter(todosData);
+                fragmentTodoBinding.todoListRecyclerView.setAdapter(todoRecyclerViewAdapter);
             }
         });
-    }
-
-
-    private void initRecyclerView(ArrayList<Data> dataTodo) {
-        todoRecyclerViewAdapter = new TodoRecyclerViewAdapter(dataTodo);
-        fragmentTodoBinding.todoListRecyclerView.setAdapter(todoRecyclerViewAdapter);
     }
 
     @Override
@@ -134,7 +128,7 @@ public class TodoFragment extends Fragment implements View.OnClickListener {
         @Override
         public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
             if (direction == ItemTouchHelper.LEFT) {
-                deleteAction(viewHolder);
+                deleteAction(viewHolder.getAbsoluteAdapterPosition());
             }
         }
 
@@ -148,6 +142,7 @@ public class TodoFragment extends Fragment implements View.OnClickListener {
                 c.drawRect(item.getRight() + (dX / 4), item.getTop(), item.getRight(), item.getBottom(), paint);
                 Drawable deleteIcon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_delete_white_24dp);
 
+                assert deleteIcon != null;
                 int intrinsicWidth = deleteIcon.getIntrinsicWidth();
                 int intrinsicHeight = deleteIcon.getIntrinsicHeight();
 
@@ -163,12 +158,11 @@ public class TodoFragment extends Fragment implements View.OnClickListener {
             super.onChildDraw(c, recyclerView, viewHolder, dX / 4, dY, actionState, isCurrentlyActive);
         }
 
-        private void deleteAction(RecyclerView.ViewHolder viewHolder) {
-            deletedItem = todosData.get(viewHolder.getAdapterPosition());
-            deletedItemPosition = viewHolder.getAdapterPosition();
+        private void deleteAction(int deletedItemPosition) {
+            deletedItem = todosData.get(deletedItemPosition);
 
-            todosData.remove(viewHolder.getAdapterPosition());
-            todoRecyclerViewAdapter.notifyDataSetChanged();
+            todosData.remove(deletedItemPosition);
+            todoRecyclerViewAdapter.notifyItemRemoved(deletedItemPosition);
 
             Snackbar.make(fragmentTodoBinding.getRoot(), R.string.element_deleted, Snackbar.LENGTH_LONG)
                     .setAction(R.string.undo, v -> dismissDeleteAction())
@@ -182,7 +176,7 @@ public class TodoFragment extends Fragment implements View.OnClickListener {
         private void dismissDeleteAction() {
             handler.removeCallbacks(runnable);
             todosData.add(deletedItemPosition, deletedItem);
-            todoRecyclerViewAdapter.notifyDataSetChanged();
+            todoRecyclerViewAdapter.notifyItemInserted(deletedItemPosition);
         }
     };
 }

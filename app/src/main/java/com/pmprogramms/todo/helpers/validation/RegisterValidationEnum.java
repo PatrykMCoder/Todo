@@ -11,7 +11,7 @@ public enum RegisterValidationEnum {
     PASSWORD_NOT_MATCH("Passwords are not same"),
     OK("");
 
-    private String msg;
+    private final String msg;
     RegisterValidationEnum(String msg) {
         this.msg = msg;
     }
