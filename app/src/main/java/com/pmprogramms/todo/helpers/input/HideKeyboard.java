@@ -7,8 +7,8 @@ import android.view.inputmethod.InputMethodManager;
 import static android.content.Context.INPUT_METHOD_SERVICE;
 
 public class HideKeyboard {
-    private View view;
-    private Activity activity;
+    private final View view;
+    private final Activity activity;
     public HideKeyboard(View v, Activity activity) {
         view = v;
         this.activity = activity;

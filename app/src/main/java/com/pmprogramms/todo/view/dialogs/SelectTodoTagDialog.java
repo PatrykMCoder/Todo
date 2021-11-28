@@ -16,12 +16,8 @@ import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.pmprogramms.todo.API.retrofit.API;
-import com.pmprogramms.todo.API.retrofit.Client;
-import com.pmprogramms.todo.API.retrofit.customTags.JsonHelperTag;
-import com.pmprogramms.todo.API.retrofit.customTags.TagsData;
+import com.pmprogramms.todo.api.retrofit.customTags.TagsData;
 import com.pmprogramms.todo.R;
-import com.pmprogramms.todo.databinding.DialogSelectTagTodoBinding;
 import com.pmprogramms.todo.helpers.view.TagsHelper;
 import com.pmprogramms.todo.helpers.user.UserData;
 import com.pmprogramms.todo.utils.text.Messages;
@@ -30,10 +26,6 @@ import com.pmprogramms.todo.viewmodel.TodoNoteViewModel;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.stream.Collectors;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class SelectTodoTagDialog extends DialogFragment {
     private Context context;
@@ -49,9 +41,7 @@ public class SelectTodoTagDialog extends DialogFragment {
     private void loadTags() {
         String userToken = new UserData(requireContext()).getUserToken();
 
-        todoNoteViewModel.getAllTags(userToken).observe(this, tagsData -> {
-            setAdapterSelect(tagsData.data);
-        });
+        todoNoteViewModel.getAllTags(userToken).observe(this, tagsData -> setAdapterSelect(tagsData.data));
     }
 
     private void setAdapterSelect(ArrayList<TagsData> data) {
@@ -80,14 +70,9 @@ public class SelectTodoTagDialog extends DialogFragment {
                     }
                 })
                 .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
-                .setNeutralButton("Add custom", (dialog, which) -> addCustomTag(getFragmentManager()));
+                .setNeutralButton("Add custom", (dialog, which) -> addCustomTag(getParentFragmentManager()));
 
         return builder.create();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
     }
 
     private void addCustomTag(FragmentManager fragmentManager) {

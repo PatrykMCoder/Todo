@@ -25,23 +25,13 @@
             android:layout_height="match_parent"
             android:background="#ffffff"
             android:padding="10dp"
+            android:layout_below="@id/app_bar"
             tools:context=".view.fragments.TodoDetailsFragment">
 
-            <ScrollView
-                android:id="@+id/scroll_view"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <LinearLayout
-                    android:id="@+id/container_scroll"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="#ffffff"
-                    android:orientation="vertical">
-
-                </LinearLayout>
-
-            </ScrollView>
+           <androidx.recyclerview.widget.RecyclerView
+               android:id="@+id/todos_recycler"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"/>
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/menu_card"

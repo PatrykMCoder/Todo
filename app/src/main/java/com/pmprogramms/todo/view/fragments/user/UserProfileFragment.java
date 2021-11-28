@@ -1,6 +1,5 @@
 package com.pmprogramms.todo.view.fragments.user;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 
@@ -8,6 +7,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -32,21 +32,15 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
     private MainActivity mainActivity;
     private TodoNoteViewModel todoNoteViewModel;
 
-    private Context context;
-    private String userToken;
-
     private String username;
-    private String email;
 
-    private ProgressDialog progressDialog;
+    private ProgressBar progressBar;
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         mainActivity = (MainActivity) context;
-        this.context = context;
         new HideAppBarHelper(mainActivity).hideBar();
-        userToken = new UserData(context).getUserToken();
     }
 
     @Nullable
@@ -65,7 +59,9 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
 
         fragmentUserProfileBinding.swipeRefresh.setOnRefreshListener(this::getData);
 
-        progressDialog = ProgressDialog.show(context, "Loading data", "Please wait...");
+        progressBar = new ProgressBar(requireContext(), null, android.R.attr.progressBarStyle);
+        fragmentUserProfileBinding.getRoot().addView(progressBar);
+        progressBar.setVisibility(View.VISIBLE);
 
 
         getData();
@@ -77,19 +73,18 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
         fragmentUserProfileBinding.swipeRefresh.setRefreshing(false);
         String userToken = new UserData(requireContext()).getUserToken();
         todoNoteViewModel.getUserData(userToken).observe(getViewLifecycleOwner(), userData -> {
-            progressDialog.dismiss();
+            progressBar.setVisibility(View.GONE);
             if (userData != null) {
-                email = userData.data.email;
                 username = userData.data.username;
 
-                updateUI(username);
+                updateUI();
             } else {
-                new Messages(context).showMessage("Something wrong, try again");
+                new Messages(requireContext()).showMessage("Something wrong, try again");
             }
         });
     }
 
-    private void updateUI(String username) {
+    private void updateUI() {
         if (username.length() > 15)
             username = username.substring(0, 15) + "...";
 
@@ -100,20 +95,12 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
     public void onClick(View v) {
         int id = v.getId();
         if (id == R.id.button_logout) {
-            new UserData(context).removeUserToken();
+            new UserData(requireContext()).removeUserToken();
             Intent intent = new Intent(mainActivity, LoginActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
         } else if (id == R.id.edit_userdata_button) {
-// TODO: 21/09/2021 Task: https://github.com/PatrykMCoder/Todo/issues/198
-//            UserProfileFragment userProfileFragment = new UserProfileFragment();
-//            Bundle bundle = new Bundle();
-//            bundle.putString("userToken", userToken);
-//            bundle.putString("username", username);
-//            bundle.putString("userEmail", email);
-//
-//            userProfileFragment.setArguments(bundle);
-            new Messages(context).showMessage("For now is blocking, please be patient for 2.2.1 version");
+            new Messages(requireContext()).showMessage("For now is blocking, please be patient for update this function");
 
         } else if (id == R.id.privacy) {
             DialogFragment dialogFragment = new PolicyDialog();

@@ -1,16 +1,12 @@
 package com.pmprogramms.todo.helpers.reminders;
 
-import android.app.PendingIntent;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
-
-import com.pmprogramms.todo.utils.reminders.ReminderBroadcastReceiver;
 
 import java.util.ArrayList;
 
 public class ReadAboutRemindersFromSharedpreference {
-    private Context context;
+    private final Context context;
 
     public ReadAboutRemindersFromSharedpreference(Context context) {
         this.context = context;
@@ -26,18 +22,6 @@ public class ReadAboutRemindersFromSharedpreference {
 
         return dataReminder;
     }
-
-//    public ArrayList<PendingIntent> readPendings() {
-//        SharedPreferences remindersIdsPreference = context.getSharedPreferences("reminders_id", Context.MODE_PRIVATE);
-//        ArrayList<PendingIntent> pendingIntents = new ArrayList<>();
-//        PendingIntent pendingIntent;
-//        for (String dataTitle : readTitles()) {
-//            int id = remindersIdsPreference.getInt(dataTitle, 0);
-//            Intent intent = new Intent(context, ReminderBroadcastReceiver.class);
-//            pendingIntent = PendingIntent.getBroadcast(context, id, intent, 0);
-//        }
-//        return pendingIntents;
-//    }
 
     public int getID(String title) {
         SharedPreferences remindersIdsPreference = context.getSharedPreferences("reminders_id", Context.MODE_PRIVATE);

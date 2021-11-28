@@ -14,7 +14,7 @@ public class TextFormat {
 
     public String splitTextTag(String tag) {
         if (tag != null && tag.length() >= 7) {
-            tag = tag.substring(0, Math.min(tag.length(), 7)) + "...";
+            tag = tag.substring(0, 7) + "...";
         }
         return tag;
     }

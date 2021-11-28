@@ -3,9 +3,7 @@ package com.pmprogramms.todo.view.dialogs;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.format.DateFormat;
 import android.view.View;
@@ -28,8 +26,6 @@ import java.util.Calendar;
 
 public class CreateReminderDialog extends DialogFragment {
 
-    private static final String TAG = "CreateReminder";
-
     private TimePicker timePicker;
     private Spinner typeRepeatReminderSpinner;
     private Spinner typeDisplayReminderSpinner;
@@ -40,8 +36,6 @@ public class CreateReminderDialog extends DialogFragment {
     private ArrayAdapter<String> typeRepeatReminderAdapter;
     private ArrayAdapter<String> typeDisplayReminderAdapter;
 
-    private long timePickerTime;
-
     private ReminderRepeatType reminderRepeatType;
     private ReminderDisplayType reminderDisplayType;
 
@@ -49,7 +43,7 @@ public class CreateReminderDialog extends DialogFragment {
     private SharedPreferences remindersIdsPreference;
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         this.context = context;
 
@@ -80,57 +74,44 @@ public class CreateReminderDialog extends DialogFragment {
         builder.setTitle("Create reminder");
 
         builder.setView(v)
-                .setPositiveButton("Create", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        String title = ReminderHelper.getTitle();
+                .setPositiveButton("Create", (dialogInterface, i) -> {
+                    String title = ReminderHelper.getTitle();
 
-                        Calendar c = Calendar.getInstance();
+                    Calendar c = Calendar.getInstance();
 
-                        int day = datePicker.getDayOfMonth();
-                        int month = datePicker.getMonth();
-                        int year = datePicker.getYear();
+                    int day = datePicker.getDayOfMonth();
+                    int month = datePicker.getMonth();
+                    int year = datePicker.getYear();
 
-                        c.set(Calendar.DAY_OF_MONTH, day);
-                        c.set(Calendar.MONTH, month);
-                        c.set(Calendar.YEAR, year);
+                    c.set(Calendar.DAY_OF_MONTH, day);
+                    c.set(Calendar.MONTH, month);
+                    c.set(Calendar.YEAR, year);
 
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                            c.set(Calendar.HOUR_OF_DAY, timePicker.getHour());
-                            c.set(Calendar.MINUTE, timePicker.getMinute());
-                        } else {
-                            c.set(Calendar.HOUR_OF_DAY, timePicker.getCurrentHour());
-                            c.set(Calendar.MINUTE, timePicker.getCurrentMinute());
-                        }
+                    c.set(Calendar.HOUR_OF_DAY, timePicker.getHour());
+                    c.set(Calendar.MINUTE, timePicker.getMinute());
 
-                        if (c.before(Calendar.getInstance()))
-                            c.add(Calendar.DATE, 1);
+                    if (c.before(Calendar.getInstance()))
+                        c.add(Calendar.DATE, 1);
 
-                        getSelectedItemFromSpinners();
-                        long time = c.getTimeInMillis();
+                    getSelectedItemFromSpinners();
+                    long time = c.getTimeInMillis();
 
-                        Reminder reminder = new Reminder(context, title, time, reminderRepeatType, reminderDisplayType);
-                        reminder.createReminder();
+                    Reminder reminder = new Reminder(context, title, time, reminderRepeatType, reminderDisplayType);
+                    reminder.createReminder();
 
-                        remindersTitlePreference.edit().putString(title, title).apply();
-                        remindersIdsPreference.edit().putInt(title, (int) time).apply();
-                    }
+                    remindersTitlePreference.edit().putString(title, title).apply();
+                    remindersIdsPreference.edit().putInt(title, (int) time).apply();
                 })
 
-                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        dialogInterface.dismiss();
-                    }
-                });
+                .setNegativeButton("Cancel", (dialogInterface, i) -> dialogInterface.dismiss());
 
         return builder.create();
     }
 
     private void initSpinnerAdapter() {
-        typeRepeatReminderAdapter = new ArrayAdapter<String>(context, R.layout.custom_spinner_item,
+        typeRepeatReminderAdapter = new ArrayAdapter<>(context, R.layout.custom_spinner_item,
                 getResources().getStringArray(R.array.reminder_repeat_type));
-        typeDisplayReminderAdapter = new ArrayAdapter<String>(context, R.layout.custom_spinner_item,
+        typeDisplayReminderAdapter = new ArrayAdapter<>(context, R.layout.custom_spinner_item,
                 getResources().getStringArray(R.array.reminder_display_type));
     }
 

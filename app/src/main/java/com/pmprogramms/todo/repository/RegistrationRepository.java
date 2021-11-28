@@ -1,10 +1,11 @@
 package com.pmprogramms.todo.repository;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.pmprogramms.todo.API.retrofit.API;
-import com.pmprogramms.todo.API.retrofit.Client;
+import com.pmprogramms.todo.api.retrofit.API;
+import com.pmprogramms.todo.api.retrofit.Client;
 
 import java.util.HashMap;
 
@@ -23,7 +24,7 @@ public class RegistrationRepository {
 
         apiTodoNote.createUser(userData).enqueue(new Callback<Void>() {
             @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
+            public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
                 if (response.isSuccessful())
                     resultCreateUser.postValue(201);
                 else
@@ -31,7 +32,7 @@ public class RegistrationRepository {
             }
 
             @Override
-            public void onFailure(Call<Void> call, Throwable t) {
+            public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
                 resultCreateUser.postValue(500);
             }
         });

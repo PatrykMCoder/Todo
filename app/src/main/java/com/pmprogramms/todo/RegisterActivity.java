@@ -4,19 +4,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.EditText;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
+import android.widget.ProgressBar;
 
 import com.google.android.material.snackbar.Snackbar;
-import com.pmprogramms.todo.API.retrofit.API;
-import com.pmprogramms.todo.API.retrofit.Client;
 import com.pmprogramms.todo.databinding.ActivityRegisterBinding;
 import com.pmprogramms.todo.helpers.forms.RegisterFieldForm;
 import com.pmprogramms.todo.helpers.input.HideKeyboard;
@@ -26,14 +19,10 @@ import com.pmprogramms.todo.viewmodel.RegistrationViewModel;
 
 import java.util.HashMap;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-
 public class RegisterActivity extends AppCompatActivity {
     private ActivityRegisterBinding activityRegisterBinding;
     private RegistrationViewModel registrationViewModel;
-    private ProgressDialog progressDialog;
+    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,19 +39,21 @@ public class RegisterActivity extends AppCompatActivity {
         });
 
         activityRegisterBinding.buttonLogin.setOnClickListener(v -> {
-            progressDialog = ProgressDialog.show(RegisterActivity.this, "Create user...", "Please wait...");
+            progressBar = new ProgressBar(this, null, android.R.attr.progressBarStyle);
+            activityRegisterBinding.getRoot().addView(progressBar);
+            progressBar.setVisibility(View.VISIBLE);
             new HideKeyboard(v, RegisterActivity.this).hide();
 
             String username = activityRegisterBinding.usernameEditText.getText().toString().trim();
             String email = activityRegisterBinding.emailEditText.getText().toString().trim();
             String password = activityRegisterBinding.passwordEditText.getText().toString();
             String repeatPassword = activityRegisterBinding.confirmPasswordEditText.getText().toString();
-            boolean acceptedPrivacy = activityRegisterBinding.acceptCheckbox.isChecked();
+            boolean acceptedPrivacy = activityRegisterBinding.acceptPrivacy.isChecked();
 
             RegisterFieldForm registerFieldForm = new RegisterFieldForm(email, password, repeatPassword, username, acceptedPrivacy);
 
             registrationViewModel.validationRegisterForm(registerFieldForm).observe(this, resultOfValidation -> {
-                progressDialog.dismiss();
+                progressBar.setVisibility(View.GONE);
 
                 if (resultOfValidation.getMsg().equals("")) {
                     HashMap<String, Object> userDataMap = new HashMap<>();

@@ -1,15 +1,15 @@
 package com.pmprogramms.todo.repository;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.pmprogramms.todo.API.retrofit.API;
-import com.pmprogramms.todo.API.retrofit.Client;
-import com.pmprogramms.todo.API.retrofit.customTags.JsonHelperTag;
-import com.pmprogramms.todo.API.retrofit.todo.todo.Data;
-import com.pmprogramms.todo.API.retrofit.todo.todo.JSONHelperTodo;
-import com.pmprogramms.todo.API.retrofit.user.JsonHelperUser;
-import com.pmprogramms.todo.API.retrofit.user.UserData;
+import com.pmprogramms.todo.api.retrofit.API;
+import com.pmprogramms.todo.api.retrofit.Client;
+import com.pmprogramms.todo.api.retrofit.customTags.JsonHelperTag;
+import com.pmprogramms.todo.api.retrofit.todo.todo.Data;
+import com.pmprogramms.todo.api.retrofit.todo.todo.JSONHelperTodo;
+import com.pmprogramms.todo.api.retrofit.user.JsonHelperUser;
 
 import java.util.HashMap;
 
@@ -37,7 +37,7 @@ public class TodoNoteRepository {
 
         apiTodoNote.getUserTodosTitle(archive, token).enqueue(new Callback<JSONHelperTodo>() {
             @Override
-            public void onResponse(Call<JSONHelperTodo> call, Response<JSONHelperTodo> response) {
+            public void onResponse(@NonNull Call<JSONHelperTodo> call, @NonNull Response<JSONHelperTodo> response) {
                 if (response.isSuccessful() && (response.code() == 200 || response.code() == 201)) {
                     todosMutableLiveData.postValue(response.body());
                 } else
@@ -45,7 +45,7 @@ public class TodoNoteRepository {
             }
 
             @Override
-            public void onFailure(Call<JSONHelperTodo> call, Throwable t) {
+            public void onFailure(@NonNull Call<JSONHelperTodo> call, @NonNull Throwable t) {
                 todosMutableLiveData.postValue(null);
             }
         });
@@ -57,7 +57,7 @@ public class TodoNoteRepository {
             selectedTodoMutableLiveData = new MutableLiveData<>();
         apiTodoNote.getUserTodoData(todoID, userToken).enqueue(new Callback<JSONHelperTodo>() {
             @Override
-            public void onResponse(Call<JSONHelperTodo> call, Response<JSONHelperTodo> response) {
+            public void onResponse(@NonNull Call<JSONHelperTodo> call, @NonNull Response<JSONHelperTodo> response) {
                 if (response.isSuccessful() && (response.code() == 200 || response.code() == 201))
                     selectedTodoMutableLiveData.postValue(response.body());
                 else
@@ -65,7 +65,7 @@ public class TodoNoteRepository {
             }
 
             @Override
-            public void onFailure(Call<JSONHelperTodo> call, Throwable t) {
+            public void onFailure(@NonNull Call<JSONHelperTodo> call, @NonNull Throwable t) {
                 selectedTodoMutableLiveData.postValue(null);
             }
         });
@@ -79,12 +79,12 @@ public class TodoNoteRepository {
         Call<Data> call = apiTodoNote.updateTodoStatus(todoID, todoMap, userToken);
         call.enqueue(new Callback<Data>() {
             @Override
-            public void onResponse(Call<Data> call, Response<Data> response) {
+            public void onResponse(@NonNull Call<Data> call, @NonNull Response<Data> response) {
                 returnCodeAfterUpdateTodo.postValue(response.code());
             }
 
             @Override
-            public void onFailure(Call<Data> call, Throwable t) {
+            public void onFailure(@NonNull Call<Data> call, @NonNull Throwable t) {
                 returnCodeAfterUpdateTodo.postValue(500);
             }
         });
@@ -98,12 +98,12 @@ public class TodoNoteRepository {
         Call<Void> call = apiTodoNote.archiveAction(todoID, archiveMap, userToken);
         call.enqueue(new Callback<Void>() {
             @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
+            public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
                 returnCodeAfterArchiveTodo.postValue(response.code());
             }
 
             @Override
-            public void onFailure(Call<Void> call, Throwable t) {
+            public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
                 returnCodeAfterArchiveTodo.postValue(500);
             }
         });
@@ -117,12 +117,12 @@ public class TodoNoteRepository {
         Call<Void> call = apiTodoNote.saveTodo(data, userToken);
         call.enqueue(new Callback<Void>() {
             @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
+            public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
                 returnCodeCreateTodo.postValue(response.code());
             }
 
             @Override
-            public void onFailure(Call<Void> call, Throwable t) {
+            public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
                 returnCodeCreateTodo.postValue(500);
             }
         });
@@ -135,12 +135,12 @@ public class TodoNoteRepository {
 
         apiTodoNote.editTodo(todoID, data, userToken).enqueue(new Callback<Void>() {
             @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
+            public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
                 returnCodeEditTodo.postValue(response.code());
             }
 
             @Override
-            public void onFailure(Call<Void> call, Throwable t) {
+            public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
                 returnCodeEditTodo.postValue(500);
             }
         });
@@ -154,7 +154,7 @@ public class TodoNoteRepository {
 
         apiTodoNote.getUserTagData(userToken).enqueue(new Callback<JsonHelperTag>() {
             @Override
-            public void onResponse(Call<JsonHelperTag> call, Response<JsonHelperTag> response) {
+            public void onResponse(@NonNull Call<JsonHelperTag> call, @NonNull Response<JsonHelperTag> response) {
                 if (response.isSuccessful() && (response.code() == 200 || response.code() == 201)) {
                     tagsMutableLiveData.postValue(response.body());
                 } else {
@@ -163,7 +163,7 @@ public class TodoNoteRepository {
             }
 
             @Override
-            public void onFailure(Call<JsonHelperTag> call, Throwable t) {
+            public void onFailure(@NonNull Call<JsonHelperTag> call, @NonNull Throwable t) {
                 tagsMutableLiveData.postValue(null);
             }
         });
@@ -178,12 +178,12 @@ public class TodoNoteRepository {
 
         apiTodoNote.deleteTodo(todoID, userToken).enqueue(new Callback<Void>() {
             @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
+            public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
                 returnCodeDeleteTodo.postValue(response.code());
             }
 
             @Override
-            public void onFailure(Call<Void> call, Throwable t) {
+            public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
                 returnCodeDeleteTodo.postValue(500);
             }
         });
@@ -197,12 +197,12 @@ public class TodoNoteRepository {
 
         apiTodoNote.createCustomTag(data, userToken).enqueue(new Callback<Void>() {
             @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
+            public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
                 returnCodeCreateTag.postValue(response.code());
             }
 
             @Override
-            public void onFailure(Call<Void> call, Throwable t) {
+            public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
                 returnCodeCreateTag.postValue(500);
             }
         });
@@ -215,7 +215,7 @@ public class TodoNoteRepository {
 
         apiTodoNote.getUserData(userToken).enqueue(new Callback<JsonHelperUser>() {
             @Override
-            public void onResponse(Call<JsonHelperUser> call, Response<JsonHelperUser> response) {
+            public void onResponse(@NonNull Call<JsonHelperUser> call, @NonNull Response<JsonHelperUser> response) {
                 if (response.isSuccessful() && (response.code() == 200 || response.code() == 201)) {
                     userDataMutableLiveData.postValue(response.body());
                 } else {
@@ -224,7 +224,7 @@ public class TodoNoteRepository {
             }
 
             @Override
-            public void onFailure(Call<JsonHelperUser> call, Throwable t) {
+            public void onFailure(@NonNull Call<JsonHelperUser> call, @NonNull Throwable t) {
                 userDataMutableLiveData.postValue(null);
             }
         });

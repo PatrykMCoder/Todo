@@ -5,7 +5,7 @@ import android.os.Handler;
 import android.widget.Toast;
 
 public class Messages {
-    private Context context;
+    private final Context context;
 
     public Messages(Context context) {
         this.context = context;
@@ -13,8 +13,6 @@ public class Messages {
 
     public void showMessage(String msg) {
         Handler handler = new Handler();
-        handler.post(() -> {
-            Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
-        });
+        handler.post(() -> Toast.makeText(context, msg, Toast.LENGTH_SHORT).show());
     }
 }

@@ -1,7 +1,8 @@
 package com.pmprogramms.todo.helpers.forms;
 
 public class LoginFieldForm {
-    private String email, password;
+    private final String email;
+    private final String password;
 
     public LoginFieldForm(String email, String password) {
         this.email = email;

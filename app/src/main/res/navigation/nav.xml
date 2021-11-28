@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/nav"
     app:startDestination="@id/todoFragment">
 
     <fragment
@@ -37,9 +36,6 @@
         android:id="@+id/userProfileFragment"
         android:name="com.pmprogramms.todo.view.fragments.user.UserProfileFragment"
         android:label="UserProfileFragment" >
-        <action
-            android:id="@+id/action_userProfileFragment_to_userProfileEditFragment"
-            app:destination="@id/userProfileEditFragment" />
     </fragment>
     <fragment
         android:id="@+id/tagsFragment"
@@ -72,9 +68,5 @@
             android:name="editTodoFields"
             app:argType="com.pmprogramms.todo.helpers.view.EditTodoHelper" />
     </fragment>
-    <fragment
-        android:id="@+id/userProfileEditFragment"
-        android:name="com.pmprogramms.todo.view.fragments.user.UserProfileEditFragment"
-        android:label="UserProfileEditFragment" />
 
 </navigation>

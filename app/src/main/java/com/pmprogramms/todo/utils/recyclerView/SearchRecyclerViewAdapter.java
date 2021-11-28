@@ -11,7 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.pmprogramms.todo.API.retrofit.todo.todo.Data;
+import com.pmprogramms.todo.api.retrofit.todo.todo.Data;
 import com.pmprogramms.todo.MainActivity;
 import com.pmprogramms.todo.R;
 
@@ -20,11 +20,10 @@ import java.util.Set;
 
 public class SearchRecyclerViewAdapter extends RecyclerView.Adapter<SearchRecyclerViewAdapter.SearchListViewHolder> {
 
-    private Set<Data> data;
-    private ArrayList<String> ids;
-    private ArrayList<String> titles;
-    private ArrayList<Boolean> archives;
-    private ArrayList<String> colors;
+    private final Set<Data> data;
+    private final ArrayList<String> ids;
+    private final ArrayList<String> titles;
+    private final ArrayList<Boolean> archives;
 
     public SearchRecyclerViewAdapter(Set<Data> data) {
         this.data = data;
@@ -32,13 +31,11 @@ public class SearchRecyclerViewAdapter extends RecyclerView.Adapter<SearchRecycl
         ids = new ArrayList<>();
         titles = new ArrayList<>();
         archives = new ArrayList<>();
-        colors = new ArrayList<>();
 
         for (Data t : data) {
             ids.add(t._id);
             titles.add(t.title);
             archives.add(t.archive);
-            colors.add(t.color);
         }
     }
 
@@ -70,9 +67,9 @@ public class SearchRecyclerViewAdapter extends RecyclerView.Adapter<SearchRecycl
     }
 
     static class SearchListViewHolder extends RecyclerView.ViewHolder {
-        private TextView resultTextView;
-        private CardView searchCard;
-        private ImageView archiveStatusImage;
+        private final TextView resultTextView;
+        private final CardView searchCard;
+        private final ImageView archiveStatusImage;
 
         public SearchListViewHolder(@NonNull View itemView) {
             super(itemView);

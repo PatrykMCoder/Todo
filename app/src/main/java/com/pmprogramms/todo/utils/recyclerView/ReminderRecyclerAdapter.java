@@ -1,6 +1,5 @@
 package com.pmprogramms.todo.utils.recyclerView;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.view.LayoutInflater;
@@ -10,7 +9,6 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.pmprogramms.todo.R;
@@ -21,7 +19,7 @@ import java.util.ArrayList;
 
 public class ReminderRecyclerAdapter extends RecyclerView.Adapter<ReminderRecyclerAdapter.ReminderRecyclerListHolder> {
 
-    private ArrayList<String> data;
+    private final ArrayList<String> data;
     private ReadAboutRemindersFromSharedpreference readAboutRemindersFromSharedpreference;
 
     public ReminderRecyclerAdapter(ArrayList<String> data) {
@@ -44,19 +42,21 @@ public class ReminderRecyclerAdapter extends RecyclerView.Adapter<ReminderRecycl
             holder.textView.setText(data.get(position));
 
         holder.removeButton.setOnClickListener(v -> {
-            Reminder reminder = new Reminder(holder.removeButton.getContext());
-            reminder.removeReminder(readAboutRemindersFromSharedpreference.getID(data.get(position)));
-            SharedPreferences titles = holder.removeButton.getContext().getSharedPreferences("reminders_title", Context.MODE_PRIVATE);
-            SharedPreferences ids = holder.removeButton.getContext().getSharedPreferences("reminders_id", Context.MODE_PRIVATE);
+            if (data != null) {
+                Reminder reminder = new Reminder(holder.removeButton.getContext());
+                reminder.removeReminder(readAboutRemindersFromSharedpreference.getID(data.get(position)));
+                SharedPreferences titles = holder.removeButton.getContext().getSharedPreferences("reminders_title", Context.MODE_PRIVATE);
+                SharedPreferences ids = holder.removeButton.getContext().getSharedPreferences("reminders_id", Context.MODE_PRIVATE);
 
-            SharedPreferences.Editor deleterTitles = titles.edit();
-            SharedPreferences.Editor deleterIds = ids.edit();
+                SharedPreferences.Editor deleterTitles = titles.edit();
+                SharedPreferences.Editor deleterIds = ids.edit();
 
-            deleterTitles.remove(data.get(position)).apply();
-            deleterIds.remove(data.get(position)).apply();
+                deleterTitles.remove(data.get(position)).apply();
+                deleterIds.remove(data.get(position)).apply();
 
-            notifyItemRemoved(position);
-            data.remove(position);
+                notifyItemRemoved(position);
+                data.remove(position);
+            }
         });
     }
 
@@ -65,16 +65,14 @@ public class ReminderRecyclerAdapter extends RecyclerView.Adapter<ReminderRecycl
         return data.size();
     }
 
-    class ReminderRecyclerListHolder extends RecyclerView.ViewHolder {
-        private TextView textView;
-        private ImageButton removeButton;
-        private CardView reminderDataHolderCard;
+    static class ReminderRecyclerListHolder extends RecyclerView.ViewHolder {
+        private final TextView textView;
+        private final ImageButton removeButton;
 
         public ReminderRecyclerListHolder(@NonNull View itemView) {
             super(itemView);
             textView = itemView.findViewById(R.id.reminder_text);
             removeButton = itemView.findViewById(R.id.remove_reminder_button);
-            reminderDataHolderCard = itemView.findViewById(R.id.card_view);
         }
     }
 }

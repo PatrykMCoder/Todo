@@ -1,12 +1,12 @@
 package com.pmprogramms.todo.repository;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.pmprogramms.todo.API.retrofit.API;
-import com.pmprogramms.todo.API.retrofit.Client;
-import com.pmprogramms.todo.API.retrofit.login.JsonHelperLogin;
-import com.pmprogramms.todo.API.retrofit.user.JsonHelperUser;
+import com.pmprogramms.todo.api.retrofit.API;
+import com.pmprogramms.todo.api.retrofit.Client;
+import com.pmprogramms.todo.api.retrofit.login.JsonHelperLogin;
 
 import java.util.HashMap;
 
@@ -25,7 +25,7 @@ public class LoginRepository {
 
         apiTodoNote.loginUser(authData).enqueue(new Callback<JsonHelperLogin>() {
             @Override
-            public void onResponse(Call<JsonHelperLogin> call, Response<JsonHelperLogin> response) {
+            public void onResponse(@NonNull Call<JsonHelperLogin> call, @NonNull Response<JsonHelperLogin> response) {
                 if (response.isSuccessful()) {
                     loginResultLiveData.postValue(response.body());
                 } else
@@ -33,7 +33,7 @@ public class LoginRepository {
             }
 
             @Override
-            public void onFailure(Call<JsonHelperLogin> call, Throwable t) {
+            public void onFailure(@NonNull Call<JsonHelperLogin> call, @NonNull Throwable t) {
                 loginResultLiveData.postValue(null);
             }
         });

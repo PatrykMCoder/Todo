@@ -2,7 +2,6 @@ package com.pmprogramms.todo.view.dialogs;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.View;
 
@@ -22,11 +21,7 @@ public class SourceDialog extends DialogFragment {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setView(rootView);
-        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                //nothing
-            }
+        builder.setPositiveButton("Ok", (dialog, which) -> {
         });
         return builder.create();
     }

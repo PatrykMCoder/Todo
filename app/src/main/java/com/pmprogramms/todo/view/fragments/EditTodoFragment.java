@@ -1,6 +1,5 @@
 package com.pmprogramms.todo.view.fragments;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -12,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
@@ -21,14 +21,14 @@ import androidx.navigation.Navigation;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.pmprogramms.todo.API.retrofit.todo.todo.save.JSONHelperSaveTodo;
-import com.pmprogramms.todo.API.retrofit.todo.todo.Todos;
+import com.pmprogramms.todo.api.retrofit.todo.todo.save.JSONHelperSaveTodo;
+import com.pmprogramms.todo.api.retrofit.todo.todo.Todos;
 import com.pmprogramms.todo.MainActivity;
 import com.pmprogramms.todo.R;
 import com.pmprogramms.todo.databinding.FragmentEditTodoBinding;
 import com.pmprogramms.todo.helpers.user.UserData;
 import com.pmprogramms.todo.helpers.input.HideKeyboard;
-import com.pmprogramms.todo.API.retrofit.todo.todo.edit.JSONHelperEditTodo;
+import com.pmprogramms.todo.api.retrofit.todo.todo.edit.JSONHelperEditTodo;
 import com.pmprogramms.todo.utils.text.Messages;
 import com.pmprogramms.todo.view.dialogs.SelectTodoTagDialog;
 import com.pmprogramms.todo.viewmodel.TodoNoteViewModel;
@@ -38,7 +38,6 @@ import java.util.HashMap;
 
 
 public class EditTodoFragment extends Fragment implements View.OnClickListener {
-    private EditTodoFragmentArgs args;
     private EditText taskEditText;
     private CheckBox doneCheckBox;
     private MainActivity mainActivity;
@@ -64,18 +63,15 @@ public class EditTodoFragment extends Fragment implements View.OnClickListener {
                              Bundle savedInstanceState) {
         fragmentEditTodoBinding = FragmentEditTodoBinding.inflate(inflater);
         todoNoteViewModel = new ViewModelProvider(this).get(TodoNoteViewModel.class);
-
-        args = EditTodoFragmentArgs.fromBundle(getArguments());
-
-        loadData(args);
+        loadData(EditTodoFragmentArgs.fromBundle(getArguments()));
 
         fragmentEditTodoBinding.container.setBackgroundColor(color);
-        fragmentEditTodoBinding.colorsLayoutEdit.defaultColor.setOnClickListener(this);
-        fragmentEditTodoBinding.colorsLayoutEdit.pastel1.setOnClickListener(this);
-        fragmentEditTodoBinding.colorsLayoutEdit.pastel2.setOnClickListener(this);
-        fragmentEditTodoBinding.colorsLayoutEdit.pastel3.setOnClickListener(this);
-        fragmentEditTodoBinding.colorsLayoutEdit.pastel4.setOnClickListener(this);
-        fragmentEditTodoBinding.colorsLayoutEdit.pastel5.setOnClickListener(this);
+        fragmentEditTodoBinding.colorsMenu.defaultColor.setOnClickListener(this);
+        fragmentEditTodoBinding.colorsMenu.pastel1.setOnClickListener(this);
+        fragmentEditTodoBinding.colorsMenu.pastel2.setOnClickListener(this);
+        fragmentEditTodoBinding.colorsMenu.pastel3.setOnClickListener(this);
+        fragmentEditTodoBinding.colorsMenu.pastel4.setOnClickListener(this);
+        fragmentEditTodoBinding.colorsMenu.pastel5.setOnClickListener(this);
         fragmentEditTodoBinding.saveTodo.setOnClickListener(this);
         fragmentEditTodoBinding.setTag.setOnClickListener(this);
         fragmentEditTodoBinding.boxNewItem.setOnClickListener(this);
@@ -193,7 +189,9 @@ public class EditTodoFragment extends Fragment implements View.OnClickListener {
     }
 
     private void updateTodo() {
-        ProgressDialog progressDialog = ProgressDialog.show(context, "Update...", "Please wait...");
+        ProgressBar progressBar = new ProgressBar(requireContext(), null, android.R.attr.progressBarStyle);
+        fragmentEditTodoBinding.getRoot().addView(progressBar);
+        progressBar.setVisibility(View.VISIBLE);
         String title = fragmentEditTodoBinding.titleEdit.getText().toString();
 
         EditText editText;
@@ -223,6 +221,6 @@ public class EditTodoFragment extends Fragment implements View.OnClickListener {
             else
                 new Messages(context).showMessage("Something wrong, try again");
         });
-        progressDialog.dismiss();
+        progressBar.setVisibility(View.GONE);
     }
 }

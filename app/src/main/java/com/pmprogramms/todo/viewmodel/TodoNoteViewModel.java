@@ -5,17 +5,16 @@ import android.app.Application;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 
-import com.pmprogramms.todo.API.retrofit.customTags.JsonHelperTag;
-import com.pmprogramms.todo.API.retrofit.todo.todo.JSONHelperTodo;
-import com.pmprogramms.todo.API.retrofit.user.JsonHelperUser;
+import com.pmprogramms.todo.api.retrofit.customTags.JsonHelperTag;
+import com.pmprogramms.todo.api.retrofit.todo.todo.JSONHelperTodo;
+import com.pmprogramms.todo.api.retrofit.user.JsonHelperUser;
 import com.pmprogramms.todo.repository.TodoNoteRepository;
 
 import java.util.HashMap;
 
 public class TodoNoteViewModel extends AndroidViewModel {
-    private TodoNoteRepository todoNoteRepository = new TodoNoteRepository();
+    private final TodoNoteRepository todoNoteRepository = new TodoNoteRepository();
 
     public TodoNoteViewModel(@NonNull Application application) {
         super(application);

@@ -6,7 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 
 public class Reminder {
-    private Context context;
+    private final Context context;
     private AlarmManager alarmManager;
     private long time;
     private ReminderRepeatType typeRepeatReminder;

@@ -14,15 +14,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 
-import com.pmprogramms.todo.API.retrofit.customTags.TagsData;
 import com.pmprogramms.todo.MainActivity;
 import com.pmprogramms.todo.databinding.FragmentTagsBinding;
 import com.pmprogramms.todo.helpers.user.UserData;
 import com.pmprogramms.todo.helpers.view.HideAppBarHelper;
 import com.pmprogramms.todo.utils.recyclerView.TagsRecyclerAdapter;
 import com.pmprogramms.todo.viewmodel.TodoNoteViewModel;
-
-import java.util.ArrayList;
 
 public class TagsFragment extends Fragment {
     private MainActivity mainActivity;
@@ -47,16 +44,9 @@ public class TagsFragment extends Fragment {
         mainActivity.setSupportActionBar(fragmentTagsBinding.customToolBar);
         loadData();
 
-        fragmentTagsBinding.refreshSwipe.setOnRefreshListener(this::loadData);
+        fragmentTagsBinding.refresh.setOnRefreshListener(this::loadData);
 
         return fragmentTagsBinding.getRoot();
-    }
-
-    private void initRecyclerView(ArrayList<TagsData> tags) {
-        TagsRecyclerAdapter tagsAdapter = new TagsRecyclerAdapter(tags);
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(mainActivity, RecyclerView.VERTICAL, false);
-        fragmentTagsBinding.tagsRecyclerView.setLayoutManager(layoutManager);
-        fragmentTagsBinding.tagsRecyclerView.setAdapter(tagsAdapter);
     }
 
     private void loadData() {
@@ -64,8 +54,11 @@ public class TagsFragment extends Fragment {
 
         todoNoteViewModel.getAllTags(userToken).observe(getViewLifecycleOwner(), tagsData -> {
             if(tagsData.data != null) {
-                initRecyclerView(tagsData.data);
-                fragmentTagsBinding.refreshSwipe.setRefreshing(false);
+                TagsRecyclerAdapter tagsAdapter = new TagsRecyclerAdapter(tagsData.data);
+                RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(mainActivity, RecyclerView.VERTICAL, false);
+                fragmentTagsBinding.recycler.setLayoutManager(layoutManager);
+                fragmentTagsBinding.recycler.setAdapter(tagsAdapter);
+                fragmentTagsBinding.refresh.setRefreshing(false);
             }
         });
     }

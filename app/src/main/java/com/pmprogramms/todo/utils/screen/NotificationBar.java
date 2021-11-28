@@ -1,7 +1,6 @@
 package com.pmprogramms.todo.utils.screen;
 
 import android.graphics.Color;
-import android.os.Build;
 import android.view.View;
 import android.view.Window;
 

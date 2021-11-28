@@ -3,7 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#ffffff"
     android:orientation="vertical"
     tools:context=".view.fragments.EditTodoFragment">
 
@@ -27,7 +26,6 @@
             android:textSize="20sp" />
 
         <ScrollView
-            android:id="@+id/scroll_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/title_edit">
@@ -82,7 +80,7 @@
     </RelativeLayout>
 
     <include
-        android:id="@+id/colors_layout_edit"
+        android:id="@+id/colors_menu"
         layout="@layout/colors_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

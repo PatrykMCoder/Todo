@@ -8,7 +8,7 @@ public enum LoginValidationEnum {
     SHORT_PASSWORD("Password is too short"),
     OK("");
 
-    private String msg;
+    private final String msg;
     LoginValidationEnum(String msg) {
         this.msg = msg;
     }
