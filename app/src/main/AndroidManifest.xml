@@ -23,14 +23,18 @@
             android:value="@string/id_ad_mob_pub"/>
 
         <activity android:name="com.pmprogramms.todo.RegisterActivity"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait"
+            android:exported="true"/>
 
         <activity android:name="com.pmprogramms.todo.LoginActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name="com.pmprogramms.todo.ReminderAlarmActivity" />
+            android:screenOrientation="portrait"
+            android:exported="true"/>
+        <activity android:name="com.pmprogramms.todo.ReminderAlarmActivity"
+            android:exported="true"/>
 
         <activity android:name="com.pmprogramms.todo.SplashScreenActivity"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -39,17 +43,20 @@
         </activity>
 
         <activity android:name="com.pmprogramms.todo.MainActivity"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait"
+            android:exported="true"/>
 
         <activity android:name="com.pmprogramms.todo.view.search.SearchActivity"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
         </activity>
 
         <activity android:name="com.pmprogramms.todo.view.reminders.RemindersActivity"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait"
+            android:exported="true"/>
 
         <receiver android:name="com.pmprogramms.todo.utils.reminders.ReminderBroadcastReceiver" />
     </application>
