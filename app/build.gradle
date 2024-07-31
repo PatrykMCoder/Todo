@@ -17,6 +17,8 @@ android {
 
         buildConfigField("String", "LOCAL_API", secretProperties['LOCAL_API'])
         buildConfigField("String", "PRODUCTION_API", secretProperties['PRODUCTION_API'])
+        buildConfigField("String", "CONTACT_EMAIL", secretProperties['CONTACT_EMAIL'])
+        buildConfigField("String", "INSTAGRAM_URL", secretProperties['INSTAGRAM_URL'])
     }
     buildTypes {
         release {

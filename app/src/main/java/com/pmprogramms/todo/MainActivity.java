@@ -111,19 +111,19 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
             return true;
         } else if (itemId == R.id.send_feedback) {
             Intent emailIntent = new Intent(Intent.ACTION_SENDTO);
-            emailIntent.setData(Uri.parse("mailto:pmarciszewski774@gmail.com"));
+            emailIntent.setData(Uri.parse("mailto:" + BuildConfig.CONTACT_EMAIL));
             startActivity(emailIntent);
             return true;
         } else if (itemId == R.id.contact_with_me) {
             // FIXME: 21/09/2021 fix open instagram
-            Uri uri = Uri.parse("https://www.instagram.com/patryk_programmer/");
+            Uri uri = Uri.parse(BuildConfig.INSTAGRAM_URL);
             Intent instagramIntent = new Intent(Intent.ACTION_VIEW);
             instagramIntent.setData(Uri.parse("com.instagram.android"));
             try {
                 startActivity(instagramIntent);
             } catch (ActivityNotFoundException e) {
                 startActivity(new Intent(Intent.ACTION_VIEW,
-                        Uri.parse("https://www.instagram.com/patryk_programmer/")));
+                        uri));
             }
             return true;
         } else if (itemId == R.id.review_app) {

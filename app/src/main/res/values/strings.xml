@@ -20,8 +20,6 @@
         <item>Only open application with song</item>
     </string-array>
 
-    <string name="id_ad_mob_pub">ca-app-pub-4871499696146883~1241558859</string>
-
     <!-- Buttons -->
     <string name="login">Login</string>
     <string name="no_account">No have account yet? Click here and create!</string>

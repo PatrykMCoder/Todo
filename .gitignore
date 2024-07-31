@@ -211,3 +211,4 @@ app/release
 app/build/outputs/apk/debug
 
 secret.properties
+secret.xml

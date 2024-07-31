@@ -33,3 +33,13 @@ Will be able to share todo/note for other users. Should type email and this will
 ![bigbanner](https://user-images.githubusercontent.com/20040431/107070049-0f7cb400-67e3-11eb-8921-410855260245.png)
 
 
+## Setup Build
+Before build app:
+* create secret.xml file with <string name="id_ad_mob_pub">admob_id</string>
+* create secret.properties with:
+    - LOCAL_API="LOCAL API URL"
+    - PRODUCTION_API="Production API URL"
+    - INSTAGRAM_URL="Your instagram URL if you have
+    - CONTACT_EMAIL="Your contact email for users"
+
+
