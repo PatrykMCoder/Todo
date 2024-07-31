@@ -42,4 +42,5 @@ Before build app:
     - INSTAGRAM_URL="Your instagram URL if you have
     - CONTACT_EMAIL="Your contact email for users"
 
-
+## API URL
+Here is repo URL for API: https://github.com/PatrykMCoder/TodoNoteApi
